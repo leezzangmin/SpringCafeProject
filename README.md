@@ -22,9 +22,11 @@
 4. 회원가입, 로그인 - oauth + JWT
 5. admin 페이지
 
-erd:
+<br>
 
-
+ERD:
+<img width="1029" alt="스크린샷 2022-06-23 오후 5 33 59" src="https://user-images.githubusercontent.com/64303390/175255248-8924ba25-5dc3-4868-a670-89aef5996342.png">
+<br>
 </details>
 
 </br>
