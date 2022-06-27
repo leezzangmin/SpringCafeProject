@@ -25,8 +25,8 @@
 <br>
 
 ERD:
-<img width="1029" alt="스크린샷 2022-06-23 오후 5 33 59" src="https://user-images.githubusercontent.com/64303390/175255248-8924ba25-5dc3-4868-a670-89aef5996342.png">
-<br>
+<br><img width="847" alt="스크린샷 2022-06-28 오전 1 01 47" src="https://user-images.githubusercontent.com/64303390/175983466-ecc08b40-b467-465e-9cde-1d63042df4fc.png">
+
 </details>
 
 </br>
