@@ -1,11 +1,13 @@
 package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.web.dto.PostResponse;
+import com.zzangmin.gesipan.web.dto.PostSaveRequest;
 import com.zzangmin.gesipan.web.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,6 +19,11 @@ public class PostController {
     public PostResponse singlePost(@PathVariable Long postId) {
         postService.findOne(postId);
         return new PostResponse();
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity createPost(@Validated @RequestBody PostSaveRequest postSaveRequest, BindingResult bindingResult) {
+        return ResponseEntity.ok(postService.save(postSaveRequest));
     }
 
 }
