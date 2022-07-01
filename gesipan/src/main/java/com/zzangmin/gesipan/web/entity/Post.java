@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.entity;
+package com.zzangmin.gesipan.web.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,14 +8,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
+
+@ToString(exclude = {"postImages", "postCategory"})
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Post {
 
@@ -31,10 +36,13 @@ public class Post {
     @JoinColumn(name = "userId")
     private Users user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryId")
+    @JoinColumn(name = "referenceCategoryId")
     private PostCategory postCategory;
-    @OneToMany
-    @JoinColumn(name = "reference_id")
-    private List<Image> postImages;
+    @Column(nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime createdAt;
+    @Column(nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private Long hitCount;
 
 }
