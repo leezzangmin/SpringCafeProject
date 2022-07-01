@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -17,11 +15,10 @@ public class PostService {
     private final PostRepository postRepository;
 
     public PostResponse findOne(Long postId) {
-        Post post = postRepository.findByPostId(postId).orElseThrow(IllegalStateException::new);
-
+//        postRepository.save(new Post(1L, "asdf", "asdf", 0, null, new PostCategory(),null));
+        Post post = postRepository.findByPostId(postId)
+                .orElseThrow(() -> new IllegalStateException("포스트id 없음"));
+        System.out.println(post);
+        return null;
     }
-
-
-
-
 }
