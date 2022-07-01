@@ -30,8 +30,4 @@ public class Users {
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updateAt;
-
-    @OneToMany
-    @JoinColumn(name = "reference_id")
-    private List<Image> userImage;
 }
