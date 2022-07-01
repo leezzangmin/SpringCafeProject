@@ -5,6 +5,8 @@ import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -20,5 +22,9 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;
+    @Column(nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime createdAt;
+    @Column(nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime updatedAt;
 
 }

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -14,6 +13,7 @@ import java.util.List;
 public class Users {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userId")
     private Long id;
     @Column(nullable = false, length = 200, columnDefinition = "VARCHAR(200)")
     private String userEmail;
@@ -29,5 +29,5 @@ public class Users {
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 }

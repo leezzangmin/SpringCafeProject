@@ -14,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 
 @ToString(exclude = {"postImages", "postCategory"})
 @Getter
@@ -34,7 +36,13 @@ public class Post {
     @JoinColumn(name = "userId")
     private Users user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryId")
+    @JoinColumn(name = "referenceCategoryId")
     private PostCategory postCategory;
+    @Column(nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime createdAt;
+    @Column(nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private Long hitCount;
 
 }
