@@ -26,4 +26,11 @@ public class PostController {
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
 
+    @DeleteMapping("/post/{postId}")
+    public ResponseEntity removePost(@PathVariable Long postId) {
+        postService.delete(postId);
+        return ResponseEntity.ok("post remove success");
+    }
+
+
 }
