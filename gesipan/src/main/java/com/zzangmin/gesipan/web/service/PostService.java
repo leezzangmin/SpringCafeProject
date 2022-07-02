@@ -44,4 +44,12 @@ public class PostService {
 
         return postRepository.save(post).getPostId();
     }
+
+    @Transactional
+    public void delete(Long postId) {
+        postRepository.findById(postId).
+                orElseThrow(() -> new IllegalStateException("해당하는 postId가 없습니다. 잘못된 입력"));
+
+        postRepository.deleteById(postId);
+    }
 }
