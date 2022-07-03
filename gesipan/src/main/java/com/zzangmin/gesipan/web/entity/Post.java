@@ -43,4 +43,10 @@ public class Post {
     @Column(nullable = true)
     private Long hitCount;
 
+    public void update(String postSubject, String postContent, LocalDateTime updateAt) {
+        this.postSubject = postSubject;
+        this.postContent = postContent;
+        this.updatedAt = updateAt;
+    }
+
 }
