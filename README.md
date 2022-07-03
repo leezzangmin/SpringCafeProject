@@ -24,9 +24,12 @@
 
 <br>
 
-ERD:
-<br></details><img width="836" alt="스크린샷 2022-07-01 오후 9 14 40" src="https://user-images.githubusercontent.com/64303390/176892407-224d05b0-59d3-40d3-be25-bcbc0e7e48e9.png">
+API 명세:<br> https://www.postman.com/aaron2-postman/workspace/zzangmin-springcafe
 
+<br>
+ERD:<br>
+<img width="836" alt="스크린샷 2022-07-01 오후 9 14 40" src="https://user-images.githubusercontent.com/64303390/176892407-224d05b0-59d3-40d3-be25-bcbc0e7e48e9.png">
+</details>
 
 </br>
 
