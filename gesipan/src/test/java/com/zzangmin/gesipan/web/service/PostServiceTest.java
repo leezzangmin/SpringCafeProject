@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -67,6 +67,23 @@ class PostServiceTest {
     @Test
     @DisplayName("Post가 삭제되어야 한다.")
     void delete() {
-
+        //given
+        Post post = Post.builder()
+                .postId(1L)
+                .postSubject("delete제목")
+                .postContent("delete내용")
+                .user(new Users())
+                .postCategory(new PostCategory())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+        when(postRepository.findById(2L)).thenThrow(new IllegalStateException());
+        //when
+        postService.delete(1L);
+        when(postRepository.findById(1L)).thenThrow();
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete(1L));
+        Assertions.assertThatThrownBy(() -> postService.delete(2L));
     }
 }
