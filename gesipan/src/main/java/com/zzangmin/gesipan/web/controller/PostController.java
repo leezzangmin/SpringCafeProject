@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
+import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
 import com.zzangmin.gesipan.web.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,12 @@ public class PostController {
     public ResponseEntity removePost(@PathVariable Long postId) {
         postService.delete(postId);
         return ResponseEntity.ok("post remove success");
+    }
+
+    @PatchMapping("/post/{postId}")
+    public ResponseEntity updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
+        postService.update(postId, postUpdateRequest);
+        return ResponseEntity.ok("post update success");
     }
 
 
