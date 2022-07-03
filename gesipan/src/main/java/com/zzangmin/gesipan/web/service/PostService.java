@@ -5,6 +5,7 @@ import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
+import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.PostCategory;
 import com.zzangmin.gesipan.web.entity.Users;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class PostService {
@@ -26,7 +27,6 @@ public class PostService {
         return null;
     }
 
-    @Transactional
     public Long save(PostSaveRequest postSaveRequest) {
         Users user = userRepository.findById(postSaveRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
@@ -45,11 +45,16 @@ public class PostService {
         return postRepository.save(post).getPostId();
     }
 
-    @Transactional
     public void delete(Long postId) {
         postRepository.findById(postId).
                 orElseThrow(() -> new IllegalStateException("해당하는 postId가 없습니다. 잘못된 입력"));
 
         postRepository.deleteById(postId);
+    }
+
+    public void update(Long postId, PostUpdateRequest postUpdateRequest) {
+        Post post = postRepository.findById(postId).
+                orElseThrow(() -> new IllegalStateException("해당하는 postId가 없습니다. 잘못된 입력"));
+        post.update(postUpdateRequest.getPostSubject(), postUpdateRequest.getPostContent(), postUpdateRequest.getUpdatedAt());
     }
 }
