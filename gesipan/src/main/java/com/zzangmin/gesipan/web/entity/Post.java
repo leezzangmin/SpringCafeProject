@@ -29,7 +29,7 @@ public class Post {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String postContent;
     @Column(nullable = true)
-    private Integer recommendCount;
+    private int recommendCount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private Users user;

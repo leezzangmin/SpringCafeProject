@@ -18,8 +18,7 @@ public class PostController {
 
     @GetMapping("/post/{postId}")
     public PostResponse singlePost(@PathVariable Long postId) {
-        postService.findOne(postId);
-        return new PostResponse();
+        return postService.findOne(postId);
     }
 
     @PostMapping("/post")
