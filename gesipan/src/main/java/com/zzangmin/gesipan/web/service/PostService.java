@@ -28,10 +28,10 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
 
-    @Transactional(readOnly = true)
     public PostResponse findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
+        post.increaseHitCount();
         List<Comment> comments = commentRepository.findAllByPostId(postId);
         return PostResponse.of(post, comments);
     }

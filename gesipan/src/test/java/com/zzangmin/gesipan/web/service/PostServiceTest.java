@@ -54,6 +54,7 @@ class PostServiceTest {
                 .postCategory(new PostCategory())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .hitCount(0L)
                 .build();
         PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>());
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
@@ -63,6 +64,7 @@ class PostServiceTest {
         //then
         Assertions.assertThat(postResponse1.getPostId()).isEqualTo(postResponse2.getPostId());
         Assertions.assertThat(postResponse1.getContent()).isEqualTo(postResponse2.getContent());
+        Assertions.assertThat(postResponse2.getHitCount()).isEqualTo(1L);
     }
 
     @Test

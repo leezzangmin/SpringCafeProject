@@ -14,7 +14,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 
-@ToString(exclude = {"postImages", "postCategory"})
+@ToString(exclude =  "postCategory")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -40,13 +40,18 @@ public class Post {
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "BIGINT default 0")
     private Long hitCount;
 
     public void update(String postSubject, String postContent, LocalDateTime updateAt) {
         this.postSubject = postSubject;
         this.postContent = postContent;
         this.updatedAt = updateAt;
+    }
+
+    public void increaseHitCount() {
+        // TODO: 유저 중복 조회수 올리기 검증로직 (가능할까....)
+        this.hitCount += 1;
     }
 
 }
