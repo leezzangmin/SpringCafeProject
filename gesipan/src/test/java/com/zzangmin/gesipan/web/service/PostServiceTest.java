@@ -1,8 +1,10 @@
 package com.zzangmin.gesipan.web.service;
 
+import com.zzangmin.gesipan.dao.CommentRepository;
 import com.zzangmin.gesipan.dao.PostCategoryRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UserRepository;
+import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.Post;
@@ -17,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,12 +36,35 @@ class PostServiceTest {
     private UserRepository userRepository;
     @Mock
     private PostCategoryRepository postCategoryRepository;
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private PostService postService;
 
     @Test
     void findOne() {
+        //given
+        Long postId = 1L;
+        Post post = Post.builder()
+                .postId(1L)
+                .postSubject("제목")
+                .postContent("내용")
+                .user(new Users())
+                .postCategory(new PostCategory())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .hitCount(0L)
+                .build();
+        PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>());
+        when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
+        when(commentRepository.findAllByPostId(postId)).thenReturn(List.of());
+        //when
+        PostResponse postResponse2 = postService.findOne(postId);
+        //then
+        Assertions.assertThat(postResponse1.getPostId()).isEqualTo(postResponse2.getPostId());
+        Assertions.assertThat(postResponse1.getContent()).isEqualTo(postResponse2.getContent());
+        Assertions.assertThat(postResponse2.getHitCount()).isEqualTo(1L);
     }
 
     @Test

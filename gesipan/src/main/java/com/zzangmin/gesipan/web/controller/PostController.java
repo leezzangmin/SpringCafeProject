@@ -17,24 +17,23 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/post/{postId}")
-    public PostResponse singlePost(@PathVariable Long postId) {
-        postService.findOne(postId);
-        return new PostResponse();
+    public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.findOne(postId));
     }
 
     @PostMapping("/post")
-    public ResponseEntity createPost(@Validated @RequestBody PostSaveRequest postSaveRequest, BindingResult bindingResult) {
+    public ResponseEntity<Long> createPost(@Validated @RequestBody PostSaveRequest postSaveRequest, BindingResult bindingResult) {
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
 
     @DeleteMapping("/post/{postId}")
-    public ResponseEntity removePost(@PathVariable Long postId) {
+    public ResponseEntity<String> removePost(@PathVariable Long postId) {
         postService.delete(postId);
         return ResponseEntity.ok("post remove success");
     }
 
     @PatchMapping("/post/{postId}")
-    public ResponseEntity updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
+    public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
         postService.update(postId, postUpdateRequest);
         return ResponseEntity.ok("post update success");
     }
