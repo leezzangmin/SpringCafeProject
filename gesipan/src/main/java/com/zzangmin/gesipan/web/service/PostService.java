@@ -7,6 +7,7 @@ import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
+import com.zzangmin.gesipan.web.dto.PostsPageResponse;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.PostCategory;
@@ -65,5 +66,10 @@ public class PostService {
         Post post = postRepository.findById(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         post.update(postUpdateRequest.getPostSubject(), postUpdateRequest.getPostContent(), postUpdateRequest.getUpdatedAt());
+    }
+
+    public PostsPageResponse pagination(Long categoryId, int currentPageNumber, int offset) {
+        List<Post> all = postRepository.findPageByCategoryId();
+        return PostsPageResponse.of(categoryId, posts);
     }
 }
