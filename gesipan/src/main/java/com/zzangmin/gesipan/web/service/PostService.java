@@ -13,6 +13,7 @@ import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.PostCategory;
 import com.zzangmin.gesipan.web.entity.Users;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,8 +69,9 @@ public class PostService {
         post.update(postUpdateRequest.getPostSubject(), postUpdateRequest.getPostContent(), postUpdateRequest.getUpdatedAt());
     }
 
-    public PostsPageResponse pagination(Long categoryId, int currentPageNumber, int offset) {
-        List<Post> all = postRepository.findPageByCategoryId();
+    @Transactional(readOnly = true)
+    public PostsPageResponse pagination(Long categoryId, Pageable pageable) {
+        List<Post> posts = postRepository.findPageByCategoryId(categoryId, pageable);
         return PostsPageResponse.of(categoryId, posts);
     }
 }

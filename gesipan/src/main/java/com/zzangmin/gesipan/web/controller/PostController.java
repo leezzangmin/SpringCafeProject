@@ -1,13 +1,12 @@
 package com.zzangmin.gesipan.web.controller;
 
-import com.zzangmin.gesipan.web.dto.PostPageResponse;
 import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
 import com.zzangmin.gesipan.web.dto.PostsPageResponse;
-import com.zzangmin.gesipan.web.dto.PostsResponse;
 import com.zzangmin.gesipan.web.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -42,8 +41,8 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<PostsPageResponse> postPagination(@PathVariable("categoryId") Long categoryId, @PathVariable("currentPageNumber") int currentPageNumber, @PathVariable("offset") int offset) {
-        PostsPageResponse postsPageResponse = postService.pagination(categoryId, currentPageNumber, offset);
+    public ResponseEntity<PostsPageResponse> postPagination(@RequestParam Long categoryId, Pageable pageable) {
+        PostsPageResponse postsPageResponse = postService.pagination(categoryId, pageable);
         return ResponseEntity.ok(postsPageResponse);
     }
 
