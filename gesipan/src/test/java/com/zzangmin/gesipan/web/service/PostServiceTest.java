@@ -7,9 +7,7 @@ import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
-import com.zzangmin.gesipan.web.entity.Post;
-import com.zzangmin.gesipan.web.entity.PostCategory;
-import com.zzangmin.gesipan.web.entity.Users;
+import com.zzangmin.gesipan.web.entity.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,8 +70,19 @@ class PostServiceTest {
     void save() {
         //given
         PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",1L, 1L, LocalDateTime.now());
-        Users user = new Users();
-        PostCategory postCategory = new PostCategory();
+        PostCategory postCategory = PostCategory.builder()
+                .postCategoryId(1L)
+                .categoryName(Categories.자유)
+                .build();
+        Users user = Users.builder()
+                .userId(1L)
+                .userEmail("ckdals1234@naver.com")
+                .userName("이창민")
+                .userNickname("zzangmin")
+                .userRole(UserRole.일반)
+                .createdAt(LocalDateTime.of(2022,2,2,2,2))
+                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .build();
         Post post = Post.builder()
                 .postId(1L)
                 .postSubject(postSaveRequest.getPostSubject())
@@ -119,12 +128,25 @@ class PostServiceTest {
     @DisplayName("post가 업데이트 되어야 한다.")
     void update() {
         //given
+        PostCategory postCategory = PostCategory.builder()
+                .postCategoryId(1L)
+                .categoryName(Categories.자유)
+                .build();
+        Users user = Users.builder()
+                .userId(1L)
+                .userEmail("ckdals1234@naver.com")
+                .userName("이창민")
+                .userNickname("zzangmin")
+                .userRole(UserRole.일반)
+                .createdAt(LocalDateTime.of(2022,2,2,2,2))
+                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .build();
         Post post = Post.builder()
                 .postId(1L)
                 .postSubject("update제목")
                 .postContent("update내용")
-                .user(new Users())
-                .postCategory(new PostCategory())
+                .user(user)
+                .postCategory(postCategory)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

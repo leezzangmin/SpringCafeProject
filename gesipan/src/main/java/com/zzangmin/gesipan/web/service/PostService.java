@@ -7,11 +7,13 @@ import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.PostResponse;
 import com.zzangmin.gesipan.web.dto.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
+import com.zzangmin.gesipan.web.dto.PostsPageResponse;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.PostCategory;
 import com.zzangmin.gesipan.web.entity.Users;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,5 +67,11 @@ public class PostService {
         Post post = postRepository.findById(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         post.update(postUpdateRequest.getPostSubject(), postUpdateRequest.getPostContent(), postUpdateRequest.getUpdatedAt());
+    }
+
+    @Transactional(readOnly = true)
+    public PostsPageResponse pagination(Long categoryId, Pageable pageable) {
+        List<Post> posts = postRepository.findPageByCategoryId(categoryId, pageable);
+        return PostsPageResponse.of(categoryId, posts);
     }
 }

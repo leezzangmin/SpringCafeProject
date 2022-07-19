@@ -2,19 +2,23 @@ package com.zzangmin.gesipan.web.entity;
 
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Users {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId")
-    private Long id;
+    //@Column(name = "userId")
+    private Long userId;
     @Column(nullable = false, length = 200, columnDefinition = "VARCHAR(200)")
     private String userEmail;
 
