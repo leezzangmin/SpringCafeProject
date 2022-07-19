@@ -36,12 +36,12 @@ public class PostResponse {
         private LocalDateTime updatedAt;
 
         private static CommentResponse of(Comment comment) {
-            return new CommentResponse(comment.getCommentId(), comment.getUser().getId(), comment.getUser().getUserName(), comment.getCommentContent(), comment.getCreatedAt(), comment.getUpdatedAt());
+            return new CommentResponse(comment.getCommentId(), comment.getUser().getUserId(), comment.getUser().getUserName(), comment.getCommentContent(), comment.getCreatedAt(), comment.getUpdatedAt());
         }
     }
 
     public static PostResponse of(Post post, List<Comment> comments) {
-        return new PostResponse(post.getPostId(), post.getUser().getId(), post.getUser().getUserNickname(), post.getRecommendCount(), post.getHitCount(), post.getPostSubject(), post.getPostContent(), post.getCreatedAt(), post.getUpdatedAt(), comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()));
+        return new PostResponse(post.getPostId(), post.getUser().getUserId(), post.getUser().getUserNickname(), post.getRecommendCount(), post.getHitCount(), post.getPostSubject(), post.getPostContent(), post.getCreatedAt(), post.getUpdatedAt(), comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()));
     }
 
 

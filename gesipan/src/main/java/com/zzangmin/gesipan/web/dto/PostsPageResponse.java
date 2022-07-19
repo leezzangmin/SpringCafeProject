@@ -31,7 +31,7 @@ public class PostsPageResponse {
                     .postSubject(post.getPostSubject())
                     .createdAt(post.getCreatedAt())
                     .hitCount(post.getHitCount())
-                    .userId(post.getUser().getId())
+                    .userId(post.getUser().getUserId())
                     .userNickname(post.getUser().getUserNickname())
                     .build();
         }
