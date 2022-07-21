@@ -26,15 +26,15 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
+    private final CommentService commentService;
 
     public PostResponse findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         post.increaseHitCount();
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        List<Comment> comments = commentService.findByPostId(postId);
         return PostResponse.of(post, comments);
     }
 
