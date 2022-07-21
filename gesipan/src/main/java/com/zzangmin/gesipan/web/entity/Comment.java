@@ -31,4 +31,9 @@ public class Comment {
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
 
+    public void update(String commentContent, LocalDateTime updatedAt) {
+        this.commentContent = commentContent;
+        this.updatedAt = updatedAt;
+    }
+
 }
