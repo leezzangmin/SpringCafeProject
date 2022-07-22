@@ -35,7 +35,7 @@ class PostServiceTest {
     @Mock
     private PostCategoryRepository postCategoryRepository;
     @Mock
-    private CommentRepository commentRepository;
+    private CommentService commentService;
 
     @InjectMocks
     private PostService postService;
@@ -56,7 +56,8 @@ class PostServiceTest {
                 .build();
         PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>());
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
-        when(commentRepository.findAllByPostId(postId)).thenReturn(List.of());
+        when(commentService.findByPostId(postId)).thenReturn(List.of());
+
         //when
         PostResponse postResponse2 = postService.findOne(postId);
         //then
