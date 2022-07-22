@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `spring_cafe`.`users` (
                                                      `user_email` VARCHAR(200) NOT NULL,
     `user_name` VARCHAR(10) NOT NULL,
     `user_nickname` VARCHAR(100) NOT NULL,
-    `user_role` VARCHAR(45) NOT NULL,
+    `user_role` VARCHAR(45) NOT NULL DEFAULT 'normal',
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`user_id`))
@@ -45,13 +45,12 @@ CREATE TABLE IF NOT EXISTS `spring_cafe`.`post_category` (
 CREATE TABLE IF NOT EXISTS `spring_cafe`.`post` (
                                                     `post_id` BIGINT NOT NULL AUTO_INCREMENT,
                                                     `post_subject` VARCHAR(1000) NOT NULL,
-    `post_content` TEXT NOT NULL,
-    `recommend_count` INT NOT NULL DEFAULT 0,
+    `post_content` TEXT NULL,
+    `hit_count` BIGINT NOT NULL DEFAULT 0,
     `reference_category_id` BIGINT NOT NULL,
     `user_id` BIGINT NOT NULL,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
-    `hit_count` BIGINT NOT NULL,
     PRIMARY KEY (`post_id`),
     INDEX `fk_post_post_category1_idx` (`reference_category_id` ASC) VISIBLE,
     INDEX `fk_post_users1_idx` (`user_id` ASC) VISIBLE,
@@ -89,6 +88,30 @@ CREATE TABLE IF NOT EXISTS `spring_cafe`.`comment` (
     CONSTRAINT `fk_comment_users1`
     FOREIGN KEY (`user_id`)
     REFERENCES `spring_cafe`.`users` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+    ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `spring_cafe`.`post_recommend`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `spring_cafe`.`post_recommend` (
+                                                              `post_recommend_id` BIGINT NOT NULL,
+                                                              `created_at` DATETIME NOT NULL,
+                                                              `user_id` BIGINT NOT NULL,
+                                                              `post_id` BIGINT NOT NULL,
+                                                              PRIMARY KEY (`post_recommend_id`),
+    INDEX `fk_post_recommend_users1_idx` (`user_id` ASC) VISIBLE,
+    INDEX `fk_post_recommend_post1_idx` (`post_id` ASC) VISIBLE,
+    CONSTRAINT `fk_post_recommend_users1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `spring_cafe`.`users` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+    CONSTRAINT `fk_post_recommend_post1`
+    FOREIGN KEY (`post_id`)
+    REFERENCES `spring_cafe`.`post` (`post_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;
