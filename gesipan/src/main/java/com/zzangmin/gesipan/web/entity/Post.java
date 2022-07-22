@@ -28,8 +28,6 @@ public class Post {
     private String postSubject;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String postContent;
-    @Column(nullable = true)
-    private int recommendCount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private Users user;

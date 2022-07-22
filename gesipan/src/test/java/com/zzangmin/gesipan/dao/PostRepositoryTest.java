@@ -46,7 +46,6 @@ class PostRepositoryTest {
         post = Post.builder()
                 .postSubject("test제목")
                 .postContent("test내용")
-                .recommendCount(0)
                 .user(user)
                 .postCategory(postCategory)
                 .createdAt(LocalDateTime.of(2022,2,2,2,2))

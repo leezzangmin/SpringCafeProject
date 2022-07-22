@@ -2,12 +2,16 @@ package com.zzangmin.gesipan.web.entity;
 
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Comment {
@@ -26,5 +30,10 @@ public class Comment {
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
+
+    public void update(String commentContent, LocalDateTime updatedAt) {
+        this.commentContent = commentContent;
+        this.updatedAt = updatedAt;
+    }
 
 }

@@ -13,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 public class PostController {
@@ -25,7 +27,7 @@ public class PostController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<Long> createPost(@Validated @RequestBody PostSaveRequest postSaveRequest, BindingResult bindingResult) {
+    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest, BindingResult bindingResult) {
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
 
@@ -36,7 +38,7 @@ public class PostController {
     }
 
     @PatchMapping("/post/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
+    public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
         postService.update(postId, postUpdateRequest);
         return ResponseEntity.ok("post update success");
     }
