@@ -17,7 +17,6 @@ public class PostResponse {
     private Long postId;
     private Long userId;
     private String userNickname;
-    private int recommendCount;
     private Long hitCount;
     private String subject;
     private String content;
@@ -41,7 +40,7 @@ public class PostResponse {
     }
 
     public static PostResponse of(Post post, List<Comment> comments) {
-        return new PostResponse(post.getPostId(), post.getUser().getUserId(), post.getUser().getUserNickname(), post.getRecommendCount(), post.getHitCount(), post.getPostSubject(), post.getPostContent(), post.getCreatedAt(), post.getUpdatedAt(), comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()));
+        return new PostResponse(post.getPostId(), post.getUser().getUserId(), post.getUser().getUserNickname(), post.getHitCount(), post.getPostSubject(), post.getPostContent(), post.getCreatedAt(), post.getUpdatedAt(), comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()));
     }
 
 
