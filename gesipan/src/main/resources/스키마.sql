@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `spring_cafe`.`comment` (
 -- Table `spring_cafe`.`post_recommend`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `spring_cafe`.`post_recommend` (
-                                                              `post_recommend_id` BIGINT NOT NULL,
+                                                              `post_recommend_id` BIGINT NOT NULL AUTO_INCREMENT,
                                                               `created_at` DATETIME NOT NULL,
                                                               `user_id` BIGINT NOT NULL,
                                                               `post_id` BIGINT NOT NULL,
