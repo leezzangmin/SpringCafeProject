@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.dto;
+package com.zzangmin.gesipan.web.dto.post;
 
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.entity.Post;
