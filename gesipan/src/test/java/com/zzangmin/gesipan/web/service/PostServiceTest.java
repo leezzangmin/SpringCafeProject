@@ -1,12 +1,11 @@
 package com.zzangmin.gesipan.web.service;
 
-import com.zzangmin.gesipan.dao.CommentRepository;
 import com.zzangmin.gesipan.dao.PostCategoryRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UserRepository;
-import com.zzangmin.gesipan.web.dto.PostResponse;
-import com.zzangmin.gesipan.web.dto.PostSaveRequest;
-import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
+import com.zzangmin.gesipan.web.dto.post.PostResponse;
+import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
+import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
