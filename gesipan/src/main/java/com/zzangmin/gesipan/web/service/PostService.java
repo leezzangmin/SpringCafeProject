@@ -31,9 +31,10 @@ public class PostService {
     public PostResponse findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
+        int recommendCount = postRecommendRepository.countByPostId(postId);
         post.increaseHitCount();
         List<Comment> comments = commentService.findByPostId(postId);
-        return PostResponse.of(post, comments);
+        return PostResponse.of(post, comments, recommendCount);
     }
 
     public Long save(PostSaveRequest postSaveRequest) {
