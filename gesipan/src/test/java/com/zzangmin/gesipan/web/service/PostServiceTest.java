@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.web.service;
 
 import com.zzangmin.gesipan.dao.PostCategoryRepository;
+import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.post.PostResponse;
@@ -34,6 +35,8 @@ class PostServiceTest {
     private PostCategoryRepository postCategoryRepository;
     @Mock
     private CommentService commentService;
+    @Mock
+    private PostRecommendRepository postRecommendRepository;
 
     @InjectMocks
     private PostService postService;
@@ -52,9 +55,10 @@ class PostServiceTest {
                 .updatedAt(LocalDateTime.now())
                 .hitCount(0L)
                 .build();
-        PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>());
+        PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>(), 0);
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
         when(commentService.findByPostId(postId)).thenReturn(List.of());
+        when(postRecommendRepository.countByPostId(postId)).thenReturn(0);
 
         //when
         PostResponse postResponse2 = postService.findOne(postId);
