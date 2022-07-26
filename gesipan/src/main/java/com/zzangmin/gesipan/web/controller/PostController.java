@@ -1,16 +1,12 @@
 package com.zzangmin.gesipan.web.controller;
 
-import com.zzangmin.gesipan.web.dto.PostResponse;
-import com.zzangmin.gesipan.web.dto.PostSaveRequest;
-import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
-import com.zzangmin.gesipan.web.dto.PostsPageResponse;
+import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,6 +44,12 @@ public class PostController {
         Long categoryId = Categories.castCategoryNameToCategoryId(categoryName);
         PostsPageResponse postsPageResponse = postService.pagination(categoryId, pageable);
         return ResponseEntity.ok(postsPageResponse);
+    }
+
+    @PostMapping("/post/recommend")
+    public ResponseEntity<String> recommendPost(@RequestBody @Valid PostRecommendRequest postRecommendRequest) {
+        postService.postRecommendCount(postRecommendRequest);
+        return ResponseEntity.ok("recommend success");
     }
 
 }

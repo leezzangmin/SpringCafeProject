@@ -1,16 +1,17 @@
-package com.zzangmin.gesipan.web.dto;
+package com.zzangmin.gesipan.web.dto.post;
 
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class PostResponse {
 
@@ -18,6 +19,7 @@ public class PostResponse {
     private Long userId;
     private String userNickname;
     private Long hitCount;
+    private int recommendCount;
     private String subject;
     private String content;
     private LocalDateTime createdAt;
@@ -39,8 +41,19 @@ public class PostResponse {
         }
     }
 
-    public static PostResponse of(Post post, List<Comment> comments) {
-        return new PostResponse(post.getPostId(), post.getUser().getUserId(), post.getUser().getUserNickname(), post.getHitCount(), post.getPostSubject(), post.getPostContent(), post.getCreatedAt(), post.getUpdatedAt(), comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()));
+    public static PostResponse of(Post post, List<Comment> comments, int recommendCount) {
+        return PostResponse.builder()
+                .postId(post.getPostId())
+                .userId(post.getUser().getUserId())
+                .userNickname(post.getUser().getUserNickname())
+                .hitCount(post.getHitCount())
+                .recommendCount(recommendCount)
+                .subject(post.getPostSubject())
+                .content(post.getPostContent())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .comments(comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()))
+                .build();
     }
 
 

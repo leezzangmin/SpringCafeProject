@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.dto;
+package com.zzangmin.gesipan.web.dto.post;
 
 import com.zzangmin.gesipan.web.entity.Post;
 import lombok.Builder;
@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 public class PostsPageResponse {
@@ -25,12 +26,13 @@ public class PostsPageResponse {
         private Long userId;
         private String userNickname;
 
-        public static PostPageResponse of(Post post) {
+        public static PostPageResponse of(Post post, int recommendCount) {
             return PostPageResponse.builder()
                     .postId(post.getPostId())
                     .postSubject(post.getPostSubject())
                     .createdAt(post.getCreatedAt())
                     .hitCount(post.getHitCount())
+                    .recommendCount(recommendCount)
                     .userId(post.getUser().getUserId())
                     .userNickname(post.getUser().getUserNickname())
                     .build();
@@ -42,9 +44,9 @@ public class PostsPageResponse {
         this.postPageResponseList = postPageResponses;
     }
 
-    public static PostsPageResponse of(Long categoryId, List<Post> posts) {
-        return new PostsPageResponse(categoryId, posts.stream()
-                .map(i -> PostPageResponse.of(i))
+    public static PostsPageResponse of(Long categoryId, List<Post> posts, List<Integer> recommendCount) {
+        return new PostsPageResponse(categoryId, IntStream.range(0, posts.size()).boxed()
+                .map(i ->  PostPageResponse.of(posts.get(i), recommendCount.get(i)))
                 .collect(Collectors.toList()));
     }
 

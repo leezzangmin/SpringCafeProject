@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.dto;
+package com.zzangmin.gesipan.web.dto.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

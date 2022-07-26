@@ -1,12 +1,12 @@
 package com.zzangmin.gesipan.web.service;
 
-import com.zzangmin.gesipan.dao.CommentRepository;
 import com.zzangmin.gesipan.dao.PostCategoryRepository;
+import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UserRepository;
-import com.zzangmin.gesipan.web.dto.PostResponse;
-import com.zzangmin.gesipan.web.dto.PostSaveRequest;
-import com.zzangmin.gesipan.web.dto.PostUpdateRequest;
+import com.zzangmin.gesipan.web.dto.post.PostResponse;
+import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
+import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -36,6 +35,8 @@ class PostServiceTest {
     private PostCategoryRepository postCategoryRepository;
     @Mock
     private CommentService commentService;
+    @Mock
+    private PostRecommendRepository postRecommendRepository;
 
     @InjectMocks
     private PostService postService;
@@ -54,9 +55,10 @@ class PostServiceTest {
                 .updatedAt(LocalDateTime.now())
                 .hitCount(0L)
                 .build();
-        PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>());
+        PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>(), 0);
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
         when(commentService.findByPostId(postId)).thenReturn(List.of());
+        when(postRecommendRepository.countByPostId(postId)).thenReturn(0);
 
         //when
         PostResponse postResponse2 = postService.findOne(postId);

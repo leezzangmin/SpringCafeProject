@@ -17,11 +17,9 @@ import java.time.LocalDateTime;
 public class Users {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@Column(name = "userId")
     private Long userId;
     @Column(nullable = false, length = 200, columnDefinition = "VARCHAR(200)")
     private String userEmail;
-
     @Column(nullable = false, length = 10, columnDefinition = "VARCHAR(10)")
     private String userName;
     @Column(nullable = false, length = 100, columnDefinition = "VARCHAR(100)")
@@ -29,7 +27,6 @@ public class Users {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 45, columnDefinition = "VARCHAR(45)")
     private UserRole userRole;
-
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
