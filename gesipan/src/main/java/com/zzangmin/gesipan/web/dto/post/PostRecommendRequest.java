@@ -2,12 +2,12 @@ package com.zzangmin.gesipan.web.dto.post;
 
 import lombok.Getter;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 public class PostRecommendRequest {
-    @NotNull
+    @NotBlank
     private long postId;
-    @NotNull
+    @NotBlank
     private long userId;
 }
