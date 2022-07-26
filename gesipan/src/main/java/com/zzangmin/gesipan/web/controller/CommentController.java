@@ -1,7 +1,7 @@
 package com.zzangmin.gesipan.web.controller;
 
-import com.zzangmin.gesipan.web.dto.CommentSaveRequest;
-import com.zzangmin.gesipan.web.dto.CommentUpdateRequest;
+import com.zzangmin.gesipan.web.dto.comment.CommentSaveRequest;
+import com.zzangmin.gesipan.web.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.web.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
