@@ -49,6 +49,7 @@ public class PostService {
                 .postCategory(postCategory)
                 .createdAt(postSaveRequest.getCreatedAt())
                 .updatedAt(postSaveRequest.getCreatedAt())
+                .hitCount(0L) // TODO: DB 디폴트값 만들고 해당 줄 지우기
                 .build();
 
         return postRepository.save(post).getPostId();
@@ -74,7 +75,6 @@ public class PostService {
                 .map(i -> i.getPostId())
                 .collect(Collectors.toList()));
 
-        System.out.println("recommendCount = " + recommendCount);
         return PostsPageResponse.of(categoryId, posts, recommendCount);
     }
 
