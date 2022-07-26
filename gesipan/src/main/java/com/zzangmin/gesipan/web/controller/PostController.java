@@ -23,7 +23,7 @@ public class PostController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest, BindingResult bindingResult) {
+    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
 
