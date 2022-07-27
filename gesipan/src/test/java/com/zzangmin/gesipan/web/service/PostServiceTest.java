@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+서
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,8 @@ class PostServiceTest {
     private CommentService commentService;
     @Mock
     private PostRecommendRepository postRecommendRepository;
+    @Mock
+    private RedisService redisService;
 
     @InjectMocks
     private PostService postService;
@@ -59,9 +61,10 @@ class PostServiceTest {
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
         when(commentService.findByPostId(postId)).thenReturn(List.of());
         when(postRecommendRepository.countByPostId(postId)).thenReturn(0);
+        when(redisService.isFirstIpRequest(anyString(),anyLong())).thenReturn(true);
 
         //when
-        PostResponse postResponse2 = postService.findOne(postId);
+        PostResponse postResponse2 = postService.findOne(postId, "123.123.123.123:8080");
         //then
         Assertions.assertThat(postResponse1.getPostId()).isEqualTo(postResponse2.getPostId());
         Assertions.assertThat(postResponse1.getContent()).isEqualTo(postResponse2.getContent());

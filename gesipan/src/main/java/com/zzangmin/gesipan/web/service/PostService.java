@@ -7,6 +7,7 @@ import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,24 +17,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
 public class PostService {
 
+    private final RedisService redisService;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final CommentService commentService;
     private final PostRecommendRepository postRecommendRepository;
 
-    public PostResponse findOne(Long postId) {
+    public PostResponse findOne(Long postId, String clientAddress) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         int recommendCount = postRecommendRepository.countByPostId(postId);
-        post.increaseHitCount();
+        if (redisService.isFirstIpRequest(clientAddress, postId)) {
+            log.debug("same user requests duplicate in 24hours: {}, {}", clientAddress, postId);
+            increasePostHitCount(post, clientAddress);
+        }
         List<Comment> comments = commentService.findByPostId(postId);
         return PostResponse.of(post, comments, recommendCount);
+    }
+
+    private void increasePostHitCount(Post post, String clienAddress) {
+        post.increaseHitCount();
+        redisService.writeClientRequest(clienAddress, post.getPostId());
     }
 
     public Long save(PostSaveRequest postSaveRequest) {
@@ -49,6 +60,7 @@ public class PostService {
                 .postCategory(postCategory)
                 .createdAt(postSaveRequest.getCreatedAt())
                 .updatedAt(postSaveRequest.getCreatedAt())
+                .hitCount(0L) // TODO: DB 디폴트값 만들고 해당 줄 지우기
                 .build();
 
         return postRepository.save(post).getPostId();
@@ -74,7 +86,6 @@ public class PostService {
                 .map(i -> i.getPostId())
                 .collect(Collectors.toList()));
 
-        System.out.println("recommendCount = " + recommendCount);
         return PostsPageResponse.of(categoryId, posts, recommendCount);
     }
 
@@ -95,4 +106,5 @@ public class PostService {
                 .build();
         postRecommendRepository.save(postRecommend);
     }
+
 }

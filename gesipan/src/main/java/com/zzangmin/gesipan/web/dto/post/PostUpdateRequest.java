@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
@@ -14,12 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class PostUpdateRequest {
-    @NotNull
+    @NotBlank
     @Length(max = 1000)
     private String postSubject;
-    @NotNull
+    @NotBlank
     private String postContent;
-    @NotNull
+    @NotBlank
     @PastOrPresent
     private LocalDateTime updatedAt;
 }
