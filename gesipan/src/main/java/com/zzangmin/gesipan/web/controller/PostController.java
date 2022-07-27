@@ -3,12 +3,14 @@ package com.zzangmin.gesipan.web.controller;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.service.PostService;
+import com.zzangmin.gesipan.web.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
@@ -16,10 +18,12 @@ import javax.validation.Valid;
 public class PostController {
 
     private final PostService postService;
+    private final RedisService redisService;
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId) {
-        return ResponseEntity.ok(postService.findOne(postId));
+    public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
+        String clientAddress = httpServletRequest.getRemoteAddr();
+        return ResponseEntity.ok(postService.findOne(postId, clientAddress));
     }
 
     @PostMapping("/post")
