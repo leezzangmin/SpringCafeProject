@@ -42,9 +42,9 @@ public class PostService {
         return PostResponse.of(post, comments, recommendCount);
     }
 
-    private void increasePostHitCount(Post post, String clienAddress) {
+    private void increasePostHitCount(Post post, String clientAddress) {
         post.increaseHitCount();
-        redisService.writeClientRequest(clienAddress, post.getPostId());
+        redisService.writeClientRequest(clientAddress, post.getPostId());
     }
 
     public Long save(PostSaveRequest postSaveRequest) {
