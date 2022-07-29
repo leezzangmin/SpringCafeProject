@@ -23,25 +23,15 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
 
-    private final RedisService redisService;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
 
-    public Post findOne(Long postId, String clientAddress) {
+    public Post findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        if (redisService.isFirstIpRequest(clientAddress, postId)) {
-            log.debug("same user requests duplicate in 24hours: {}, {}", clientAddress, postId);
-            increasePostHitCount(post, clientAddress);
-        }
         return post;
-    }
-
-    private void increasePostHitCount(Post post, String clientAddress) {
-        post.increaseHitCount();
-        redisService.writeClientRequest(clientAddress, post.getPostId());
     }
 
     public Long save(PostSaveRequest postSaveRequest) {

@@ -7,6 +7,7 @@ import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.service.CommentService;
 import com.zzangmin.gesipan.web.service.PostService;
+import com.zzangmin.gesipan.web.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +27,16 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final PostRecommendRepository postRecommendRepository;
+    private final RedisService redisService;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
         String clientAddress = httpServletRequest.getRemoteAddr();
 
-        Post post = postService.findOne(postId, clientAddress);
+        Post post = postService.findOne(postId);
         int recommendCount = postRecommendRepository.countByPostId(postId);
         List<Comment> comments = commentService.findByPostId(postId);
+        redisService.increasePostHitCount(clientAddress, postId);
 
         return ResponseEntity.ok(PostResponse.of(post, comments, recommendCount));
     }

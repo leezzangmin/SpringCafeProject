@@ -34,8 +34,7 @@ class PostServiceTest {
     private PostCategoryRepository postCategoryRepository;
     @Mock
     private PostRecommendRepository postRecommendRepository;
-    @Mock
-    private RedisService redisService;
+
 
     @InjectMocks
     private PostService postService;
@@ -57,7 +56,6 @@ class PostServiceTest {
         PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>(), 0);
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
         when(postRecommendRepository.countByPostId(postId)).thenReturn(0);
-        when(redisService.isFirstIpRequest(anyString(),anyLong())).thenReturn(true);
 
         //when
         Post post1 = postService.findOne(postId, "123.123.123.123:8080");
