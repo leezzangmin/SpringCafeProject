@@ -27,19 +27,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
-    private final CommentService commentService;
     private final PostRecommendRepository postRecommendRepository;
 
-    public PostResponse findOne(Long postId, String clientAddress) {
+    public Post findOne(Long postId, String clientAddress) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        int recommendCount = postRecommendRepository.countByPostId(postId);
         if (redisService.isFirstIpRequest(clientAddress, postId)) {
             log.debug("same user requests duplicate in 24hours: {}, {}", clientAddress, postId);
             increasePostHitCount(post, clientAddress);
         }
-        List<Comment> comments = commentService.findByPostId(postId);
-        return PostResponse.of(post, comments, recommendCount);
+        return post;
     }
 
     private void increasePostHitCount(Post post, String clientAddress) {
