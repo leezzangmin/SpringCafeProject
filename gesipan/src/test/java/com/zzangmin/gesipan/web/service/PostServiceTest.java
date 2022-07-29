@@ -33,8 +33,6 @@ class PostServiceTest {
     @Mock
     private PostCategoryRepository postCategoryRepository;
     @Mock
-    private CommentService commentService;
-    @Mock
     private PostRecommendRepository postRecommendRepository;
     @Mock
     private RedisService redisService;
@@ -58,16 +56,15 @@ class PostServiceTest {
                 .build();
         PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>(), 0);
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
-        when(commentService.findByPostId(postId)).thenReturn(List.of());
         when(postRecommendRepository.countByPostId(postId)).thenReturn(0);
         when(redisService.isFirstIpRequest(anyString(),anyLong())).thenReturn(true);
 
         //when
-        PostResponse postResponse2 = postService.findOne(postId, "123.123.123.123:8080");
+        Post post1 = postService.findOne(postId, "123.123.123.123:8080");
         //then
-        Assertions.assertThat(postResponse1.getPostId()).isEqualTo(postResponse2.getPostId());
-        Assertions.assertThat(postResponse1.getContent()).isEqualTo(postResponse2.getContent());
-        Assertions.assertThat(postResponse2.getHitCount()).isEqualTo(1L);
+        Assertions.assertThat(postResponse1.getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(postResponse1.getContent()).isEqualTo(post1.getPostContent());
+        Assertions.assertThat(postResponse1.getHitCount()).isEqualTo(1L);
     }
 
     @Test
