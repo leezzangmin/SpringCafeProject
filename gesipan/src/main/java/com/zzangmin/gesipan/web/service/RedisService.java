@@ -4,8 +4,8 @@ import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.web.entity.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +24,7 @@ public class RedisService {
     private final long scheduledIncreaseSeconds = 10;
     private final String scheduleHitCountKeyPrefix = "scheduleHitCount:";
 
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisTemplate<String, String> stringRedisTemplate;
+    private final StringRedisTemplate redisTemplate;
     private final PostRepository postRepository;
 
 
@@ -50,11 +49,11 @@ public class RedisService {
 
         ScanOptions build = ScanOptions.scanOptions().match(scheduleHitCountKeyPrefix + "*").build();
 
-        List<String> keys = stringRedisTemplate.scan(build)
+        List<String> keys = redisTemplate.scan(build)
                 .stream()
                 .collect(Collectors.toList());
 
-        List<Long> hitCounts = stringRedisTemplate.opsForValue()
+        List<Long> hitCounts = redisTemplate.opsForValue()
                 .multiGet(keys)
                 .stream()
                 .map(i -> Long.valueOf(i))
@@ -69,9 +68,8 @@ public class RedisService {
 
         // TODO: 이거 고치기 -> 어떻게 하는거야
         // postRepository.updatePostsHitCounts(postIds, hitCounts);
-        stringRedisTemplate.delete(keys);
+        redisTemplate.delete(keys);
     }
-
 
     // 조회수 스케줄링에 사용할 키 형식 -> "scheduleHitCount:+postId" -> scheduleHitCount:1234
     private void insertHitCountsToSchedulingList(Long postId) {
@@ -88,18 +86,14 @@ public class RedisService {
         return true;
     }
 
-
-
     private void cacheClientRequest(String clientAddress, Long postId) {
         String key = generateKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
-
-        // 사실 set 할때 value가 필요없음. 그나마 가장 작은 불린으로 넣긴 했는데 아직 레디스를 잘 몰라서 이렇게 쓰고 있음
-        redisTemplate.opsForValue().set(key, true, clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
     }
 
-    // key 형식 : 'client Address + postId' ->  '\xac\xed\x00\x05t\x00\x0f127.0.0.1 + 500'
+    // key 형식 : 'client Address + postId' ->  '127.0.0.1:500'
     private String generateKey(String clientAddress, Long postId) {
-        return clientAddress + " + " + postId;
+        return clientAddress + ":" + postId;
     }
 }
