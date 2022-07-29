@@ -1,33 +1,46 @@
 package com.zzangmin.gesipan.web.controller;
 
+import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.Categories;
+import com.zzangmin.gesipan.web.entity.Comment;
+import com.zzangmin.gesipan.web.entity.Post;
+import com.zzangmin.gesipan.web.service.CommentService;
 import com.zzangmin.gesipan.web.service.PostService;
-import com.zzangmin.gesipan.web.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class PostController {
 
+    private final int validateSeconds = 60;
     private final PostService postService;
-    private final RedisService redisService;
+    private final CommentService commentService;
+    private final PostRecommendRepository postRecommendRepository;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
         String clientAddress = httpServletRequest.getRemoteAddr();
-        return ResponseEntity.ok(postService.findOne(postId, clientAddress));
+
+        Post post = postService.findOne(postId, clientAddress);
+        int recommendCount = postRecommendRepository.countByPostId(postId);
+        List<Comment> comments = commentService.findByPostId(postId);
+
+        return ResponseEntity.ok(PostResponse.of(post, comments, recommendCount));
     }
 
     @PostMapping("/post")
     public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
+        validateRequestDate(postSaveRequest.getCreatedAt());
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
 
@@ -39,6 +52,7 @@ public class PostController {
 
     @PatchMapping("/post/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
+        validateRequestDate(postUpdateRequest.getUpdatedAt());
         postService.update(postId, postUpdateRequest);
         return ResponseEntity.ok("post update success");
     }
@@ -54,6 +68,12 @@ public class PostController {
     public ResponseEntity<String> recommendPost(@RequestBody @Valid PostRecommendRequest postRecommendRequest) {
         postService.postRecommendCount(postRecommendRequest);
         return ResponseEntity.ok("recommend success");
+    }
+
+    private void validateRequestDate(LocalDateTime givenDate) {
+        if (ChronoUnit.SECONDS.between(LocalDateTime.now(), givenDate) > validateSeconds) {
+            throw new IllegalArgumentException("입력된 날짜가 조건에 부합하지 않습니다.");
+        }
     }
 
 }

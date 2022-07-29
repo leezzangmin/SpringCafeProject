@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class RedisService {
-    private final Long clientAddressPostRequestWriteExpireDurationSec = 86400L;
+    private final long clientAddressPostRequestWriteExpireDurationSec = 86400L;
 
     private final RedisTemplate<String, Boolean> redisTemplate;
 
