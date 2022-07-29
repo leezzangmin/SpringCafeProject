@@ -47,9 +47,8 @@ public class Post {
         this.updatedAt = updateAt;
     }
 
-    public void increaseHitCount() {
-        // TODO: 유저 중복 조회수 올리기 검증로직 (가능할까....)
-        this.hitCount += 1;
+    public void increaseHitCount(Long a) {
+        this.hitCount += a;
     }
 
 }
