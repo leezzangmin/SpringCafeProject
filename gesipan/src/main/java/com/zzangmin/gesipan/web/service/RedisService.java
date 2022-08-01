@@ -42,8 +42,8 @@ public class RedisService {
      *  fixedRate는 작업 수행시간과 상관없이 일정 주기마다 메소드를 호출하는 것이고,
      * fixedDelay는 (작업 수행 시간을 포함하여) 작업을 마친 후부터 주기 타이머가 돌아 메소드를 호출하는 것이다.
      */
-    @Scheduled(fixedRate = scheduledIncreaseSeconds, timeUnit = TimeUnit.SECONDS)
     @Transactional
+    @Scheduled(fixedRate = scheduledIncreaseSeconds, timeUnit = TimeUnit.SECONDS)
     public void scheduledIncreasePostHitCounts() {
         log.debug("스케줄 태스크 {}", LocalDateTime.now());
 
