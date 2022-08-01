@@ -25,10 +25,11 @@ dependencies {
 
 	// 레디스
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'it.ozimov:embedded-redis:0.7.2'
-	implementation 'org.projectlombok:lombok:1.18.22'
+	implementation (group: 'it.ozimov', name: 'embedded-redis', version: '0.7.3') {
+		exclude group: 'org.slf4j', module: 'slf4j-simple'
+	}
+	implementation 'org.projectlombok:lombok'
 
-	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
