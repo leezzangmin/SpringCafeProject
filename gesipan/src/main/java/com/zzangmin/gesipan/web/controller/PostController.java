@@ -73,10 +73,19 @@ public class PostController {
         return ResponseEntity.ok("recommend success");
     }
 
+    // TODO: @RequestParam으로 받는 userId 추후 개선
+    @GetMapping("/posts/my")
+    public ResponseEntity<PersonalPostsResponse> myPosts(@RequestParam Long userId) {
+        PersonalPostsResponse personalPostsResponse = postService.userPosts(userId);
+        return ResponseEntity.ok(personalPostsResponse);
+    }
+
     private void validateRequestDate(LocalDateTime givenDate) {
         if (ChronoUnit.SECONDS.between(LocalDateTime.now(), givenDate) > validateSeconds) {
             throw new IllegalArgumentException("입력된 날짜가 조건에 부합하지 않습니다.");
         }
     }
+
+
 
 }
