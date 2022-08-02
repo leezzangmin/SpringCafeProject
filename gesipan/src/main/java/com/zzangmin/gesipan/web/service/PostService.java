@@ -92,4 +92,18 @@ public class PostService {
         postRecommendRepository.save(postRecommend);
     }
 
+    @Transactional(readOnly = true)
+    public PersonalPostsResponse userPosts(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
+        List<Post> personalPosts = postRepository.findByUserId(userId);
+        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(personalPosts.stream()
+                .map(i -> i.getPostId())
+                .collect(Collectors.toList()));
+        List<Integer> commentCounts = commentRepository.countByIds(personalPosts.stream()
+                .map(Post::getPostId)
+                .collect(Collectors.toList()));
+        return PersonalPostsResponse.of(user, personalPosts, recommendCount, commentCounts);
+    }
+
 }
