@@ -5,6 +5,7 @@ import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UserRepository;
 import com.zzangmin.gesipan.web.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.web.dto.comment.CommentUpdateRequest;
+import com.zzangmin.gesipan.web.dto.comment.PersonalCommentsResponse;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.Users;
@@ -50,5 +51,13 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<Comment> findByPostId(Long postId) {
         return commentRepository.findAllByPostId(postId);
+    }
+
+    @Transactional(readOnly = true)
+    public PersonalCommentsResponse userComments(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
+        List<Comment> comments = commentRepository.findAllByUserIdWithPostId(userId);
+        return PersonalCommentsResponse.of(user, comments);
     }
 }
