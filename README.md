@@ -7,6 +7,7 @@
 ![Java](https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white)
 ![Spring-Boot](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white)
 ![JPA](https://img.shields.io/badge/jpa-00555?style=for-the-badge&logo=jpa&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-232F3E?style=for-the-badge&logo=redis&logoColor=red)
 ![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![AWS](https://img.shields.io/badge/aws-232F3E?style=for-the-badge&logo=aws&logoColor=white)
 
@@ -16,7 +17,7 @@
 <summary> 요구사항 명세:</summary><br>
 
 구현 필요 기능
-1. 게시글 CRUD + 이미지 포함
+1. 게시글 CRUD
 2. 게시글 추천
 3. 무한 대댓글 CRUD
 4. 회원가입, 로그인 - oauth + JWT
@@ -24,11 +25,11 @@
 
 <br>
 
-API 명세:<br> https://www.postman.com/aaron2-postman/workspace/zzangmin-springcafe
+
 
 <br>
 ERD:<br>
-<img width="836" alt="스크린샷 2022-07-01 오후 9 14 40" src="https://user-images.githubusercontent.com/64303390/176892407-224d05b0-59d3-40d3-be25-bcbc0e7e48e9.png">
+<img width="941" alt="스크린샷 2022-08-03 오전 1 00 39" src="https://user-images.githubusercontent.com/64303390/182419862-f884c8d9-2c20-4c84-9a54-e51ba24075d0.png">
 </details>
 
 </br>
@@ -59,7 +60,7 @@ ERD:<br>
 
 
 ## 📃 API Specification
-
+https://www.postman.com/aaron2-postman/workspace/zzangmin-springcafe
 
 ## 🏛️ Depedency Used
 
