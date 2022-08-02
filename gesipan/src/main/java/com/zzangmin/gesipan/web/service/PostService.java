@@ -1,9 +1,6 @@
 package com.zzangmin.gesipan.web.service;
 
-import com.zzangmin.gesipan.dao.PostCategoryRepository;
-import com.zzangmin.gesipan.dao.PostRecommendRepository;
-import com.zzangmin.gesipan.dao.PostRepository;
-import com.zzangmin.gesipan.dao.UserRepository;
+import com.zzangmin.gesipan.dao.*;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.*;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +24,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
+    private final CommentRepository commentRepository;
 
     public Post findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
@@ -72,8 +70,8 @@ public class PostService {
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(posts.stream()
                 .map(i -> i.getPostId())
                 .collect(Collectors.toList()));
-
-        return PostsPageResponse.of(categoryId, posts, recommendCount);
+        List<Integer> commentCounts = commentRepository.countByIds(posts.stream().map(Post::getPostId).collect(Collectors.toList()));
+        return PostsPageResponse.of(categoryId, posts, recommendCount, commentCounts);
     }
 
     // TODO: (post_id, user_id) 복합인덱스 생성하기

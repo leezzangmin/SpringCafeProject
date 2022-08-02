@@ -120,3 +120,11 @@ CREATE TABLE IF NOT EXISTS `spring_cafe`.`post_recommend` (
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+ALTER TABLE `spring_cafe`.`comment`
+DROP FOREIGN KEY `fk_comment_post`;
+ALTER TABLE `spring_cafe`.`comment`
+    ADD CONSTRAINT `fk_comment_post`
+        FOREIGN KEY (`reference_post_id`)
+            REFERENCES `spring_cafe`.`post` (`post_id`)
+            ON DELETE CASCADE;
