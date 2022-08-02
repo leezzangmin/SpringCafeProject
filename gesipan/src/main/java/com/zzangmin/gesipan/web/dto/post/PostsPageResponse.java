@@ -26,7 +26,9 @@ public class PostsPageResponse {
         private Long userId;
         private String userNickname;
 
-        public static PostPageResponse of(Post post, int recommendCount) {
+        private int commentCount;
+
+        private static PostPageResponse of(Post post, int recommendCount, int commentCount) {
             return PostPageResponse.builder()
                     .postId(post.getPostId())
                     .postSubject(post.getPostSubject())
@@ -35,6 +37,7 @@ public class PostsPageResponse {
                     .recommendCount(recommendCount)
                     .userId(post.getUser().getUserId())
                     .userNickname(post.getUser().getUserNickname())
+                    .commentCount(commentCount)
                     .build();
         }
     }
@@ -44,9 +47,9 @@ public class PostsPageResponse {
         this.postPageResponseList = postPageResponses;
     }
 
-    public static PostsPageResponse of(Long categoryId, List<Post> posts, List<Integer> recommendCount) {
+    public static PostsPageResponse of(Long categoryId, List<Post> posts, List<Integer> recommendCount, List<Integer> commentCounts) {
         return new PostsPageResponse(categoryId, IntStream.range(0, posts.size()).boxed()
-                .map(i ->  PostPageResponse.of(posts.get(i), recommendCount.get(i)))
+                .map(i ->  PostPageResponse.of(posts.get(i), recommendCount.get(i), commentCounts.get(i)))
                 .collect(Collectors.toList()));
     }
 
