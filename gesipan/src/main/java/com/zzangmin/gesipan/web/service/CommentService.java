@@ -2,7 +2,7 @@ package com.zzangmin.gesipan.web.service;
 
 import com.zzangmin.gesipan.dao.CommentRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
-import com.zzangmin.gesipan.dao.UserRepository;
+import com.zzangmin.gesipan.dao.UsersRepository;
 import com.zzangmin.gesipan.web.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.web.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.web.dto.comment.PersonalCommentsResponse;
@@ -21,11 +21,11 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final PostRepository postRepository;
 
     public Long save(CommentSaveRequest commentSaveRequest) {
-        Users user = userRepository.findById(commentSaveRequest.getUserId())
+        Users user = usersRepository.findById(commentSaveRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
         Post post = postRepository.findById(commentSaveRequest.getReferencePostId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 없습니다. 잘못된 입력"));
@@ -55,7 +55,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public PersonalCommentsResponse userComments(Long userId) {
-        Users user = userRepository.findById(userId)
+        Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
         List<Comment> comments = commentRepository.findAllByUserIdWithPostId(userId);
         return PersonalCommentsResponse.of(user, comments);

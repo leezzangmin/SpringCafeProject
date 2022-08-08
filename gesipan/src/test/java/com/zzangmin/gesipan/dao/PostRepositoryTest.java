@@ -1,12 +1,9 @@
 package com.zzangmin.gesipan.dao;
 
 import com.zzangmin.gesipan.web.entity.*;
-import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @DataJpaTest
@@ -23,7 +19,8 @@ class PostRepositoryTest {
 
     @Autowired PostRepository postRepository;
     @Autowired PostCategoryRepository postCategoryRepository;
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UsersRepository usersRepository;
 
     PostCategory postCategory;
     Users user;
@@ -52,7 +49,7 @@ class PostRepositoryTest {
                 .updatedAt(LocalDateTime.of(2022,2,2,2,2))
                 .hitCount(0L)
                 .build();
-        userRepository.save(user).getUserId();
+        usersRepository.save(user).getUserId();
         postCategoryRepository.save(postCategory);
         postRepository.save(post).getPostId();
     }
