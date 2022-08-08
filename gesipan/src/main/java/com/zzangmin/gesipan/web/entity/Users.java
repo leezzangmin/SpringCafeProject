@@ -29,4 +29,10 @@ public class Users {
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
+
+    public void update(String userName, String userNickname, LocalDateTime updateTime) {
+        this.userName = userName;
+        this.userNickname = userNickname;
+        this.updatedAt = updateTime;
+    }
 }
