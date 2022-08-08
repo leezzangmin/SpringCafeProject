@@ -128,3 +128,6 @@ ALTER TABLE `spring_cafe`.`comment`
         FOREIGN KEY (`reference_post_id`)
             REFERENCES `spring_cafe`.`post` (`post_id`)
             ON DELETE CASCADE;
+ALTER TABLE `spring_cafe`.`users`
+    ADD UNIQUE INDEX `user_email_UNIQUE` (`user_email` ASC) VISIBLE;
+;
