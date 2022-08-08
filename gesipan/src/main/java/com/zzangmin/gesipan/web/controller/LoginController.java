@@ -43,7 +43,7 @@ public class LoginController {
     @GetMapping("/oauth/callback")
     public void callback(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         GithubToken token = githubOauthService.getAccessToken(code);
-        UserResources userResources = githubOauthService.getUserEmail(token);
+        UserResources userResources = githubOauthService.getUserResources(token);
         githubOauthService.upsert(userResources);
 
         Cookie cookie = new Cookie("asdf", "JWT 구현하기~");
