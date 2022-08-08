@@ -3,6 +3,8 @@ package com.zzangmin.gesipan.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zzangmin.gesipan.web.dto.oauth.GithubToken;
 import com.zzangmin.gesipan.web.dto.oauth.UserResources;
+import com.zzangmin.gesipan.web.entity.Users;
+import com.zzangmin.gesipan.web.jwt.JwtProvider;
 import com.zzangmin.gesipan.web.service.GithubOauthService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /** TODO: 1. code 요청하는 URL 돌려주는 api
  *        2. callback+code로 요청하면
@@ -28,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
     private final static String githubOauthURL = "https://github.com/login/oauth/authorize?client_id=" + System.getenv("GITHUB_CLIENT_ID") + "&scope=user";
     private final GithubOauthService githubOauthService;
+    private final JwtProvider jwtProvider;
 
 
 
@@ -42,10 +46,13 @@ public class LoginController {
     public void callback(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         GithubToken token = githubOauthService.getAccessToken(code);
         UserResources userResources = githubOauthService.getUserResources(token);
-        githubOauthService.upsert(userResources);
+        Users user = githubOauthService.upsert(userResources);
 
-//        Cookie cookie = new Cookie("asf", "JWT");
-//        response.addCookie(cookie);
+        String token1 = jwtProvider.createToken(user.getUserEmail());
+        //String userInfo = jwtProvider.getUserInfo(token1);
+
+        Cookie cookie = new Cookie("JWT", token1);
+        response.addCookie(cookie);
     }
 
 }
