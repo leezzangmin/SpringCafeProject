@@ -1,6 +1,5 @@
 package com.zzangmin.gesipan.web.service;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zzangmin.gesipan.dao.UsersRepository;
@@ -58,7 +57,7 @@ public class GithubOauthService {
      * @param userResources
      */
     @Transactional
-    public void upsert(UserResources userResources) {
+    public Users upsert(UserResources userResources) {
         LocalDateTime now = LocalDateTime.now();
         Users user = usersRepository.findByEmail(userResources.getUserEmail())
                         .orElseGet(() -> usersRepository.save(
@@ -74,6 +73,7 @@ public class GithubOauthService {
             user.update(userResources.getUserName(), userResources.getUserNickname(), now);
         }
         log.info("user: {}", user);
+        return user;
     }
 
     private Map<String,String> generateRequestBodyForAccessToken(String code) {
