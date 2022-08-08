@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
-
 
 /** TODO: 1. code 요청하는 URL 돌려주는 api
  *        2. callback+code로 요청하면
@@ -46,8 +44,8 @@ public class LoginController {
         UserResources userResources = githubOauthService.getUserResources(token);
         githubOauthService.upsert(userResources);
 
-        Cookie cookie = new Cookie("asdf", "JWT 구현하기~");
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("asf", "JWT");
+//        response.addCookie(cookie);
     }
 
 }

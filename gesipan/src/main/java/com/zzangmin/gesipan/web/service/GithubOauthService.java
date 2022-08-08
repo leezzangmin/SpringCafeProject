@@ -70,6 +70,9 @@ public class GithubOauthService {
                                         .createdAt(now)
                                         .updatedAt(now)
                                         .build()));
+        if (!user.getUserName().equals(userResources.getUserName()) || !user.getUserNickname().equals(userResources.getUserNickname())) {
+            user.update(userResources.getUserName(), userResources.getUserNickname(), now);
+        }
         log.info("user: {}", user);
     }
 
