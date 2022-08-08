@@ -28,6 +28,10 @@ dependencies {
 	implementation (group: 'it.ozimov', name: 'embedded-redis', version: '0.7.3') {
 		exclude group: 'org.slf4j', module: 'slf4j-simple'
 	}
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
 	implementation 'org.projectlombok:lombok'
 
 	runtimeOnly 'com.h2database:h2'
