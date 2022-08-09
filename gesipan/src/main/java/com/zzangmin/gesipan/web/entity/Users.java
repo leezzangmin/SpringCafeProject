@@ -2,13 +2,11 @@ package com.zzangmin.gesipan.web.entity;
 
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @Builder
 @NoArgsConstructor
@@ -31,4 +29,10 @@ public class Users {
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
+
+    public void update(String userName, String userNickname, LocalDateTime updateTime) {
+        this.userName = userName;
+        this.userNickname = userNickname;
+        this.updatedAt = updateTime;
+    }
 }

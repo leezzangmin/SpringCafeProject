@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
     private final CommentRepository commentRepository;
@@ -33,7 +33,7 @@ public class PostService {
     }
 
     public Long save(PostSaveRequest postSaveRequest) {
-        Users user = userRepository.findById(postSaveRequest.getUserId())
+        Users user = usersRepository.findById(postSaveRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
         PostCategory postCategory = postCategoryRepository.findById(postSaveRequest.getPostCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 postCategoryId가 없습니다. 게시판 없음"));
@@ -78,7 +78,7 @@ public class PostService {
     public void postRecommendCount(PostRecommendRequest postRecommendRequest) {
         Post post = postRepository.findById(postRecommendRequest.getPostId()).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        Users user = userRepository.findById(postRecommendRequest.getUserId())
+        Users user = usersRepository.findById(postRecommendRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
 
         postRecommendRepository.findByUsersIdAndPostId(post.getPostId(), user.getUserId())
@@ -94,7 +94,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PersonalPostsResponse userPosts(Long userId) {
-        Users user = userRepository.findById(userId)
+        Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
         List<Post> personalPosts = postRepository.findByUserId(userId);
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(personalPosts.stream()

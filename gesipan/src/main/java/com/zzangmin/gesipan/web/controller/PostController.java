@@ -1,13 +1,17 @@
 package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.dao.PostRecommendRepository;
+import com.zzangmin.gesipan.dao.UsersRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
+import com.zzangmin.gesipan.web.entity.Users;
+import com.zzangmin.gesipan.web.jwt.JwtProvider;
 import com.zzangmin.gesipan.web.service.CommentService;
 import com.zzangmin.gesipan.web.service.PostService;
 import com.zzangmin.gesipan.web.service.RedisService;
+import com.zzangmin.gesipan.web.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,6 +33,9 @@ public class PostController {
     private final CommentService commentService;
     private final PostRecommendRepository postRecommendRepository;
     private final RedisService redisService;
+
+    private final JwtProvider jwtProvider;
+    private final UsersService usersService;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
@@ -73,10 +81,14 @@ public class PostController {
         return ResponseEntity.ok("recommend success");
     }
 
-    // TODO: @RequestParam으로 받는 userId 추후 개선
+    // TODO: @RequestParam으로 받는 userId 추후 개선 -> ArgumentResolver 쓰기;;
     @GetMapping("/posts/my")
-    public ResponseEntity<PersonalPostsResponse> myPosts(@RequestParam Long userId) {
-        PersonalPostsResponse personalPostsResponse = postService.userPosts(userId);
+    public ResponseEntity<PersonalPostsResponse> myPosts(HttpServletRequest request) {
+        String jwt = jwtProvider.resolveToken(request).get();
+        String userInfo = jwtProvider.getUserInfo(jwt);
+        Users user = usersService.findOneByEmail(userInfo);
+
+        PersonalPostsResponse personalPostsResponse = postService.userPosts(user.getUserId());
         return ResponseEntity.ok(personalPostsResponse);
     }
 
@@ -85,7 +97,5 @@ public class PostController {
             throw new IllegalArgumentException("입력된 날짜가 조건에 부합하지 않습니다.");
         }
     }
-
-
 
 }

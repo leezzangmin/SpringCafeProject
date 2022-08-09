@@ -3,7 +3,7 @@ package com.zzangmin.gesipan.web.service;
 import com.zzangmin.gesipan.dao.PostCategoryRepository;
 import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
-import com.zzangmin.gesipan.dao.UserRepository;
+import com.zzangmin.gesipan.dao.UsersRepository;
 import com.zzangmin.gesipan.web.dto.post.PostResponse;
 import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
@@ -28,7 +28,7 @@ class PostServiceTest {
     @Mock
     private PostRepository postRepository;
     @Mock
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
     @Mock
     private PostCategoryRepository postCategoryRepository;
     @Mock
@@ -92,7 +92,7 @@ class PostServiceTest {
                 .updatedAt(postSaveRequest.getCreatedAt())
                 .build();
         when(postRepository.save(any())).thenReturn(post);
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(usersRepository.findById(any())).thenReturn(Optional.of(user));
         when(postCategoryRepository.findById(any())).thenReturn(Optional.of(postCategory));
         //when
         Long saveId = postService.save(postSaveRequest);
