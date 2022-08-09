@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /** TODO: 1. code 요청하는 URL 돌려주는 api
  *        2. callback+code로 요청하면
@@ -33,26 +31,20 @@ public class LoginController {
     private final GithubOauthService githubOauthService;
     private final JwtProvider jwtProvider;
 
-
-
-    // http://127.0.0.1:8080/oauth/github_url
     // https://github.com/login/oauth/authorize?client_id=2e32ee13d9ee74d112ec&scope=user
     @GetMapping("/oauth/github_url")
     public ResponseEntity<String> githubOauthURL() {
         return ResponseEntity.ok(githubOauthURL);
     }
 
-    @GetMapping("/oauth/callback")
-    public void callback(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    @GetMapping("/login")
+    public void callbackAndLoginProcess(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         GithubToken token = githubOauthService.getAccessToken(code);
         UserResources userResources = githubOauthService.getUserResources(token);
         Users user = githubOauthService.upsert(userResources);
 
-        String token1 = jwtProvider.createToken(user.getUserEmail());
-        //String userInfo = jwtProvider.getUserInfo(token1);
-
-        Cookie cookie = new Cookie("JWT", token1);
-        response.addCookie(cookie);
+        String jwt = jwtProvider.createToken(user.getUserEmail());
+        response.setHeader("X-AUTH-TOKEN", jwt);
     }
 
 }
