@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 /** TODO: 1. code 요청하는 URL 돌려주는 api
@@ -37,14 +38,17 @@ public class LoginController {
         return ResponseEntity.ok(githubOauthURL);
     }
 
+
+    // accesstoken을 왜 저장해야 하는거지
     @GetMapping("/login")
     public void callbackAndLoginProcess(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        GithubToken token = githubOauthService.getAccessToken(code);
-        UserResources userResources = githubOauthService.getUserResources(token);
+        GithubToken githubAccessToken = githubOauthService.getAccessToken(code);
+        UserResources userResources = githubOauthService.getUserResources(githubAccessToken);
         Users user = githubOauthService.upsert(userResources);
 
         String jwt = jwtProvider.createToken(user.getUserEmail());
-        response.setHeader("X-AUTH-TOKEN", jwt);
+        Cookie cookie = new Cookie("X-AUTH-TOKEN", jwt);
+        response.addCookie(cookie);
     }
 
 }
