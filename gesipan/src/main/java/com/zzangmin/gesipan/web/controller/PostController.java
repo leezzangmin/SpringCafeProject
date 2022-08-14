@@ -1,7 +1,6 @@
 package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.dao.PostRecommendRepository;
-import com.zzangmin.gesipan.dao.UsersRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.entity.Comment;
@@ -22,7 +21,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
