@@ -66,8 +66,6 @@ public class RedisService {
         IntStream.range(0, posts.size()).boxed()
                         .forEach(i -> posts.get(i).increaseHitCount(hitCounts.get(i)));
 
-        // TODO: 이거 고치기 -> 어떻게 하는거야
-        // postRepository.updatePostsHitCounts(postIds, hitCounts);
         redisTemplate.delete(keys);
     }
 
@@ -93,6 +91,7 @@ public class RedisService {
     }
 
     // key 형식 : 'client Address + postId' ->  '127.0.0.1:500'
+    // TODO : ip -> JWT로 구분하기
     private String generateKey(String clientAddress, Long postId) {
         return clientAddress + ":" + postId;
     }
