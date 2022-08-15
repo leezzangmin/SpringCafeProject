@@ -48,6 +48,16 @@ class JwtProviderTest {
     }
 
     @Test
+    @DisplayName("유효한 토큰을 넘겨주면 true를, 아니면 false를 반환해야한다")
     void isValidToken() {
+        //given
+        String jwt = jwtProvider.createToken("ckdals");
+        String invalidJWT = "it's invalid token";
+        //when
+        boolean validTokenFlag = jwtProvider.isValidToken(jwt);
+        boolean invalidTokenFlag = jwtProvider.isValidToken(invalidJWT);
+        //then
+        Assertions.assertThat(validTokenFlag).isTrue();
+        Assertions.assertThat(invalidTokenFlag).isFalse();
     }
 }
