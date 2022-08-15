@@ -44,12 +44,6 @@ public class JwtProvider {
                 .compact();
     }
 
-//    // JWT 토큰에서 인증 정보 조회
-//    public Authentication getAuthentication(String token) {
-//        //UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
-//        return null;//new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-//    }
-
     public String getUserInfo(String jwt) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
@@ -68,8 +62,14 @@ public class JwtProvider {
 
     public boolean isValidToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date());
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(jwtToken);
+
+            return !claims.getBody()
+                    .getExpiration()
+                    .before(new Date());
+
         } catch (Exception e) {
             return false;
         }
