@@ -25,6 +25,8 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Service
 public class RedisService {
+
+
     private final long clientAddressPostRequestWriteExpireDurationSec = 86400;
     private final long scheduledIncreaseSeconds = 10;
     private final String scheduleHitCountHashKey = "scheduleHitCounts";
@@ -33,8 +35,19 @@ public class RedisService {
     private final PostRepository postRepository;
 
     private final ScanOptions scanOptions = ScanOptions.scanOptions()
-            .match(scheduleHitCountHashKey)
+            .count(100)
             .build();
+
+
+    // 작동 안됨 - 트랜잭션 비활성화
+    // @PreDestroy
+    public void doRestTask() {
+
+        System.out.println("RedisService.doRestTask");
+        scheduledIncreasePostHitCounts();
+
+        log.info("redis cache cleanup complete");
+    }
 
     public void increasePostHitCount(String clientAddress, Long postId) {
         if (isFirstIpRequest(clientAddress, postId)) {
@@ -60,19 +73,20 @@ public class RedisService {
         List<Long> hitCounts = new ArrayList<>();
 
         Cursor<Map.Entry<Long, Long>> cursor = hashOperations.scan(scheduleHitCountHashKey, scanOptions);
-        hashOperations.scan(scheduleHitCountHashKey, scanOptions)
-                .stream()
-                .forEach(i -> {
-                    postIds.add(i.getKey());
-                    hitCounts.add(i.getValue());
-                    redisTemplate.delete(postIds);
-                });
+        while (cursor.hasNext()) {
+            Map.Entry<Long, Long> next = cursor.next();
+            postIds.add(next.getKey());
+            hitCounts.add(next.getValue());
+        }
 
         List<Post> posts = postRepository.findAllById(postIds);
 
-        IntStream.range(0, posts.size()).boxed()
-                        .forEach(i -> posts.get(i)
-                                .increaseHitCount(hitCounts.get(i)));
+        IntStream.range(0, posts.size())
+                .boxed()
+                .forEach(i -> postRepository.updateHitCountByPostId(posts.get(i).getPostId(), hitCounts.get(i)));
+
+        postIds.stream()
+                .forEach(i -> hashOperations.delete(scheduleHitCountHashKey, i));
     }
 
 
@@ -81,7 +95,6 @@ public class RedisService {
                         .increment(scheduleHitCountHashKey, postId, 1);
     }
 
-    // https://devlog-wjdrbs96.tistory.com/375
     private boolean isFirstIpRequest(String clientAddress, Long postId) {
         String key = generateKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
@@ -94,7 +107,8 @@ public class RedisService {
     private void cacheClientRequest(String clientAddress, Long postId) {
         String key = generateKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
-        redisTemplate.opsForValue().set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
+        redisTemplate.opsForValue()
+                .set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
         // 컬렉션에 담으면 item 개별로 expire 불가능 -> 컬렉션 전체에 대해서 expire만 가능
     }
 
