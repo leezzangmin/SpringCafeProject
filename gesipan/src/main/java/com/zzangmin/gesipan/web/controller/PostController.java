@@ -12,6 +12,7 @@ import com.zzangmin.gesipan.web.service.PostService;
 import com.zzangmin.gesipan.web.service.RedisService;
 import com.zzangmin.gesipan.web.service.UsersService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +23,23 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class PostController {
 
     private final int validateSeconds = 60;
+
     private final PostService postService;
     private final CommentService commentService;
     private final PostRecommendRepository postRecommendRepository;
     private final RedisService redisService;
-
     private final JwtProvider jwtProvider;
     private final UsersService usersService;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
+        log.info("postId: {}", postId);
         String clientAddress = httpServletRequest.getRemoteAddr();
 
         Post post = postService.findOne(postId);
@@ -82,7 +85,8 @@ public class PostController {
     // TODO: @RequestParam으로 받는 userId 추후 개선 -> ArgumentResolver 쓰기;;
     @GetMapping("/posts/my")
     public ResponseEntity<PersonalPostsResponse> myPosts(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request).get();
+        String jwt = jwtProvider.resolveToken(request).
+                orElseThrow(() -> new IllegalStateException("뭔가 잘못된 인증 요청"));
         String userInfo = jwtProvider.getUserInfo(jwt);
         Users user = usersService.findOneByEmail(userInfo);
 
