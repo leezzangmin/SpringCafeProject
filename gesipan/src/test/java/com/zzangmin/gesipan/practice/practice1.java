@@ -22,31 +22,30 @@ import java.util.stream.Collectors;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED) // 실제 DB 사용하고 싶을때 NONE 사용
 public class practice1 {
 
-
     @Autowired
     RedisTemplate redisTemplate;
 
-
-
     @Test
     void asdf() {
+
         RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
         connection.flushAll();
+        String a="key1";
         HashOperations<String, Long, Long> hashOperations = redisTemplate.opsForHash();
         RedisSerializer hashKeySerializer = redisTemplate.getHashKeySerializer();
-        System.out.println("hashKeySerializer = " + hashKeySerializer);
-        //hashOperations.increment("bbb",345L,1);
-        //hashOperations.increment("bbb",567L,1);
 
-        redisTemplate.opsForHash().increment("bbb",123L,1);
-        Set<Long> bbb = hashOperations.keys("bbb");
-        System.out.println("1351rwadf = " + bbb);
+        System.out.println("hashKeySerializer = " + hashKeySerializer);
+
+
+        redisTemplate.opsForHash().increment(a,123L,1);
+
+
         ScanOptions build = ScanOptions.scanOptions()
                 .count(100)
                 .build();
 
         //Cursor<Map.Entry<Long, Long>> bbb1 = hashOperations.scan("bbb", build);
-        Cursor<Map.Entry<Long, Long>> scan = hashOperations.scan("bbb", build);
+        Cursor<Map.Entry<Long, Long>> scan = hashOperations.scan(a, build);
 
         while (scan.hasNext()) {
             Map.Entry<Long, Long> next = scan.next();
