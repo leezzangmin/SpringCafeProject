@@ -8,7 +8,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 
@@ -26,17 +26,15 @@ public class RedisRepositoryConfig {
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
+    // https://zkdlu.github.io/2020-12-29/redis02-spring-boot%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0/
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
-
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
-
-        redisTemplate.setHashKeySerializer(new GenericJackson2JsonRedisSerializer());
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-
+        redisTemplate.setHashKeySerializer(new Jackson2JsonRedisSerializer<>(Long.class));
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Long.class));
         return redisTemplate;
     }
 
