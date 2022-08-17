@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Set;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 class RedisServiceTest {
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisTemplate redisTemplate;
     @Autowired
     private RedisService redisService;
 
@@ -24,20 +24,21 @@ class RedisServiceTest {
     // 초기상태로 만드는 메서드를 만들어서 사용해야한다 ?
     @BeforeEach
     private void deleteAll() {
-        stringRedisTemplate.getConnectionFactory().getConnection().flushAll();
+        redisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushAll();
     }
 
     @Test
     @DisplayName("첫번째 게시글 요청 후에는 방문기록이 남아야 한다.")
     void 첫번째요청방문기록() {
         //given
-
         //when
         redisService.increasePostHitCount("123.123.123.123", 444L);
         //then
-        Assertions.assertThat(stringRedisTemplate.hasKey("123.123.123.123:444")).isTrue();
-        Assertions.assertThat(stringRedisTemplate.hasKey("scheduleHitCount:444")).isTrue();
-
+        Assertions.assertThat(redisTemplate.opsForHash().hasKey("scheduleHitCounts", 444L)).isTrue();
+        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(1);
+        Assertions.assertThat(redisTemplate.hasKey("123.123.123.123:444")).isTrue();
     }
 
     @Test
@@ -48,7 +49,7 @@ class RedisServiceTest {
         redisService.increasePostHitCount("123.123.123.123", 444L);
         redisService.increasePostHitCount("123.123.123.123", 444L);
         //then
-        Assertions.assertThat(stringRedisTemplate.opsForValue().get("scheduleHitCount:444")).isEqualTo("1");
+        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(1);
     }
 
     @Test
@@ -60,8 +61,7 @@ class RedisServiceTest {
         redisService.increasePostHitCount("123.123.123.123", 444L);
         redisService.increasePostHitCount("000.000.000.000", 444L);
         //then
-        Assertions.assertThat(stringRedisTemplate.opsForValue().get("scheduleHitCount:444")).isEqualTo("2");
-        Set<String> keys = stringRedisTemplate.keys("*");
+        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(2);
     }
 
     @Test
