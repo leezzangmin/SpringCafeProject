@@ -7,6 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
@@ -19,6 +23,7 @@ import java.io.InputStreamReader;
 @Slf4j
 @Profile("test")
 @Configuration
+@EnableRedisRepositories
 public class EmbeddedRedisConfig {
 
     @Value("${spring.redis.port}")
@@ -31,10 +36,18 @@ public class EmbeddedRedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(host, port);
-        // 패스워드가 있는경우
-        // lettuceConnectionFactory.setPassword("");
-        return lettuceConnectionFactory;
+        return new LettuceConnectionFactory(host, port);
+    }
+
+    @Bean
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new Jackson2JsonRedisSerializer<>(Long.class));
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Long.class));
+        return redisTemplate;
     }
 
     @PostConstruct

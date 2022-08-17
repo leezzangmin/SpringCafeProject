@@ -47,8 +47,5 @@ public class Post {
         this.updatedAt = updateAt;
     }
 
-    public void increaseHitCount(Long a) {
-        this.hitCount += a;
-    }
 
 }

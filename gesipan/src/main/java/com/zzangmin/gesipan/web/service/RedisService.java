@@ -4,29 +4,50 @@ import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.web.entity.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+
+// memory 관리 해야함 -> maxmemory 설정이 있는데 있어도 더 사용할 가능성 있음. - RSS값 모니터링 - 나도 모르는 새 swap이 발생할 수도 있음
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class RedisService {
+
+
     private final long clientAddressPostRequestWriteExpireDurationSec = 86400;
     private final long scheduledIncreaseSeconds = 10;
-    private final String scheduleHitCountKeyPrefix = "scheduleHitCount:";
+    private final String scheduleHitCountHashKey = "scheduleHitCounts";
 
-    private final StringRedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
     private final PostRepository postRepository;
 
+    private final ScanOptions scanOptions = ScanOptions.scanOptions()
+            .count(100)
+            .build();
+
+
+    // 작동 안됨 - 트랜잭션 비활성화
+    // @PreDestroy
+    public void doRestTask() {
+
+        System.out.println("RedisService.doRestTask");
+        scheduledIncreasePostHitCounts();
+
+        log.info("redis cache cleanup complete");
+    }
 
     public void increasePostHitCount(String clientAddress, Long postId) {
         if (isFirstIpRequest(clientAddress, postId)) {
@@ -47,34 +68,33 @@ public class RedisService {
     public void scheduledIncreasePostHitCounts() {
         log.debug("스케줄 태스크 {}", LocalDateTime.now());
 
-        ScanOptions build = ScanOptions.scanOptions().match(scheduleHitCountKeyPrefix + "*").build();
+        HashOperations<String, Long, Long> hashOperations = redisTemplate.opsForHash();
+        List<Long> postIds = new ArrayList<>();
+        List<Long> hitCounts = new ArrayList<>();
 
-        List<String> keys = redisTemplate.scan(build)
-                .stream()
-                .collect(Collectors.toList());
-
-        List<Long> hitCounts = redisTemplate.opsForValue()
-                .multiGet(keys)
-                .stream()
-                .map(i -> Long.valueOf(i))
-                .collect(Collectors.toList());
-        List<Long> postIds = keys.stream()
-                .map(i -> Long.valueOf(i.split(":")[1]))
-                .collect(Collectors.toList());
+        Cursor<Map.Entry<Long, Long>> cursor = hashOperations.scan(scheduleHitCountHashKey, scanOptions);
+        while (cursor.hasNext()) {
+            Map.Entry<Long, Long> next = cursor.next();
+            postIds.add(next.getKey());
+            hitCounts.add(next.getValue());
+        }
 
         List<Post> posts = postRepository.findAllById(postIds);
-        IntStream.range(0, posts.size()).boxed()
-                        .forEach(i -> posts.get(i).increaseHitCount(hitCounts.get(i)));
 
-        redisTemplate.delete(keys);
+        IntStream.range(0, posts.size())
+                .boxed()
+                .forEach(i -> postRepository.updateHitCountByPostId(posts.get(i).getPostId(), hitCounts.get(i)));
+
+        postIds.stream()
+                .forEach(i -> hashOperations.delete(scheduleHitCountHashKey, i));
     }
 
-    // 조회수 스케줄링에 사용할 키 형식 -> "scheduleHitCount:+postId" -> scheduleHitCount:1234
+
     private void insertHitCountsToSchedulingList(Long postId) {
-        redisTemplate.opsForValue().increment(scheduleHitCountKeyPrefix + postId);
+        redisTemplate.opsForHash()
+                        .increment(scheduleHitCountHashKey, postId, 1);
     }
 
-    // https://devlog-wjdrbs96.tistory.com/375
     private boolean isFirstIpRequest(String clientAddress, Long postId) {
         String key = generateKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
@@ -87,7 +107,9 @@ public class RedisService {
     private void cacheClientRequest(String clientAddress, Long postId) {
         String key = generateKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
-        redisTemplate.opsForValue().set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
+        redisTemplate.opsForValue()
+                .set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
+        // 컬렉션에 담으면 item 개별로 expire 불가능 -> 컬렉션 전체에 대해서 expire만 가능
     }
 
     // key 형식 : 'client Address + postId' ->  '127.0.0.1:500'
