@@ -52,6 +52,7 @@ public class PostController {
 
     @PostMapping("/post")
     public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
+        log.info("post create: {}", postSaveRequest);
         validateRequestDate(postSaveRequest.getCreatedAt());
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
@@ -64,6 +65,7 @@ public class PostController {
 
     @PatchMapping("/post/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
+        log.info("post update :{}", postUpdateRequest);
         validateRequestDate(postUpdateRequest.getUpdatedAt());
         postService.update(postId, postUpdateRequest);
         return ResponseEntity.ok("post update success");
@@ -71,6 +73,7 @@ public class PostController {
 
     @GetMapping("/posts")
     public ResponseEntity<PostsPageResponse> postPagination(@RequestParam String categoryName, Pageable pageable) {
+        log.info("post pagination: {}", pageable);
         Long categoryId = Categories.castCategoryNameToCategoryId(categoryName);
         PostsPageResponse postsPageResponse = postService.pagination(categoryId, pageable);
         return ResponseEntity.ok(postsPageResponse);
@@ -78,6 +81,7 @@ public class PostController {
 
     @PostMapping("/post/recommend")
     public ResponseEntity<String> recommendPost(@RequestBody @Valid PostRecommendRequest postRecommendRequest) {
+        log.info("post recommend : {}", postRecommendRequest);
         postService.postRecommendCount(postRecommendRequest);
         return ResponseEntity.ok("recommend success");
     }
@@ -85,8 +89,7 @@ public class PostController {
     // TODO: @RequestParam으로 받는 userId 추후 개선 -> ArgumentResolver 쓰기;;
     @GetMapping("/posts/my")
     public ResponseEntity<PersonalPostsResponse> myPosts(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request).
-                orElseThrow(() -> new IllegalStateException("뭔가 잘못된 인증 요청"));
+        String jwt = jwtProvider.resolveToken(request);
         String userInfo = jwtProvider.getUserInfo(jwt);
         Users user = usersService.findOneByEmail(userInfo);
 

@@ -30,8 +30,8 @@ class JwtProviderTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getCookies()).thenReturn(cookies);
-        Optional<String> s = jwtProvider.resolveToken(request);
-        String getToken = s.get();
+        String getToken = jwtProvider.resolveToken(request);
+
 
         Assertions.assertThat(givenToken).isEqualTo(getToken);
     }

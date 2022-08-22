@@ -45,8 +45,7 @@ public class CommentController {
 
     @GetMapping("/comments/my")
     public ResponseEntity<PersonalCommentsResponse> myComments(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request).
-                orElseThrow(() -> new IllegalStateException("뭔가 잘못된 인증 요청"));
+        String jwt = jwtProvider.resolveToken(request);
         log.info("my comments jwt: {}", jwt);
         String userInfo = jwtProvider.getUserInfo(jwt);
         Users user = usersService.findOneByEmail(userInfo);

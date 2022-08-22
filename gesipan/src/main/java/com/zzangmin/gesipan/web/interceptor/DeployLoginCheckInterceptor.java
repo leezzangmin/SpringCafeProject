@@ -37,8 +37,7 @@ public class DeployLoginCheckInterceptor implements LoginCheckInterceptor {
     }
 
     private void validateAuth(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request)
-                .orElseThrow(() -> new IllegalArgumentException("인증 수단이 존재하지 않습니다."));
+        String jwt = jwtProvider.resolveToken(request);
         if (!jwtProvider.isValidToken(jwt)) {
             throw new IllegalArgumentException("인증이 유효하지 않습니다.");
         }
