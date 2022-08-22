@@ -4,24 +4,26 @@ import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.Users;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
-
+@ToString
 @Getter
 public class CommentSaveRequest {
 
-    @NotBlank
+    @NotNull
     @Positive
     private Long referencePostId;
-    @NotBlank
+    @NotNull
     @Positive
     private Long userId;
     @NotBlank
     private String commentContent;
-    @NotBlank
+    @NotNull
     @PastOrPresent
     private LocalDateTime createdAt;
 
