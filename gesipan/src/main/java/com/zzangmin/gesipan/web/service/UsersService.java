@@ -5,6 +5,7 @@ import com.zzangmin.gesipan.web.entity.Users;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -13,10 +14,10 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
 
+    @Transactional(readOnly = true)
     public Users findOneByEmail(String userEmail) {
-        Users user = usersRepository.findByEmail(userEmail)
+        return usersRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 email 입니다."));
-        return user;
     }
 
 }
