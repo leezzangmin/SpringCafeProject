@@ -33,7 +33,7 @@ public class LoginController {
     private final JwtProvider jwtProvider;
 
     // https://github.com/login/oauth/authorize?client_id=2e32ee13d9ee74d112ec&scope=user
-    @GetMapping("/oauth/github_url")
+    @GetMapping("/oauth/github-url")
     public ResponseEntity<String> githubOauthURL() {
         return ResponseEntity.ok(githubOauthURL);
     }
