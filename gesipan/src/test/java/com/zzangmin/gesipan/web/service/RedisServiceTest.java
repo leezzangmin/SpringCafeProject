@@ -81,7 +81,7 @@ class RedisServiceTest {
         //given
         PostCategory postCategory = PostCategory.builder()
                 .postCategoryId(1L)
-                .categoryName(Categories.자유)
+                .categoryName(Categories.FREE)
                 .build();
         Users user = Users.builder()
                 .userId(1L)

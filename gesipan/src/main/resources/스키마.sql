@@ -131,3 +131,5 @@ ALTER TABLE `spring_cafe`.`comment`
 ALTER TABLE `spring_cafe`.`users`
     ADD UNIQUE INDEX `user_email_UNIQUE` (`user_email` ASC) VISIBLE;
 ;
+UPDATE `spring_cafe`.`post_category` SET `category_name` = 'FREE' WHERE (`post_category_id` = '1');
+UPDATE `spring_cafe`.`post_category` SET `category_name` = 'QNA' WHERE (`post_category_id` = '2');

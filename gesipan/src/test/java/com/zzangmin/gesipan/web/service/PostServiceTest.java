@@ -71,7 +71,7 @@ class PostServiceTest {
         PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",1L, 1L, LocalDateTime.now());
         PostCategory postCategory = PostCategory.builder()
                 .postCategoryId(1L)
-                .categoryName(Categories.자유)
+                .categoryName(Categories.FREE)
                 .build();
         Users user = Users.builder()
                 .userId(1L)
@@ -129,7 +129,7 @@ class PostServiceTest {
         //given
         PostCategory postCategory = PostCategory.builder()
                 .postCategoryId(1L)
-                .categoryName(Categories.자유)
+                .categoryName(Categories.FREE)
                 .build();
         Users user = Users.builder()
                 .userId(1L)
