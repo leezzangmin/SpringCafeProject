@@ -2,15 +2,13 @@ package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
+import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostLoadResponse;
+import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
-import com.zzangmin.gesipan.web.entity.Users;
 import com.zzangmin.gesipan.web.jwt.JwtProvider;
-import com.zzangmin.gesipan.web.service.CommentService;
-import com.zzangmin.gesipan.web.service.PostService;
-import com.zzangmin.gesipan.web.service.RedisService;
-import com.zzangmin.gesipan.web.service.UsersService;
+import com.zzangmin.gesipan.web.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +34,7 @@ public class PostController {
     private final RedisService redisService;
     private final JwtProvider jwtProvider;
     private final UsersService usersService;
+    private final TemporaryPostService temporaryPostService;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
@@ -50,6 +49,7 @@ public class PostController {
         return ResponseEntity.ok(PostResponse.of(post, comments, recommendCount));
     }
 
+    // TODO: jwt에서 정보 뽑아오기. DTO 수정해야함
     @PostMapping("/post")
     public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
         log.info("post create: {}", postSaveRequest);
@@ -90,11 +90,25 @@ public class PostController {
     @GetMapping("/posts/my")
     public ResponseEntity<PersonalPostsResponse> myPosts(HttpServletRequest request) {
         String jwt = jwtProvider.resolveToken(request);
-        String userInfo = jwtProvider.getUserInfo(jwt);
-        Users user = usersService.findOneByEmail(userInfo);
+        Long userId = jwtProvider.getUserId(jwt);
 
-        PersonalPostsResponse personalPostsResponse = postService.userPosts(user.getUserId());
+        PersonalPostsResponse personalPostsResponse = postService.userPosts(userId);
         return ResponseEntity.ok(personalPostsResponse);
+    }
+
+    @PostMapping("/post/temporary")
+    public void temporarySave(@RequestBody @Valid TemporaryPostSaveRequest temporaryPostSaveRequest, HttpServletRequest httpRequest) {
+        String jwt = jwtProvider.resolveToken(httpRequest);
+        Long userId = jwtProvider.getUserId(jwt);
+        temporaryPostService.postTemporarySave(userId, temporaryPostSaveRequest);
+    }
+
+    @GetMapping("/post/temporary")
+    public ResponseEntity<TemporaryPostLoadResponse> temporaryLoad(HttpServletRequest request) {
+        String jwt = jwtProvider.resolveToken(request);
+        Long userId = jwtProvider.getUserId(jwt);
+        TemporaryPostLoadResponse temporaryPostLoadResponse = temporaryPostService.temporaryPostLoad(userId);
+        return ResponseEntity.ok(temporaryPostLoadResponse);
     }
 
     private void validateRequestDate(LocalDateTime givenDate) {
