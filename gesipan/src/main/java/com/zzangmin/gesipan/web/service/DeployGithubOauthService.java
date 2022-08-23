@@ -24,34 +24,30 @@ import java.util.Map;
 @Profile("deploy")
 public class DeployGithubOauthService implements GithubOauthService {
     private final UsersRepository usersRepository;
+    private final RestTemplate restTemplate;
 
     private static final String ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String GET_RESOURCE_URL = "https://api.github.com/";
     private static final String clientId = System.getenv("GITHUB_CLIENT_ID");
     private static final String secret = System.getenv("GITHUB_CLIENT_SECRET");
 
-    private final ObjectMapper objectMapper;
-
 
     @Override
     public GithubToken getAccessToken(String code) {
         Map<String, String> requestBody = generateRequestBodyForAccessToken(code);
         log.info("requestBody: {}", requestBody);
-        RestTemplate restTemplate = new RestTemplate();
         return restTemplate.postForObject(ACCESS_TOKEN_URL, requestBody, GithubToken.class);
     }
 
     @Override
     public UserResources getUserResources(GithubToken token) throws JsonProcessingException {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token.getTokenHeaderString());
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(headers);
-
         String userResource = restTemplate.exchange(GET_RESOURCE_URL + token.getScope(), HttpMethod.GET, request, String.class).getBody();
-        UserResources userResources = objectMapper.readValue(userResource, UserResources.class);
-
+        log.info("userResource: {}", userResource);
+        UserResources userResources = new ObjectMapper().readValue(userResource, UserResources.class);
         log.info("userResources: {}", userResources);
         return userResources;
     }
