@@ -3,7 +3,6 @@ package com.zzangmin.gesipan.web.controller;
 import com.zzangmin.gesipan.web.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.web.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.web.dto.comment.PersonalCommentsResponse;
-import com.zzangmin.gesipan.web.entity.Users;
 import com.zzangmin.gesipan.web.jwt.JwtProvider;
 import com.zzangmin.gesipan.web.service.CommentService;
 import com.zzangmin.gesipan.web.service.UsersService;
@@ -22,7 +21,6 @@ public class CommentController {
 
     private final CommentService commentService;
     private final JwtProvider jwtProvider;
-    private final UsersService usersService;
 
     @PostMapping("/comment")
     public ResponseEntity<Long> createComment(@RequestBody @Valid CommentSaveRequest commentSaveRequest) {
@@ -47,10 +45,9 @@ public class CommentController {
     public ResponseEntity<PersonalCommentsResponse> myComments(HttpServletRequest request) {
         String jwt = jwtProvider.resolveToken(request);
         log.info("my comments jwt: {}", jwt);
-        String userInfo = jwtProvider.getUserInfo(jwt);
-        Users user = usersService.findOneByEmail(userInfo);
+        Long userId = jwtProvider.getUserId(jwt);
 
-        return ResponseEntity.ok(commentService.userComments(user.getUserId()));
+        return ResponseEntity.ok(commentService.userComments(userId));
     }
 
 }

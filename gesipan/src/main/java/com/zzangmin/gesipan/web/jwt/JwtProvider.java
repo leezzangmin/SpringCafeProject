@@ -30,9 +30,9 @@ public class JwtProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String userEmail) {
+    public String createToken(Long userId) {
         Claims claims = Jwts.claims().setSubject(claimSubject); // JWT payload 에 저장되는 정보단위
-        claims.put("jwtEMAIL", userEmail); // 정보는 key / value 쌍으로 저장된다.
+        claims.put("userId", userId); // 정보는 key / value 쌍으로 저장된다.
         Date now = new Date();
 
         return Jwts.builder()
@@ -43,13 +43,13 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String getUserInfo(String jwt) {
-        return Jwts.parser()
+    public Long getUserId(String jwt) {
+        return Long.valueOf(Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
                 .getBody()
-                .get("jwtEMAIL")
-                .toString();
+                .get("userId")
+                .toString());
     }
 
     public String resolveToken(HttpServletRequest request) {
