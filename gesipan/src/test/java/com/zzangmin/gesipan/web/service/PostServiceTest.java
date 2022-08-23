@@ -31,8 +31,6 @@ class PostServiceTest {
     private UsersRepository usersRepository;
     @Mock
     private PostCategoryRepository postCategoryRepository;
-    @Mock
-    private PostRecommendRepository postRecommendRepository;
 
 
     @InjectMocks
@@ -54,14 +52,12 @@ class PostServiceTest {
                 .build();
         PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>(), 0);
         when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
-        when(postRecommendRepository.countByPostId(postId)).thenReturn(0);
 
         //when
         Post post1 = postService.findOne(postId);
         //then
         Assertions.assertThat(postResponse1.getPostId()).isEqualTo(post1.getPostId());
         Assertions.assertThat(postResponse1.getContent()).isEqualTo(post1.getPostContent());
-        Assertions.assertThat(postResponse1.getHitCount()).isEqualTo(1L);
     }
 
     @Test
