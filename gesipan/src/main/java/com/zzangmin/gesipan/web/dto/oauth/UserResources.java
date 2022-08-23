@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.web.dto.oauth;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)//https://coding-today.tistory.com/24 [오늘도 코딩:티스토리]
 public class UserResources {
     @JsonProperty("email")
     private String userEmail;
