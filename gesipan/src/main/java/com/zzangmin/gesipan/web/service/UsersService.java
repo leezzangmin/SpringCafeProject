@@ -20,4 +20,10 @@ public class UsersService {
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 email 입니다."));
     }
 
+    @Transactional(readOnly = true)
+    public Users findOne(Long userId) {
+        return usersRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 userId"));
+    }
+
 }
