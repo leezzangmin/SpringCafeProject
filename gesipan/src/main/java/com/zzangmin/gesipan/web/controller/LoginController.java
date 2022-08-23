@@ -33,7 +33,7 @@ public class LoginController {
     private final JwtProvider jwtProvider;
 
     // https://github.com/login/oauth/authorize?client_id=2e32ee13d9ee74d112ec&scope=user
-    @GetMapping("/oauth/github_url")
+    @GetMapping("/oauth/github-url")
     public ResponseEntity<String> githubOauthURL() {
         return ResponseEntity.ok(githubOauthURL);
     }
@@ -46,7 +46,7 @@ public class LoginController {
         UserResources userResources = githubOauthService.getUserResources(githubAccessToken);
         Users user = githubOauthService.upsert(userResources);
 
-        String jwt = jwtProvider.createToken(user.getUserEmail());
+        String jwt = jwtProvider.createToken(user.getUserId());
         Cookie cookie = new Cookie("X-AUTH-TOKEN", jwt);
         response.addCookie(cookie);
     }

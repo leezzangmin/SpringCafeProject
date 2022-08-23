@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Optional;
 
 // https://velog.io/@kyeongsoo5196/JWT%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%97%B0%EA%B5%AC
 @RequiredArgsConstructor
@@ -31,9 +30,9 @@ public class JwtProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String userEmail) {
+    public String createToken(Long userId) {
         Claims claims = Jwts.claims().setSubject(claimSubject); // JWT payload 에 저장되는 정보단위
-        claims.put("jwtEMAIL", userEmail); // 정보는 key / value 쌍으로 저장된다.
+        claims.put("userId", userId); // 정보는 key / value 쌍으로 저장된다.
         Date now = new Date();
 
         return Jwts.builder()
@@ -44,20 +43,21 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String getUserInfo(String jwt) {
-        return Jwts.parser()
+    public Long getUserId(String jwt) {
+        return Long.valueOf(Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
                 .getBody()
-                .get("jwtEMAIL")
-                .toString();
+                .get("userId")
+                .toString());
     }
 
-    public Optional<String> resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request) {
         return Arrays.stream(request.getCookies())
                 .filter(i -> i.getName().equals("X-AUTH-TOKEN"))
                 .findFirst()
-                .map(i -> i.getValue());
+                .map(i -> i.getValue())
+                .orElseThrow(() -> new IllegalStateException("뭔가 잘못된 인증요청"));
     }
 
     public boolean isValidToken(String jwtToken) {

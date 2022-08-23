@@ -2,15 +2,13 @@ package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
+import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostLoadResponse;
+import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.web.entity.Categories;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
-import com.zzangmin.gesipan.web.entity.Users;
 import com.zzangmin.gesipan.web.jwt.JwtProvider;
-import com.zzangmin.gesipan.web.service.CommentService;
-import com.zzangmin.gesipan.web.service.PostService;
-import com.zzangmin.gesipan.web.service.RedisService;
-import com.zzangmin.gesipan.web.service.UsersService;
+import com.zzangmin.gesipan.web.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +34,7 @@ public class PostController {
     private final RedisService redisService;
     private final JwtProvider jwtProvider;
     private final UsersService usersService;
+    private final TemporaryPostService temporaryPostService;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
@@ -50,8 +49,10 @@ public class PostController {
         return ResponseEntity.ok(PostResponse.of(post, comments, recommendCount));
     }
 
+    // TODO: jwt에서 정보 뽑아오기. DTO 수정해야함
     @PostMapping("/post")
     public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
+        log.info("post create: {}", postSaveRequest);
         validateRequestDate(postSaveRequest.getCreatedAt());
         return ResponseEntity.ok(postService.save(postSaveRequest));
     }
@@ -64,6 +65,7 @@ public class PostController {
 
     @PatchMapping("/post/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
+        log.info("post update :{}", postUpdateRequest);
         validateRequestDate(postUpdateRequest.getUpdatedAt());
         postService.update(postId, postUpdateRequest);
         return ResponseEntity.ok("post update success");
@@ -71,6 +73,7 @@ public class PostController {
 
     @GetMapping("/posts")
     public ResponseEntity<PostsPageResponse> postPagination(@RequestParam String categoryName, Pageable pageable) {
+        log.info("post pagination: {}", pageable);
         Long categoryId = Categories.castCategoryNameToCategoryId(categoryName);
         PostsPageResponse postsPageResponse = postService.pagination(categoryId, pageable);
         return ResponseEntity.ok(postsPageResponse);
@@ -78,6 +81,7 @@ public class PostController {
 
     @PostMapping("/post/recommend")
     public ResponseEntity<String> recommendPost(@RequestBody @Valid PostRecommendRequest postRecommendRequest) {
+        log.info("post recommend : {}", postRecommendRequest);
         postService.postRecommendCount(postRecommendRequest);
         return ResponseEntity.ok("recommend success");
     }
@@ -85,13 +89,26 @@ public class PostController {
     // TODO: @RequestParam으로 받는 userId 추후 개선 -> ArgumentResolver 쓰기;;
     @GetMapping("/posts/my")
     public ResponseEntity<PersonalPostsResponse> myPosts(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request).
-                orElseThrow(() -> new IllegalStateException("뭔가 잘못된 인증 요청"));
-        String userInfo = jwtProvider.getUserInfo(jwt);
-        Users user = usersService.findOneByEmail(userInfo);
+        String jwt = jwtProvider.resolveToken(request);
+        Long userId = jwtProvider.getUserId(jwt);
 
-        PersonalPostsResponse personalPostsResponse = postService.userPosts(user.getUserId());
+        PersonalPostsResponse personalPostsResponse = postService.userPosts(userId);
         return ResponseEntity.ok(personalPostsResponse);
+    }
+
+    @PostMapping("/post/temporary")
+    public void temporarySave(@RequestBody @Valid TemporaryPostSaveRequest temporaryPostSaveRequest, HttpServletRequest httpRequest) {
+        String jwt = jwtProvider.resolveToken(httpRequest);
+        Long userId = jwtProvider.getUserId(jwt);
+        temporaryPostService.postTemporarySave(userId, temporaryPostSaveRequest);
+    }
+
+    @GetMapping("/post/temporary")
+    public ResponseEntity<TemporaryPostLoadResponse> temporaryLoad(HttpServletRequest request) {
+        String jwt = jwtProvider.resolveToken(request);
+        Long userId = jwtProvider.getUserId(jwt);
+        TemporaryPostLoadResponse temporaryPostLoadResponse = temporaryPostService.temporaryPostLoad(userId);
+        return ResponseEntity.ok(temporaryPostLoadResponse);
     }
 
     private void validateRequestDate(LocalDateTime givenDate) {

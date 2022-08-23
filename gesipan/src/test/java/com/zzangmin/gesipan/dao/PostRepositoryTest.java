@@ -29,7 +29,7 @@ class PostRepositoryTest {
     @BeforeEach
     void setUp() {
         postCategory = PostCategory.builder()
-                .categoryName(Categories.자유)
+                .categoryName(Categories.FREE)
                 .build();
         user = Users.builder()
                 .userEmail("ckdals1234@naver.com")

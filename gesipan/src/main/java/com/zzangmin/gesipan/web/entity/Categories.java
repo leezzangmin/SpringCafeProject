@@ -2,7 +2,8 @@ package com.zzangmin.gesipan.web.entity;
 
 
 public enum Categories {
-    휴지통, 자유, 질문;
+    //휴지통, 자유, 질문;
+    TRASH, FREE, QNA;
 
     public static Long castCategoryNameToCategoryId(String categoryName) {
         try {
