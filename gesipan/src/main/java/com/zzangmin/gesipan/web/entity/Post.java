@@ -32,7 +32,7 @@ public class Post {
     @JoinColumn(name = "userId")
     private Users user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "referenceCategoryId")
+    @JoinColumn(name = "reference_category_id")
     private PostCategory postCategory;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime createdAt;

@@ -46,7 +46,7 @@ public class LoginController {
         UserResources userResources = githubOauthService.getUserResources(githubAccessToken);
         Users user = githubOauthService.upsert(userResources);
 
-        String jwt = jwtProvider.createToken(user.getUserEmail());
+        String jwt = jwtProvider.createToken(user.getUserId());
         Cookie cookie = new Cookie("X-AUTH-TOKEN", jwt);
         response.addCookie(cookie);
     }
