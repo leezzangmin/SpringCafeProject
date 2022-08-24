@@ -24,13 +24,12 @@ public class PostSaveRequest {
     private String postSubject;
     @NotBlank
     private String postContent;
-    @NotNull
-    @Positive
-    private Long userId;
     @NotNull @Positive
     private Long postCategoryId;
     @NotNull
     @PastOrPresent
     private LocalDateTime createdAt;
+
+    private Long tempPostId;
 
 }
