@@ -1,76 +1,40 @@
 package com.zzangmin.gesipan.web.service;
 
-import com.zzangmin.gesipan.dao.PostCategoryRepository;
-import com.zzangmin.gesipan.dao.PostRecommendRepository;
-import com.zzangmin.gesipan.dao.PostRepository;
-import com.zzangmin.gesipan.dao.UsersRepository;
-import com.zzangmin.gesipan.web.dto.post.PostResponse;
+import com.zzangmin.gesipan.dao.*;
 import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.*;
+import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+@SpringBootTest
+@RequiredArgsConstructor
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
 
-    @Mock
-    private PostRepository postRepository;
-    @Mock
-    private UsersRepository usersRepository;
-    @Mock
-    private PostCategoryRepository postCategoryRepository;
-
-
-    @InjectMocks
-    private PostService postService;
+    @Autowired private PostRepository postRepository;
+    @Autowired private UsersRepository usersRepository;
+    @Autowired private PostCategoryRepository postCategoryRepository;
+    @Autowired private TemporaryPostRepository temporaryPostRepository;
+    @Autowired private PostService postService;
 
     @Test
     void findOne() {
         //given
-        Long postId = 1L;
-        Post post = Post.builder()
-                .postId(1L)
-                .postSubject("제목")
-                .postContent("내용")
-                .user(new Users())
-                .postCategory(new PostCategory())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .hitCount(0L)
-                .build();
-        PostResponse postResponse1 = PostResponse.of(post, new ArrayList<>(), 0);
-        when(postRepository.findByIdWithUser(postId)).thenReturn(Optional.of(post));
-
-        //when
-        Post post1 = postService.findOne(postId);
-        //then
-        Assertions.assertThat(postResponse1.getPostId()).isEqualTo(post1.getPostId());
-        Assertions.assertThat(postResponse1.getContent()).isEqualTo(post1.getPostContent());
-    }
-
-    @Test
-    @DisplayName("Post가 저장되어야 한다.")
-    void save() {
-        //given
-        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",1L, 1L, LocalDateTime.now());
         PostCategory postCategory = PostCategory.builder()
                 .postCategoryId(1L)
                 .categoryName(Categories.FREE)
                 .build();
         Users user = Users.builder()
-                .userId(1L)
                 .userEmail("ckdals1234@naver.com")
                 .userName("이창민")
                 .userNickname("zzangmin")
@@ -79,44 +43,115 @@ class PostServiceTest {
                 .updatedAt(LocalDateTime.of(2022,2,2,2,2))
                 .build();
         Post post = Post.builder()
-                .postId(1L)
-                .postSubject(postSaveRequest.getPostSubject())
-                .postContent(postSaveRequest.getPostContent())
+                .postSubject("제목")
+                .postContent("내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(postSaveRequest.getCreatedAt())
-                .updatedAt(postSaveRequest.getCreatedAt())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .hitCount(0L)
                 .build();
-        when(postRepository.save(any())).thenReturn(post);
-        when(usersRepository.findById(any())).thenReturn(Optional.of(user));
-        when(postCategoryRepository.findById(any())).thenReturn(Optional.of(postCategory));
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
         //when
-        Long saveId = postService.save(postSaveRequest);
+        Post findPost = postService.findOne(postId);
         //then
-        Assertions.assertThat(saveId).isEqualTo(1L);
+        Assertions.assertThat(findPost.getPostId()).isEqualTo(post.getPostId());
+        Assertions.assertThat(findPost.getPostContent()).isEqualTo(post.getPostContent());
+    }
+
+    @Test
+    @DisplayName("Post가 저장되어야 한다.")
+    void save() {
+        //given
+        PostCategory postCategory = PostCategory.builder()
+                .categoryName(Categories.FREE)
+                .build();
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1", postCategoryId, LocalDateTime.now(), null);
+        Users user = Users.builder()
+                .userEmail("ckdals1234@naver.com")
+                .userName("이창민")
+                .userNickname("zzangmin")
+                .userRole(UserRole.일반)
+                .createdAt(LocalDateTime.of(2022,2,2,2,2))
+                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .build();
+
+        Long userId = usersRepository.save(user).getUserId();
+        //when
+        Long saveId = postService.save(userId, postSaveRequest);
+        //then
+        Post findPost = postRepository.findById(saveId).get();
+        Assertions.assertThat(findPost.getPostSubject()).isEqualTo(postSaveRequest.getPostSubject());
+    }
+
+    @Test
+    @DisplayName("임시 게시물을 불러와서 저장하면 임시 게시물은 삭제되어야 한다.")
+    void save2() {
+        //given
+        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",1L, LocalDateTime.now(), 1L);
+        PostCategory postCategory = PostCategory.builder()
+                .categoryName(Categories.FREE)
+                .build();
+        Users user = Users.builder()
+                .userEmail("ckdals1234@naver.com")
+                .userName("이창민")
+                .userNickname("zzangmin")
+                .userRole(UserRole.일반)
+                .createdAt(LocalDateTime.of(2022,2,2,2,2))
+                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .build();
+        TemporaryPost temporaryPost = TemporaryPost.builder()
+                .postSubject("temp제목")
+                .postContent("temp내용")
+                .createdAt(LocalDateTime.now())
+                .user(user)
+                .build();
+
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long tempPostId = temporaryPostRepository.save(temporaryPost).getTempPostId();
+        //when
+        Long savedPostId = postService.save(1L, postSaveRequest);
+        //then
+        List<TemporaryPost> temporaryPosts = temporaryPostRepository.findByUserId(1L);
+        Assertions.assertThat(temporaryPosts.size()).isEqualTo(0);
     }
 
     @Test
     @DisplayName("Post가 삭제되어야 한다.")
     void delete() {
         //given
+        PostCategory postCategory = PostCategory.builder()
+                .categoryName(Categories.FREE)
+                .build();
+        Users user = Users.builder()
+                .userEmail("ckdals1234@naver.com")
+                .userName("이창민")
+                .userNickname("zzangmin")
+                .userRole(UserRole.일반)
+                .createdAt(LocalDateTime.of(2022,2,2,2,2))
+                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .build();
         Post post = Post.builder()
-                .postId(1L)
                 .postSubject("delete제목")
                 .postContent("delete내용")
-                .user(new Users())
-                .postCategory(new PostCategory())
+                .user(user)
+                .postCategory(postCategory)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-        when(postRepository.findById(2L)).thenThrow(new IllegalStateException());
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
         //when
-        postService.delete(1L);
-        when(postRepository.findById(1L)).thenThrow();
+        postService.delete(postId, userId);
         //then
-        Assertions.assertThatThrownBy(() -> postService.delete(1L));
-        Assertions.assertThatThrownBy(() -> postService.delete(2L));
+        Assertions.assertThatThrownBy(() -> postService.delete(postId, 100000L));
+        Assertions.assertThatThrownBy(() -> postRepository.findById(postId).get());
+
     }
 
     @Test
@@ -124,11 +159,9 @@ class PostServiceTest {
     void update() {
         //given
         PostCategory postCategory = PostCategory.builder()
-                .postCategoryId(1L)
                 .categoryName(Categories.FREE)
                 .build();
         Users user = Users.builder()
-                .userId(1L)
                 .userEmail("ckdals1234@naver.com")
                 .userName("이창민")
                 .userNickname("zzangmin")
@@ -137,7 +170,6 @@ class PostServiceTest {
                 .updatedAt(LocalDateTime.of(2022,2,2,2,2))
                 .build();
         Post post = Post.builder()
-                .postId(1L)
                 .postSubject("update제목")
                 .postContent("update내용")
                 .user(user)
@@ -145,14 +177,18 @@ class PostServiceTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
+
         LocalDateTime updateTime = LocalDateTime.parse("2022-07-04T12:39:00");
         PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", updateTime);
         //when
-        postService.update(1L, postUpdateRequest);
+        postService.update(postId, postUpdateRequest);
         //then
-        Assertions.assertThat(post.getPostSubject()).isEqualTo("수정제목");
-        Assertions.assertThat(post.getPostContent()).isEqualTo("수정내용");
-        Assertions.assertThat(post.getUpdatedAt()).isEqualTo(updateTime);
+        Post findPost = postRepository.findById(postId).get();
+        Assertions.assertThat(findPost.getPostSubject()).isEqualTo("수정제목");
+        Assertions.assertThat(findPost.getPostContent()).isEqualTo("수정내용");
+        Assertions.assertThat(findPost.getUpdatedAt()).isEqualTo(updateTime);
     }
 }

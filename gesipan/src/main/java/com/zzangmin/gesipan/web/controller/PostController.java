@@ -33,7 +33,6 @@ public class PostController {
     private final PostRecommendRepository postRecommendRepository;
     private final RedisService redisService;
     private final JwtProvider jwtProvider;
-    private final UsersService usersService;
     private final TemporaryPostService temporaryPostService;
 
     @GetMapping("/post/{postId}")
@@ -51,15 +50,19 @@ public class PostController {
 
     // TODO: jwt에서 정보 뽑아오기. DTO 수정해야함
     @PostMapping("/post")
-    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
+    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest, HttpServletRequest httpServletRequest) {
         log.info("post create: {}", postSaveRequest);
+        String jwt = jwtProvider.resolveToken(httpServletRequest);
+        Long userId = jwtProvider.getUserId(jwt);
         validateRequestDate(postSaveRequest.getCreatedAt());
-        return ResponseEntity.ok(postService.save(postSaveRequest));
+        return ResponseEntity.ok(postService.save(userId, postSaveRequest));
     }
 
     @DeleteMapping("/post/{postId}")
-    public ResponseEntity<String> removePost(@PathVariable Long postId) {
-        postService.delete(postId);
+    public ResponseEntity<String> removePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
+        String jwt = jwtProvider.resolveToken(httpServletRequest);
+        Long userId = jwtProvider.getUserId(jwt);
+        postService.delete(postId, userId);
         return ResponseEntity.ok("post remove success");
     }
 

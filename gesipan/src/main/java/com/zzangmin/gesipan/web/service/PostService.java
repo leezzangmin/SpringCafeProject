@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
-@Transactional
 @RequiredArgsConstructor
 @Service
 public class PostService {
@@ -25,6 +24,7 @@ public class PostService {
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
     private final CommentRepository commentRepository;
+    private final TemporaryPostRepository temporaryPostRepository;
 
     public Post findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
@@ -32,8 +32,9 @@ public class PostService {
         return post;
     }
 
-    public Long save(PostSaveRequest postSaveRequest) {
-        Users user = usersRepository.findById(postSaveRequest.getUserId())
+    @Transactional
+    public Long save(Long userId, PostSaveRequest postSaveRequest) {
+        Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
         PostCategory postCategory = postCategoryRepository.findById(postSaveRequest.getPostCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 postCategoryId가 없습니다. 게시판 없음"));
@@ -48,16 +49,19 @@ public class PostService {
                 .hitCount(0L) // TODO: DB 디폴트값 만들고 해당 줄 지우기
                 .build();
 
+        deleteTemporaryPostData(userId, postSaveRequest.getTempPostId());
+
         return postRepository.save(post).getPostId();
     }
 
-    public void delete(Long postId) {
-        postRepository.findById(postId).
+    public void delete(Long postId, Long userId) {
+        Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-
+        validatePostOwner(userId, post);
         postRepository.deleteById(postId);
     }
 
+    @Transactional
     public void update(Long postId, PostUpdateRequest postUpdateRequest) {
         Post post = postRepository.findById(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
@@ -75,6 +79,7 @@ public class PostService {
     }
 
     // TODO: (post_id, user_id) 복합인덱스 생성하기
+    @Transactional
     public void postRecommendCount(PostRecommendRequest postRecommendRequest) {
         Post post = postRepository.findById(postRecommendRequest.getPostId()).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
@@ -104,6 +109,21 @@ public class PostService {
                 .map(Post::getPostId)
                 .collect(Collectors.toList()));
         return PersonalPostsResponse.of(user, personalPosts, recommendCount, commentCounts);
+    }
+
+    private void deleteTemporaryPostData(Long userId, Long tempPostId) {
+        if (tempPostId != null && temporaryPostRepository.findByUserId(userId)
+                .stream()
+                .anyMatch(i -> i.getTempPostId() == tempPostId)) {
+            System.out.println("userId = " + userId);
+            temporaryPostRepository.deleteById(tempPostId);
+        }
+    }
+
+    private void validatePostOwner(Long userId, Post post) {
+        if (post.getUser().getUserId() != userId) {
+            throw new IllegalArgumentException("해당 유저의 게시물이 아닙니다.");
+        }
     }
 
 }
