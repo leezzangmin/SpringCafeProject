@@ -43,8 +43,8 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Long getUserId(String jwt) {
-        return Long.valueOf(Jwts.parser()
+    public long getUserId(String jwt) {
+        return Long.parseLong(Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
                 .getBody()
