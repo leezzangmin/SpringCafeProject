@@ -2,16 +2,16 @@ package com.zzangmin.gesipan.web.dto.comment;
 
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
 @Getter
 public class CommentUpdateRequest {
 
-    @NotBlank
+    @NotNull
     private String commentContent;
-    @NotBlank
+    @NotNull
     @PastOrPresent
     private LocalDateTime updatedAt;
 
