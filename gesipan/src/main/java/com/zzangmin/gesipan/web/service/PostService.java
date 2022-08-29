@@ -71,7 +71,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostsPageResponse pagination(Long categoryId, Pageable pageable) {
-        List<Long> postIds = postRepository.findPaginationPostIds(categoryId, pageable);
+        List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(categoryId, pageable);
         List<Post> posts = postRepository.paginationByPostIds(postIds);
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
         List<Integer> commentCounts = commentRepository.countByIds(postIds);

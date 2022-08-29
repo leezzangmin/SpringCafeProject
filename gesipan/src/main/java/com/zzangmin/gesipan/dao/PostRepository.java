@@ -27,5 +27,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     void updateHitCountByPostId(@Param("postId") Long postId, @Param("hitCount") Long hitCount);
 
     @Query("select p.postId from Post p where p.postCategory.postCategoryId=:categoryId")
-    List<Long> findPaginationPostIds(@Param("categoryId") Long categoryId, Pageable pageable);
+    List<Long> findPaginationPostIdsByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 }
