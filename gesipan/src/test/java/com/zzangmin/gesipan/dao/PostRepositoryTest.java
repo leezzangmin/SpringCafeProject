@@ -77,8 +77,9 @@ class PostRepositoryTest {
         Pageable pageable = PageRequest.of(0,10);
 
         //when
-        List<Post> posts = postRepository.findPageByCategoryId(postCategoryId, pageable);
-        List<Post> nonCategorizedPosts = postRepository.findPageByCategoryId(99999L, pageable);
+        List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(postCategoryId, pageable);
+        List<Post> posts = postRepository.paginationByPostIds(postIds);
+        List<Long> nonCategorizedPosts = postRepository.findPaginationPostIdsByCategoryId(99999L, pageable);
 
         //then
         org.assertj.core.api.Assertions.assertThat(posts.size()).isLessThan(10).isGreaterThan(0);
