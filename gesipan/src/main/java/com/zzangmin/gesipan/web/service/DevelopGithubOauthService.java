@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 @Service
-@Profile({"local", "test"})
+@Profile({"local", "test","stress"})
 public class DevelopGithubOauthService implements GithubOauthService {
 
     private final UsersRepository usersRepository;
