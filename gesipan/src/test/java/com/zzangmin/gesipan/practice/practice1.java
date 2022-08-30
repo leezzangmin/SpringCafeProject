@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.practice;
 
+import com.zzangmin.gesipan.web.jwt.JwtProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class practice1 {
 
     @Autowired
     RedisTemplate redisTemplate;
+
+    @Autowired
+    JwtProvider jwtProvider;
 
     @Test
     void asdf() {
@@ -56,6 +60,12 @@ public class practice1 {
         }
 
 
+    }
+
+    @Test
+    void token() {
+        String token = jwtProvider.createToken(33L);
+        System.out.println("token = " + token);
     }
 
 
