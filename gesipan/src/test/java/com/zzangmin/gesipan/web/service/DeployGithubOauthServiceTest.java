@@ -74,7 +74,7 @@ class DeployGithubOauthServiceTest {
                 .userEmail("ckdals123@naver.com")
                 .userName("이창민")
                 .userNickname("leezzangmin")
-                .userRole(UserRole.일반)
+                .userRole(UserRole.NORMAL)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
