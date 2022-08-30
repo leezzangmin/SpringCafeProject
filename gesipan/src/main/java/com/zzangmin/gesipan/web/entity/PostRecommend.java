@@ -18,10 +18,10 @@ public class PostRecommend {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postRecommendId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
     @Column(nullable = false)

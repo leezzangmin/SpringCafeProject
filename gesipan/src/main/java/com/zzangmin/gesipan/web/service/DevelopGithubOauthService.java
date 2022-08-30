@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -47,7 +48,8 @@ public class DevelopGithubOauthService implements GithubOauthService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(headers);
         String userResource = "fakeUserResource";
-        return new UserResources("fakeEmail@gmail.com", "fake_name", "fake_nickname");
+        String fakeEmail = UUID.randomUUID().toString();
+        return new UserResources(fakeEmail, "fake_name", "fake_nickname");
 
     }
     @Transactional

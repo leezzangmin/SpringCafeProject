@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.web.controller;
 
+import com.zzangmin.gesipan.web.argumentresolver.Auth;
 import com.zzangmin.gesipan.web.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.web.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.web.dto.comment.PersonalCommentsResponse;
@@ -20,33 +21,30 @@ import javax.validation.Valid;
 public class CommentController {
 
     private final CommentService commentService;
-    private final JwtProvider jwtProvider;
 
     @PostMapping("/comment")
-    public ResponseEntity<Long> createComment(@RequestBody @Valid CommentSaveRequest commentSaveRequest) {
+    public ResponseEntity<Long> createComment(@RequestBody @Valid CommentSaveRequest commentSaveRequest, @Auth Long userId) {
         log.info("comment save: {}", commentSaveRequest);
-        Long savedCommentId = commentService.save(commentSaveRequest);
+        Long savedCommentId = commentService.save(commentSaveRequest, userId);
         return ResponseEntity.ok(savedCommentId);
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
-        commentService.delete(commentId);
-        return ResponseEntity.ok("delete success!");
+    public ResponseEntity<Long> deleteComment(@PathVariable Long commentId, @Auth Long userId) {
+        log.info("comment delete: {}", commentId);
+        commentService.delete(commentId, userId);
+        return ResponseEntity.ok(commentId);
     }
 
     @PatchMapping("/comment/{commentId}")
-    public ResponseEntity<String> updateComment(@PathVariable Long commentId, @RequestBody @Valid CommentUpdateRequest commentUpdateRequest) {
-        commentService.update(commentId, commentUpdateRequest);
-        return ResponseEntity.ok("update success!");
+    public ResponseEntity<Long> updateComment(@PathVariable Long commentId, @RequestBody @Valid CommentUpdateRequest commentUpdateRequest, @Auth Long userId) {
+        commentService.update(commentId, commentUpdateRequest, userId);
+        return ResponseEntity.ok(commentId);
     }
 
     @GetMapping("/comments/my")
-    public ResponseEntity<PersonalCommentsResponse> myComments(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request);
-        log.info("my comments jwt: {}", jwt);
-        Long userId = jwtProvider.getUserId(jwt);
-
+    public ResponseEntity<PersonalCommentsResponse> myComments(@Auth Long userId) {
+        log.info("my comments userId: {}", userId);
         return ResponseEntity.ok(commentService.userComments(userId));
     }
 

@@ -6,7 +6,6 @@ import com.zzangmin.gesipan.web.entity.Users;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
@@ -19,9 +18,6 @@ public class CommentSaveRequest {
     @Positive
     private Long referencePostId;
     @NotNull
-    @Positive
-    private Long userId;
-    @NotBlank
     private String commentContent;
     @NotNull
     @PastOrPresent

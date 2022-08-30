@@ -17,13 +17,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p join fetch p.user where p.postId=:postId")
     Optional<Post> findByIdWithUser(@Param("postId") Long postId);
 
-    @Query("select p from Post p join fetch p.user where p.postCategory.postCategoryId=:categoryId")
-    List<Post> findPageByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
-
+    @Query("select p from Post p join fetch p.user where p.postId in :postIds")
+    List<Post> paginationByPostIds(@Param("postIds") List<Long> postIds);
     @Query("select p from Post p where p.user.userId=:userId")
     List<Post> findByUserId(@Param("userId") Long userId);
 
     @Modifying
     @Query("update Post p set p.hitCount = p.hitCount + :hitCount where p.postId =:postId")
     void updateHitCountByPostId(@Param("postId") Long postId, @Param("hitCount") Long hitCount);
+
+    @Query("select p.postId from Post p where p.postCategory.postCategoryId=:categoryId")
+    List<Long> findPaginationPostIdsByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 }

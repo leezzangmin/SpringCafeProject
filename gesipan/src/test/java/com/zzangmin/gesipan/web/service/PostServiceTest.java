@@ -184,7 +184,7 @@ class PostServiceTest {
         LocalDateTime updateTime = LocalDateTime.parse("2022-07-04T12:39:00");
         PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", updateTime);
         //when
-        postService.update(postId, postUpdateRequest);
+        postService.update(postId, postUpdateRequest, userId);
         //then
         Post findPost = postRepository.findById(postId).get();
         Assertions.assertThat(findPost.getPostSubject()).isEqualTo("수정제목");

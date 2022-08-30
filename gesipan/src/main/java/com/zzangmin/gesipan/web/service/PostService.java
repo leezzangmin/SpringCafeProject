@@ -62,19 +62,19 @@ public class PostService {
     }
 
     @Transactional
-    public void update(Long postId, PostUpdateRequest postUpdateRequest) {
-        Post post = postRepository.findById(postId).
+    public void update(Long postId, PostUpdateRequest postUpdateRequest, long userId) {
+        Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
+        validatePostOwner(userId, post);
         post.update(postUpdateRequest.getPostSubject(), postUpdateRequest.getPostContent(), postUpdateRequest.getUpdatedAt());
     }
 
     @Transactional(readOnly = true)
     public PostsPageResponse pagination(Long categoryId, Pageable pageable) {
-        List<Post> posts = postRepository.findPageByCategoryId(categoryId, pageable);
-        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(posts.stream()
-                .map(i -> i.getPostId())
-                .collect(Collectors.toList()));
-        List<Integer> commentCounts = commentRepository.countByIds(posts.stream().map(Post::getPostId).collect(Collectors.toList()));
+        List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(categoryId, pageable);
+        List<Post> posts = postRepository.paginationByPostIds(postIds);
+        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
+        List<Integer> commentCounts = commentRepository.countByIds(postIds);
         return PostsPageResponse.of(categoryId, posts, recommendCount, commentCounts);
     }
 
@@ -114,14 +114,13 @@ public class PostService {
     private void deleteTemporaryPostData(Long userId, Long tempPostId) {
         if (tempPostId != null && temporaryPostRepository.findByUserId(userId)
                 .stream()
-                .anyMatch(i -> i.getTempPostId() == tempPostId)) {
-            System.out.println("userId = " + userId);
+                .anyMatch(i -> i.getTempPostId().equals(tempPostId))) {
             temporaryPostRepository.deleteById(tempPostId);
         }
     }
 
     private void validatePostOwner(Long userId, Post post) {
-        if (post.getUser().getUserId() != userId) {
+        if (!post.getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException("해당 유저의 게시물이 아닙니다.");
         }
     }

@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.web.controller;
 
 import com.zzangmin.gesipan.dao.PostRecommendRepository;
+import com.zzangmin.gesipan.web.argumentresolver.Auth;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostSaveRequest;
@@ -32,9 +33,10 @@ public class PostController {
     private final CommentService commentService;
     private final PostRecommendRepository postRecommendRepository;
     private final RedisService redisService;
-    private final JwtProvider jwtProvider;
     private final TemporaryPostService temporaryPostService;
 
+
+    // TODO: 서블릿에서 아이피 뽑아서 레디스에 캐싱하는거 말고 JWT로 구분해서 넣는것은 어떤지
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
         log.info("postId: {}", postId);
@@ -50,27 +52,24 @@ public class PostController {
 
     // TODO: jwt에서 정보 뽑아오기. DTO 수정해야함
     @PostMapping("/post")
-    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest, @Auth Long userId) {
         log.info("post create: {}", postSaveRequest);
-        String jwt = jwtProvider.resolveToken(httpServletRequest);
-        Long userId = jwtProvider.getUserId(jwt);
         validateRequestDate(postSaveRequest.getCreatedAt());
-        return ResponseEntity.ok(postService.save(userId, postSaveRequest));
+        long savedPostId = postService.save(userId, postSaveRequest);
+        return ResponseEntity.ok(savedPostId);
     }
 
     @DeleteMapping("/post/{postId}")
-    public ResponseEntity<String> removePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
-        String jwt = jwtProvider.resolveToken(httpServletRequest);
-        Long userId = jwtProvider.getUserId(jwt);
+    public ResponseEntity<String> removePost(@PathVariable Long postId, @Auth Long userId) {
         postService.delete(postId, userId);
         return ResponseEntity.ok("post remove success");
     }
 
     @PatchMapping("/post/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
+    public ResponseEntity<String> updatePost(@PathVariable Long postId, @RequestBody @Valid PostUpdateRequest postUpdateRequest, @Auth Long userId) {
         log.info("post update :{}", postUpdateRequest);
         validateRequestDate(postUpdateRequest.getUpdatedAt());
-        postService.update(postId, postUpdateRequest);
+        postService.update(postId, postUpdateRequest, userId);
         return ResponseEntity.ok("post update success");
     }
 
@@ -91,25 +90,18 @@ public class PostController {
 
     // TODO: @RequestParam으로 받는 userId 추후 개선 -> ArgumentResolver 쓰기;;
     @GetMapping("/posts/my")
-    public ResponseEntity<PersonalPostsResponse> myPosts(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request);
-        Long userId = jwtProvider.getUserId(jwt);
-
+    public ResponseEntity<PersonalPostsResponse> myPosts(@Auth Long userId) {
         PersonalPostsResponse personalPostsResponse = postService.userPosts(userId);
         return ResponseEntity.ok(personalPostsResponse);
     }
 
     @PostMapping("/post/temporary")
-    public void temporarySave(@RequestBody @Valid TemporaryPostSaveRequest temporaryPostSaveRequest, HttpServletRequest httpRequest) {
-        String jwt = jwtProvider.resolveToken(httpRequest);
-        Long userId = jwtProvider.getUserId(jwt);
+    public void temporarySave(@RequestBody @Valid TemporaryPostSaveRequest temporaryPostSaveRequest, @Auth Long userId) {
         temporaryPostService.postTemporarySave(userId, temporaryPostSaveRequest);
     }
 
     @GetMapping("/post/temporary")
-    public ResponseEntity<TemporaryPostLoadResponse> temporaryLoad(HttpServletRequest request) {
-        String jwt = jwtProvider.resolveToken(request);
-        Long userId = jwtProvider.getUserId(jwt);
+    public ResponseEntity<TemporaryPostLoadResponse> temporaryLoad(@Auth Long userId) {
         TemporaryPostLoadResponse temporaryPostLoadResponse = temporaryPostService.temporaryPostLoad(userId);
         return ResponseEntity.ok(temporaryPostLoadResponse);
     }

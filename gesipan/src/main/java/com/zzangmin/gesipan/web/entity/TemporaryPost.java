@@ -17,7 +17,7 @@ public class TemporaryPost {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tempPostId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_user_id")
     private Users user;
     @Column(columnDefinition = "VARCHAR(1000)", nullable = false)
