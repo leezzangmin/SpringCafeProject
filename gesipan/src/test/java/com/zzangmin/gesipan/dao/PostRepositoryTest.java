@@ -35,7 +35,7 @@ class PostRepositoryTest {
                 .userEmail("ckdals1234@naver.com")
                 .userName("이창민")
                 .userNickname("zzangmin")
-                .userRole(UserRole.일반)
+                .userRole(UserRole.NORMAL)
                 .createdAt(LocalDateTime.of(2022,2,2,2,2))
                 .updatedAt(LocalDateTime.of(2022,2,2,2,2))
                 .build();

@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 @Service
-@Profile({"local", "test"})
+@Profile({"local", "test","stress"})
 public class DevelopGithubOauthService implements GithubOauthService {
 
     private final UsersRepository usersRepository;
@@ -62,7 +62,7 @@ public class DevelopGithubOauthService implements GithubOauthService {
                                 .userEmail(userResources.getUserEmail())
                                 .userName(userResources.getUserName())
                                 .userNickname(userResources.getUserNickname())
-                                .userRole(UserRole.일반)
+                                .userRole(UserRole.NORMAL)
                                 .createdAt(now)
                                 .updatedAt(now)
                                 .build()));

@@ -88,7 +88,7 @@ class RedisServiceTest {
                 .userEmail("가짜이메일@naver.com")
                 .userName("가짜이름")
                 .userNickname("가짜닉네임")
-                .userRole(UserRole.일반)
+                .userRole(UserRole.NORMAL)
                 .createdAt(LocalDateTime.of(2022,2,2,2,2))
                 .updatedAt(LocalDateTime.of(2022,2,2,2,2))
                 .build();

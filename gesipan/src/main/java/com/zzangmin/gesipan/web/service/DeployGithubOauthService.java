@@ -66,7 +66,7 @@ public class DeployGithubOauthService implements GithubOauthService {
                                         .userEmail(userResources.getUserEmail())
                                         .userName(userResources.getUserName())
                                         .userNickname(userResources.getUserNickname())
-                                        .userRole(UserRole.일반)
+                                        .userRole(UserRole.NORMAL)
                                         .createdAt(now)
                                         .updatedAt(now)
                                         .build()));

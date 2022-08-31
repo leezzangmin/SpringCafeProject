@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Component
-@Profile({"local","test"})
+@Profile({"local","test","stress"})
 public class DevelopLoginCheckInterceptor implements LoginCheckInterceptor {
 
     @Override

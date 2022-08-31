@@ -1,9 +1,10 @@
-package com.zzangmin.gesipan.config.redis;
+package com.zzangmin.gesipan.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,13 +21,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Slf4j
-//@Profile({"local","stress"})
+@Profile("test")
 @Configuration
 @EnableRedisRepositories
-public class EmbeddedRedisConfig {
+public class EmbeddedTestRedisConfig {
 
-    @Value("${spring.redis.port}")
-    private int port;
+    //@Value("${spring.redis.port}")
+    // 윈도우 마이그레이션 하면서 임시로 랜덤 포트 할당받게 함
+    private int port = (int) (Math.random() * (65535 - 10000 + 1)) + 10000;
 
     @Value("${spring.redis.host}")
     private String host;
@@ -51,7 +53,7 @@ public class EmbeddedRedisConfig {
 
     @PostConstruct
     public void redisServer() throws IOException {
-     //   int port = isRedisRunning() ? findAvailablePort() : this.port;
+//        int port = isRedisRunning() ? findAvailablePort() : this.port;
         redisServer = new RedisServer(port);
         System.out.println("port = " + port);
         redisServer.start();
@@ -68,7 +70,7 @@ public class EmbeddedRedisConfig {
      * Embedded Redis가 현재 실행중인지 확인
      */
     private boolean isRedisRunning() throws IOException {
-        return isRunning(executeGrepProcessCommand(port));
+        return isRunning(executeGrepProcessCommandWindows(port));
     }
 
     /**
@@ -79,7 +81,7 @@ public class EmbeddedRedisConfig {
     public int findAvailablePort() throws IOException {
 
         for (int port = 10000; port <= 65535; port++) {
-            Process process = executeGrepProcessCommand(port);
+            Process process = executeGrepProcessCommandWindows(port);
             if (!isRunning(process)) {
                 return port;
             }
@@ -91,12 +93,16 @@ public class EmbeddedRedisConfig {
     /**
      * 해당 port를 사용중인 프로세스 확인하는 sh 실행
      */
-    private Process executeGrepProcessCommand(int port) throws IOException {
+    private Process executeGrepProcessCommandMac(int port) throws IOException {
         String command = String.format("netstat -nat | grep LISTEN|grep %d", port);
         String[] shell = {"/bin/sh", "-c", command};
         return Runtime.getRuntime().exec(shell);
     }
-
+        private Process executeGrepProcessCommandWindows(int port) throws IOException {
+        String command = String.format("netstat -nao | find \"LISTEN\" | find \"%d\"", port);
+        String[] shell = {"cmd.exe", "/y", "/c", command};
+        return Runtime.getRuntime().exec(shell);
+    }
 
     /**
      * 해당 Process가 현재 실행중인지 확인
