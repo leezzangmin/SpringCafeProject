@@ -1,7 +1,14 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0";
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.zzangmin'
@@ -34,6 +41,10 @@ dependencies {
 
 	implementation 'org.projectlombok:lombok'
 
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -43,3 +54,33 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+/* 10-5. querydsl에서 사용할 경로 지정*/
+
+def querydslDir = "src/main/generated"
+/* 10-6. JPA사용 여부와 사용할 경로를 지정*/
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+
+
+/* 10-7. build시 사용할 SourceSet 추가 */
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+
+/* 10-8. querydsl이 complieClasspath를 상속하도록 설정 */
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+
+
+/* 10-9. querydsl 컴파일시 사용할 옵션 설정 */
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+// https://www.inflearn.com/questions/536382
