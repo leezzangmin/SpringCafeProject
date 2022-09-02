@@ -14,7 +14,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 
-@ToString(exclude =  "postCategory")
+@ToString(exclude = {"postCategory", "user"})
 @Getter
 @Builder
 @NoArgsConstructor
