@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.web.service;
 
 import com.zzangmin.gesipan.dao.*;
+import com.zzangmin.gesipan.dao.custom.CustomPostRepository;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CustomPostRepository customPostRepository;
     private final UsersRepository usersRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
@@ -111,6 +113,15 @@ public class PostService {
         return PersonalPostsResponse.of(user, personalPosts, recommendCount, commentCounts);
     }
 
+    @Transactional(readOnly = true)
+    public PostSearchResponse searchPosts(PostSearchRequest postSearchRequest) {
+        List<Post> posts = customPostRepository.searchPostsWithUser(postSearchRequest);
+        List<Long> postIds = posts.stream().map(p -> p.getPostId()).collect(Collectors.toList());
+        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
+        List<Integer> commentCount = commentRepository.countByIds(postIds);
+        return PostSearchResponse.of(posts, recommendCount, commentCount);
+    }
+
     private void deleteTemporaryPostData(Long userId, Long tempPostId) {
         if (tempPostId != null && temporaryPostRepository.findByUserId(userId)
                 .stream()
@@ -124,5 +135,6 @@ public class PostService {
             throw new IllegalArgumentException("해당 유저의 게시물이 아닙니다.");
         }
     }
+
 
 }
