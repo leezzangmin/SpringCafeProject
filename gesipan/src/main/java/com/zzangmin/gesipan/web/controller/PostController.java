@@ -107,19 +107,22 @@ public class PostController {
     }
 
     @GetMapping("/post/search")
-    public ResponseEntity searchPost(@RequestParam(name = "categoryName", required = true) String categoryName,
+    public ResponseEntity<PostSearchResponse> searchPost(@RequestParam(name = "categoryName", required = true) String categoryName,
         @RequestParam(name = "userNickname", required = false) String userNickname,
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(name = "startAt", required = false) LocalDateTime startAt,
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(name = "endAt", required = false) LocalDateTime endAt) {
-        validateDateRange(startAt, endAt);
-        if (startAt != null && endAt != null) {
-            validateDateRange(startAt, endAt);
-        }
+        validateSearchParameters(userNickname, startAt, endAt);
         PostSearchRequest postSearchRequest = new PostSearchRequest(userNickname, startAt, endAt, Categories.castCategoryNameToCategoryId(categoryName));
         log.info("postSearchRequest: {}", postSearchRequest);
-        postService.searchPosts(postSearchRequest);
+        PostSearchResponse postSearchResponse = postService.searchPosts(postSearchRequest);
+        return ResponseEntity.ok(postSearchResponse);
+    }
 
-        return ResponseEntity.ok(null);
+    private void validateSearchParameters(String userNickname, LocalDateTime startAt, LocalDateTime endAt) {
+        if (userNickname == null && startAt == null && endAt == null) {
+            throw new IllegalArgumentException("모든 조건이 null입니다.");
+        }
+        validateDateRange(startAt, endAt);
     }
 
     private void validateDateRange(LocalDateTime startAt, LocalDateTime endAt) {
