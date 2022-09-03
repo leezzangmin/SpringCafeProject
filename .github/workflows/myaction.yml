@@ -25,7 +25,7 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew compileQuerydsl --stacktrace
         working-directory: ${{env.working-directory}}
 
 #       - name: Build and Push Docker Image
