@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Slf4j
-//@Profile({"local","stress"})
+@Profile({"local","deploy,stress"})
 @Configuration
 @EnableRedisRepositories
 public class EmbeddedRedisConfig {
@@ -112,6 +113,6 @@ public class EmbeddedRedisConfig {
             }
 
         } catch (Exception e) {}
-        return !StringUtils.isEmpty(pidInfo.toString());
+        return !StringUtils.hasText(pidInfo.toString());
     }
 }
