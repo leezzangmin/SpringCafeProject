@@ -51,7 +51,7 @@ jobs:
 #             docker run -d --rm -e profile=$profile -e MYSQL_DATABASE_USERNAME=$MYSQL_DATABASE_USERNAME -e MYSQL_DATABASE_URL=$MYSQL_DATABASE_URL -e MYSQL_DATABASE_PASSWORD=$MYSQL_DATABASE_PASSWORD -e github_client_id=$github_client_id -e github_secret_key=$github_secret_key -e jwt_secret=$jwt_secret -e jwt_expire_length=$jwt_expire_length --name server -p 8080:8080 airbnb:backend-${GITHUB_SHA::7}
             
       - name: Start Ngrinder EC2 - (Controller, Agent)
-        run: aws ec2 start-instances --instance-ids 
+        run: aws ec2 start-instances --instance-ids ${{secrets.AWS_EC2_NGRINDER_CONTROLLER}}; && aws ec2 start-instances --instance-ids ${{secrets.AWS_EC2_NGRINDER_AGENT}};
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
