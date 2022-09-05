@@ -198,3 +198,4 @@ gradle-app.setting
 application-dev.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/gradle,intellij+all,java,macos,windows
+/src/main/generated/
