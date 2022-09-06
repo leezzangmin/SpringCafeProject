@@ -52,7 +52,7 @@ jobs:
       - name: Setting environment variables...
         run: |
           echo "AWS_TEST_SERVER_IP=echo $(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)" >> $GITHUB_ENV
-          export AWS_TEST_SERVER_IP=echo $(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
           echo ${{ env.AWS_TEST_SERVER_IP }}
           echo "$AWS_TEST_SERVER_IP"
           echo "${{ env.AWS_TEST_SERVER_IP }}"
