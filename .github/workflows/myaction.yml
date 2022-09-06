@@ -58,6 +58,10 @@ jobs:
           echo "${{ env.AWS_TEST_SERVER_IP }}"
           echo $(aws ec2 describe-instances --instance-ids *** --query 'Reservations[].Instances[].PublicIpAddress' --output text)
           echo "$(aws ec2 describe-instances --instance-ids *** --query 'Reservations[].Instances[].PublicIpAddress' --output text)"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
             
       - name: Start Ngrinder EC2 - (Controller, Agent, Test Server) ${{ env.AWS_TEST_SERVER_IP }}
         run: echo ${{ env.AWS_TEST_SERVER_IP }}
