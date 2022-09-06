@@ -52,11 +52,8 @@ jobs:
       - name: Setting environment variables...
         run: |
           export AWS_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          echo ${{ env.AWS_TEST_SERVER_IP }}
-          #echo "$AWS_TEST_SERVER_IP"
-          #echo "${{ env.AWS_TEST_SERVER_IP }}"
-          #echo $(aws ec2 describe-instances --instance-ids *** --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          #echo "$(aws ec2 describe-instances --instance-ids *** --query 'Reservations[].Instances[].PublicIpAddress' --output text)"
+          echo "$AWS_TEST_SERVER_IP"
+          
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
