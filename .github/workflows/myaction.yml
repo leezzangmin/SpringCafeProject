@@ -54,6 +54,7 @@ jobs:
           echo "AWS_TEST_SERVER_IP=echo $(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)" >> $GITHUB_ENV
           export AWS_TEST_SERVER_IP=echo $(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
           echo ${{ env.AWS_TEST_SERVER_IP }}
+          echo "$AWS_TEST_SERVER_IP"
             
       - name: Start Ngrinder EC2 - (Controller, Agent, Test Server) ${{ env.AWS_TEST_SERVER_IP }}
         run: echo ${{ env.AWS_TEST_SERVER_IP }}
