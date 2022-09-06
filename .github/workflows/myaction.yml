@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./gesipan
+      test-server-host: $(aws ec2 describe-instances --instance-ids ${{AWS_EC2_SPRING_TEST_SERVER}} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
 
     steps:
       - uses: actions/checkout@v3
@@ -48,11 +49,25 @@ jobs:
 #             docker pull team07-airbnb:backend-${GITHUB_SHA::7}
 #             docker tag team07-airbnb:backend-${GITHUB_SHA::7} airbnb:backend-${GITHUB_SHA::7}
 #             docker stop server
-#             docker run -d --rm -e profile=$profile -e MYSQL_DATABASE_USERNAME=$MYSQL_DATABASE_USERNAME -e MYSQL_DATABASE_URL=$MYSQL_DATABASE_URL -e MYSQL_DATABASE_PASSWORD=$MYSQL_DATABASE_PASSWORD -e github_client_id=$github_client_id -e github_secret_key=$github_secret_key -e jwt_secret=$jwt_secret -e jwt_expire_length=$jwt_expire_length --name server -p 8080:8080 airbnb:backend-${GITHUB_SHA::7}
+#             docker run -d --rm -e profile=stress -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server airbnb:backend-${GITHUB_SHA::7}
             
-      - name: Start Ngrinder EC2 - (Controller, Agent)
-        run: aws ec2 start-instances --instance-ids ${{secrets.AWS_EC2_NGRINDER_CONTROLLER}} ${{secrets.AWS_EC2_NGRINDER_AGENT}}
+      - name: Start Ngrinder EC2 - (Controller, Agent, Test Server)
+        run: aws ec2 start-instances --instance-ids ${{secrets.AWS_EC2_NGRINDER_CONTROLLER}} ${{secrets.AWS_EC2_NGRINDER_AGENT}} ${{secrets.AWS_EC2_SPRING_TEST_SERVER}}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          
+#       - name: Deploy - test server
+#         uses: appleboy/ssh-action@master
+#         with:
+#           host: aws ec2 describe-instances --instance-ids i-0718cab345d2f63de --query 'Reservations[].Instances[].PublicIpAddress' --output text # ${{ secrets.EC2_WAS_IP }}
+#           username: ec2-user
+#           key: ${{ secrets.AWS_SECRET_PEM }}
+#           envs: GITHUB_SHA
+#           script: |
+#             docker pull team07-airbnb:backend-${GITHUB_SHA::7}
+#             docker tag team07-airbnb:backend-${GITHUB_SHA::7} airbnb:backend-${GITHUB_SHA::7}
+#             docker stop server
+#             docker run -d --rm -e profile=stress -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server airbnb:backend-${GITHUB_SHA::7}
+            
