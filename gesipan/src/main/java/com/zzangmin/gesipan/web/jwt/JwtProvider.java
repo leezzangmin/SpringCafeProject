@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +19,8 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    private String secretKey = System.getenv("JWT_SECRET");
+    @Value("${JWT_SECRET}")
+    private String secretKey;
     private final String claimSubject = "cafe_payload_subject";
 
     // 토큰 유효시간 30분
