@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Slf4j
-@Profile({"local","deploy,stress"})
+@Profile({"local","deploy","stress"})
 @Configuration
 @EnableRedisRepositories
 public class EmbeddedRedisConfig {
