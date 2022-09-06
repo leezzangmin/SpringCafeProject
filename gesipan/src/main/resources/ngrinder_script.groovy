@@ -54,26 +54,32 @@ class TestRunner {
     public List<Cookie> cookies = []
     public Cookie cookie
     public Long temp
+    public static String asdf = System.getenv('EC2_SERVER_IP')
+
+
+    public static String ip = "13.125.229.158";
+    public static String host= "http://"+ip;
 
 
 
     @BeforeProcess
     public static void beforeProcess() {
+        grinder.logger.info(asdf)
         HTTPRequestControl.setConnectionTimeout(300000)
 
-        testRecord1 = new GTest(1, "127.0.0.1")
-        testRecord2 = new GTest(2, "127.0.0.1")
-        testRecord3 = new GTest(3, "127.0.0.1")
-        testRecord4 = new GTest(4, "127.0.0.1")
-        testRecord5 = new GTest(5, "127.0.0.1")
-        testRecord6 = new GTest(6, "127.0.0.1")
-        testRecord7 = new GTest(7, "127.0.0.1")
-        testRecord8 = new GTest(8, "127.0.0.1")
-        testRecord9 = new GTest(9, "127.0.0.1")
-        testRecord10 = new GTest(10, "127.0.0.1")
-        testRecord11 = new GTest(11, "127.0.0.1")
-        testRecord12 = new GTest(12, "127.0.0.1")
-        testRecord13 = new GTest(13, "127.0.0.1")
+        testRecord1 = new GTest(1, ip)
+        testRecord2 = new GTest(2, ip)
+        testRecord3 = new GTest(3, ip)
+        testRecord4 = new GTest(4, ip)
+        testRecord5 = new GTest(5, ip)
+        testRecord6 = new GTest(6, ip)
+        testRecord7 = new GTest(7, ip)
+        testRecord8 = new GTest(8, ip)
+        testRecord9 = new GTest(9, ip)
+        testRecord10 = new GTest(10, ip)
+        testRecord11 = new GTest(11, ip)
+        testRecord12 = new GTest(12, ip)
+        testRecord13 = new GTest(13, ip)
 // request = new HTTPRequest()
         grinder.logger.info("before process.")
     }
@@ -113,8 +119,8 @@ class TestRunner {
     @Test
     public void test01() {
         grinder.logger.info("test1")
-        String url1 = "http://127.0.0.1:8080/oauth/github-url";
-        String url2 = "http://127.0.0.1:8080/login?code=this_is_fake_code";
+        String url1 = host+"/oauth/github-url";
+        String url2 = host+"/login?code=this_is_fake_code";
 
         HTTPResponse response = request.GET(url1, params)
         if (response.statusCode == 301 || response.statusCode == 302) {
@@ -134,7 +140,7 @@ class TestRunner {
     @Test
     public void test02() {
         grinder.logger.info("test2")
-        String url = "http://127.0.0.1:8080/comments/my";
+        String url = host+"/comments/my";
 
         HTTPResponse response = request.GET(url, params)
 
@@ -148,7 +154,7 @@ class TestRunner {
     @Test
     public void test03() {
         grinder.logger.info("test3")
-        String frontURL = "http://127.0.0.1:8080/posts?page="
+        String frontURL = host+"/posts?page="
         String backURL = "&size=10&categoryName=QNA&sort=postId,desc"
         String url = frontURL + RandomPostIdIssuer.getRandomNumbers() + backURL;
 
@@ -163,7 +169,7 @@ class TestRunner {
     @Test
     public void test04() {
         grinder.logger.info("test4")
-        String url = "http://127.0.0.1:8080/post/";
+        String url = host+"/post/";
         String randomPostNumber = RandomPostIdIssuer.getRandomNumbers();
 
         HTTPResponse response = request.GET(url + randomPostNumber, params)
@@ -178,7 +184,7 @@ class TestRunner {
     @Test
     public void test05() {
         grinder.logger.info("test5")
-        String url = "http://127.0.0.1:8080/post/recommend"
+        String url = host+"/post/recommend"
         String postId=RandomPostIdIssuer.getRandomNumbers();
         String userId=RandomPostIdIssuer.getRandomNumbers();
         String body = "{\"postId\":"+postId+",\n \"userId\":"+userId+"}"
@@ -196,7 +202,7 @@ class TestRunner {
     @Test
     public void test06() {
         grinder.logger.info("test6")
-        String url = "http://127.0.0.1:8080/comment"
+        String url = host+"/comment"
         String postId = RandomPostIdIssuer.getRandomNumbers();
         String commentId = RandomPostIdIssuer.getRandomNumbers();
         String charset = (('A'..'Z') + ('0'..'9')).join()
@@ -222,7 +228,7 @@ class TestRunner {
     public void test07() {
         grinder.logger.info("test7")
         Long deleteCommentId = temp;
-        String url = "http://127.0.0.1:8080/comment/"+deleteCommentId
+        String url = host+"/comment/"+deleteCommentId
         HTTPResponse response = request.DELETE(url,params)
         if (response.statusCode == 301 || response.statusCode == 302) {
             grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", response.statusCode)
@@ -234,7 +240,7 @@ class TestRunner {
     @Test //자유게시판 조회
     public void test08() {
         grinder.logger.info("test8")
-        String frontURL = "http://127.0.0.1:8080/posts?page="
+        String frontURL = host+"/posts?page="
         String backURL = "&size=10&categoryName=FREE&sort=postId,desc"
         String url = frontURL + RandomPostIdIssuer.getRandomNumbers() + backURL;
 
@@ -249,7 +255,7 @@ class TestRunner {
     @Test //글작성
     public void test09() {
         grinder.logger.info("test9")
-        String url = "http://127.0.0.1:8080/post"
+        String url = host+"/post"
         String userId=RandomPostIdIssuer.getRandomNumbers();
         String charset = (('A'..'Z') + ('0'..'9')).join()
         Integer length = 500
@@ -271,7 +277,7 @@ class TestRunner {
     @Test
     public void test10() {
         grinder.logger.info("test10")
-        String frontURL = "http://127.0.0.1:8080/posts?page="
+        String frontURL = host+"/posts?page="
         String backURL = "&size=10&categoryName=FREE&sort=postId,desc"
         String url = frontURL + RandomPostIdIssuer.getRandomNumbers() + backURL;
 
@@ -286,7 +292,7 @@ class TestRunner {
     @Test
     public void test11() {
         grinder.logger.info("test11")
-        String url = "http://127.0.0.1:8080/posts/my";
+        String url = host+"/posts/my";
 
         HTTPResponse response = request.GET(url, params)
 
@@ -300,7 +306,7 @@ class TestRunner {
     @Test //글수정
     public void test12() {
         grinder.logger.info("test12")
-        String url = "http://127.0.0.1:8080/post/" + temp
+        String url = host+"/post/" + temp
         String charset = (('A'..'Z') + ('0'..'9')).join()
 
         String postSubject = RandomStringUtils.random(30, charset.toCharArray())
@@ -318,7 +324,7 @@ class TestRunner {
     @Test
     public void test13() {
         grinder.logger.info("test13")
-        String url = "http://127.0.0.1:8080/post/";
+        String url = host+"/post/";
         String randomPostNumber = RandomPostIdIssuer.getRandomNumbers();
 
         HTTPResponse response = request.GET(url + randomPostNumber, params)

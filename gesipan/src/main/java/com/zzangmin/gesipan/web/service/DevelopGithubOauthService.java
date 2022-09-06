@@ -7,6 +7,7 @@ import com.zzangmin.gesipan.web.dto.oauth.UserResources;
 import com.zzangmin.gesipan.web.entity.UserRole;
 import com.zzangmin.gesipan.web.entity.Users;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,8 +31,10 @@ import java.util.UUID;
 public class DevelopGithubOauthService implements GithubOauthService {
 
     private final UsersRepository usersRepository;
-    private static final String clientId = System.getenv("GITHUB_CLIENT_ID");
-    private static final String secret = System.getenv("GITHUB_CLIENT_SECRET");
+    @Value("${GITHUB_CLIENT_ID}")
+    private String clientId;
+    @Value("${GITHUB_CLIENT_SECRET}")
+    private String secret;
 
     @Override
     public GithubToken getAccessToken(String code) {
