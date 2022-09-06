@@ -51,7 +51,8 @@ jobs:
 #             docker run -d --rm -e profile=stress -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server airbnb:backend-${GITHUB_SHA::7}
       - name: Setting environment variables...
         run: |
-          echo AWS_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text) >> $GITHUB_ENV
+          AWS_TEST_SERVER_IP=echo $(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          echo AWS_TEST_SERVER_IP
             
       - name: Start Ngrinder EC2 - (Controller, Agent, Test Server) ${{ env.AWS_TEST_SERVER_IP }}
         run: echo ${{ env.AWS_TEST_SERVER_IP }}
