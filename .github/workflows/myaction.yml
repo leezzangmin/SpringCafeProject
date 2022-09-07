@@ -70,7 +70,7 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_ID }}/springcafe:latest
             sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
             sudo docker stop server
-            sudo docker run -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
+            sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
           
 #       - name: Deploy - test server
 #         uses: appleboy/ssh-action@master
