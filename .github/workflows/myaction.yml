@@ -52,6 +52,7 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v4
         with:
           image: ${{ secrets.DOCKERHUB_ID }}/springcafe
+          tags: latest
           registry: docker.io
           dockerfile: ${{env.working-directory}}/Dockerfile
           username: ${{ secrets.DOCKERHUB_ID }}
@@ -65,9 +66,9 @@ jobs:
           key: ${{ secrets.AWS_SECRET_PEM }}
           envs: GITHUB_SHA
           script: |
-            docker pull leezzangmin/springcafe:main-${GITHUB_SHA::7}
+            docker pull leezzangmin/springcafe:latest
             docker stop server
-            docker run -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server springcafe:main-${GITHUB_SHA::7}
+            docker run -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server springcafe:latest
           
 #       - name: Deploy - test server
 #         uses: appleboy/ssh-action@master
