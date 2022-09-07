@@ -49,7 +49,7 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Build and Push Docker Image
-        uses: mr-smithers-excellent/docker-build-push@v4
+        uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: ${{ secrets.DOCKERHUB_ID }}/springcafe
           tags: latest
@@ -67,7 +67,7 @@ jobs:
           script: |
             echo $PATH
             sudo systemctl restart docker
-            docker login -u ${{ secrets.DOCKERHUB_ID }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+            docker login
             docker pull leezzangmin/springcafe:latest
             docker stop server
             docker run -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server springcafe:latest
