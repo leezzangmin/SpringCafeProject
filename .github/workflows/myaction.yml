@@ -19,54 +19,56 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        working-directory: ${{env.working-directory}}
-
-#       - name: Build with Gradle
-#         run: ./gradlew compileQuerydsl --stacktrace
-#         working-directory: ${{env.working-directory}}
-
-#       - name: Build and Push Docker Image
-#         uses: mr-smithers-excellent/docker-build-push@v4
-#         with:
-#           image: ${{ secrets.DOCKERHUB_ID }}/team07-airbnb
-#           registry: docker.io
-#           dockerfile: ${{env.working-directory}}/Dockerfile
-#           username: ${{ secrets.DOCKERHUB_ID }}
-#           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-#       - name: Deploy 😆 - multiple host
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.EC2_WAS_IP }}
-#           username: ec2-user
-#           key: ${{ secrets.PRIVATE_KEY }}
-#           envs: GITHUB_SHA
-#           script: |
-#             docker pull team07-airbnb:backend-${GITHUB_SHA::7}
-#             docker tag team07-airbnb:backend-${GITHUB_SHA::7} airbnb:backend-${GITHUB_SHA::7}
-#             docker stop server
-#             docker run -d --rm -e profile=stress -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server airbnb:backend-${GITHUB_SHA::7}
+          
       - name: Setting environment variables...
         run: |
-          export AWS_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          echo "$AWS_TEST_SERVER_IP"
-          echo "AWS_TEST_SERVER_IP=$AWS_TEST_SERVER_IP" >> $GITHUB_ENV
-          
+          export AWS_EC2_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          echo "$AWS_EC2_TEST_SERVER_IP"
+          echo "$AWS_EC2_SERVER_IP"
+          echo "AWS_EC2_TEST_SERVER_IP=$AWS_EC2_TEST_SERVER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_SERVER_IP=$AWS_EC2_SERVER_IP" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
             
-      - name: Start Ngrinder EC2 - (Controller, Agent, Test Server) ${{ env.AWS_TEST_SERVER_IP }}
-        run: echo "${{ env.AWS_TEST_SERVER_IP}}"
-        #run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ${{env.working-directory}}
+
+      - name: Build with Gradle
+        run: ./gradlew compileQuerydsl --stacktrace
+        working-directory: ${{env.working-directory}}
+
+      - name: Build and Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v4
+        with:
+          image: ${{ secrets.DOCKERHUB_ID }}/springcafe
+          registry: docker.io
+          dockerfile: ${{env.working-directory}}/Dockerfile
+          username: ${{ secrets.DOCKERHUB_ID }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Deploy 😆 - multiple host
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          envs: GITHUB_SHA
+          script: |
+            docker pull springcafe:${GITHUB_SHA::7}
+            docker stop server
+            docker run -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server springcafe:${GITHUB_SHA::7}
+
+#       - name: Start Ngrinder EC2 - (Controller, Agent, Test Server) ${{ env.AWS_TEST_SERVER_IP }}
+#         run: echo "${{ env.AWS_TEST_SERVER_IP}}"
+#         #run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
+#         env:
+#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           
 #       - name: Deploy - test server
 #         uses: appleboy/ssh-action@master
