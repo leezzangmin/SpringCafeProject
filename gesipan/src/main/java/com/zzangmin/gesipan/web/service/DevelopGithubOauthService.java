@@ -27,20 +27,19 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 @Service
-@Profile({"local", "test","stress"})
+@Profile({"local", "test", "stress"})
 public class DevelopGithubOauthService implements GithubOauthService {
 
     private final UsersRepository usersRepository;
-    @Value("${GITHUB_CLIENT_ID}")
-    private String clientId;
-    @Value("${GITHUB_CLIENT_SECRET}")
-    private String secret;
+    private final RestTemplate restTemplate;
+
+    private String clientId = "asdf";
+    private String clientSecret = "asdfasdf";
 
     @Override
     public GithubToken getAccessToken(String code) {
         Map<String, String> requestBody = generateRequestBodyForAccessToken(code);
-        RestTemplate restTemplate = new RestTemplate();
-        return new GithubToken("fake_access_code", "fake_scope", "fake_token_type");
+        return new GithubToken("fake_access_token", "fake_scope", "fake_token_type");
     }
 
     @Override
@@ -77,7 +76,7 @@ public class DevelopGithubOauthService implements GithubOauthService {
 
     private Map<String,String> generateRequestBodyForAccessToken(String code) {
         return Map.of("client_id", clientId,
-                "client_secret", secret,
+                "client_secret", clientSecret,
                 "code", code);
     }
 

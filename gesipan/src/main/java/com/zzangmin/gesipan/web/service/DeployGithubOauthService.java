@@ -9,6 +9,7 @@ import com.zzangmin.gesipan.web.entity.UserRole;
 import com.zzangmin.gesipan.web.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,10 @@ public class DeployGithubOauthService implements GithubOauthService {
 
     private static final String ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String GET_RESOURCE_URL = "https://api.github.com/";
-    private static final String clientId = System.getenv("GITHUB_CLIENT_ID");
-    private static final String secret = System.getenv("GITHUB_CLIENT_SECRET");
+    @Value("${GITHUB_CLIENT_ID}")
+    private static String clientId;
+    @Value("${GITHUB_CLIENT_SECRET}")
+    private static String secret;
 
 
     @Override
