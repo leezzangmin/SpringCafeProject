@@ -20,7 +20,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           
-      - name: Start Ngrinder EC2 - (Controller, Agent, Test Server) ${{ env.AWS_TEST_SERVER_IP }}
+      - name: Start Ngrinder EC2 - (Controller, Agent, Test Server)
         run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -31,10 +31,19 @@ jobs:
         run: |
           export AWS_EC2_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
           export AWS_EC2_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_CONTROLLER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_AGENT_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_AGENT }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          
           echo "$AWS_EC2_TEST_SERVER_IP"
           echo "$AWS_EC2_SERVER_IP"
+          echo "$AWS_EC2_CONTROLLER_IP"
+          echo "$AWS_EC2_AGENT_IP"
+          
           echo "AWS_EC2_TEST_SERVER_IP=$AWS_EC2_TEST_SERVER_IP" >> $GITHUB_ENV
           echo "AWS_EC2_SERVER_IP=$AWS_EC2_SERVER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_CONTROLLER_IP=$AWS_EC2_CONTROLLER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_AGENT_IP=$AWS_EC2_AGENT_IP" >> $GITHUB_ENV
+          
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -58,7 +67,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_ID }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Deploy 😆 - multiple host
+      - name: Deploy 😆 - main server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.AWS_EC2_SERVER_IP }}
@@ -72,16 +81,36 @@ jobs:
             sudo docker stop server
             sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
           
-#       - name: Deploy - test server
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: env.AWS_TEST_SERVER_IP
-#           username: ec2-user
-#           key: ${{ secrets.AWS_SECRET_PEM }}
-#           envs: GITHUB_SHA
-#           script: |
-#             docker pull team07-airbnb:backend-${GITHUB_SHA::7}
-#             docker tag team07-airbnb:backend-${GITHUB_SHA::7} airbnb:backend-${GITHUB_SHA::7}
-#             docker stop server
-#             docker run -d --rm -e profile=stress -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server airbnb:backend-${GITHUB_SHA::7}
+      - name: Deploy 😆 - test server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_TEST_EC2_SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            sudo systemctl restart docker
+            sudo docker login --username=${{ secrets.DOCKERHUB_ID }} --password=${{ secrets.DOCKERHUB_PASSWORD }}
+            sudo docker pull ${{ secrets.DOCKERHUB_ID }}/springcafe:latest
+            sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
+            sudo docker stop server
+            sudo docker run -p 80:80 -d --rm -e profile=stress -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
             
+      - name: Ngrinder Controller Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_CONTROLLER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            sudo ./controller_run.sh
+            
+      - name: Ngrinder Agent Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_AGENT_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |      
+            sudo ./agent_run.sh
+
+# https://github.com/marketplace/actions/http-request-action
