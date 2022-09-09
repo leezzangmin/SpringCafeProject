@@ -110,6 +110,10 @@ jobs:
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
             bash ./agent_run.sh
+            
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
 # https://github.com/marketplace/actions/http-request-action / ngrinder rest api
       - name: HTTP Request Action - Ngrinder rest api perf_test
         uses: fjogeleit/http-request-action@v1
@@ -120,7 +124,7 @@ jobs:
           password: 'admin'
           customHeaders: '{"Content-Type": "application/json"}'
           data: '{"param": "${{ env.AWS_EC2_TEST_SERVER_IP }}" }'
-          timeout: 60000
+          timeout: '60000'
 
 # 결과 email
 # 환경 정리
