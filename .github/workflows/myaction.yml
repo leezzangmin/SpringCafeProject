@@ -118,7 +118,7 @@ jobs:
       - name: HTTP Request Action - Ngrinder rest api perf_test
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api/75/clone_and_start'
+          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api'
           method: 'POST'
           username: 'admin'
           password: 'admin'
