@@ -113,7 +113,7 @@ jobs:
 
 # https://github.com/marketplace/actions/http-request-action / ngrinder rest api
       - name: HTTP Request Action - Ngrinder rest api perf_test
-        uses: fjogeleit/http-request-action@v1.11.
+        uses: fjogeleit/http-request-action@v1
         with:
           url: 'http://$AWS_EC2_CONTROLLER_IP/perftest/api/75/clone_and_start'
           method: 'POST'
