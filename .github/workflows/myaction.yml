@@ -112,7 +112,7 @@ jobs:
             bash ./agent_run.sh
 
 
-      - name: Sleep for 20 seconds
+      - name: Sleep for 30 seconds
         run: sleep 20s
         shell: bash
 
@@ -122,10 +122,11 @@ jobs:
         with:
           url: 'http://$AWS_EC2_CONTROLLER_IP/perftest/api/75/clone_and_start'
           method: 'POST'
-          username: admin
-          password: admin
+          username: 'admin'
+          password: 'admin'
           customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"param": ${{ env.AWS_EC2_TEST_SERVER_IP }} }'
+          data: '{"param": "${{ env.AWS_EC2_TEST_SERVER_IP }}" }'
+          timeout: 60000
 
 # 결과 email
 # 환경 정리
