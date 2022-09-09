@@ -110,7 +110,10 @@ jobs:
           host: ${{ env.AWS_EC2_AGENT_IP }}
           username: ec2-user
           key: ${{ secrets.AWS_SECRET_PEM }}
-          script: |      
-            source agent_run.sh
+          script: |
+            source ./agent_run.sh
+            sudo nohup ~/ngrinder-agent/run_agent.sh &
 
-# https://github.com/marketplace/actions/http-request-action
+# https://github.com/marketplace/actions/http-request-action / ngrinder rest api
+# 결과 email
+# 환경 정리
