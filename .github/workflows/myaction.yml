@@ -26,29 +26,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          
-      - name: Setting environment variables...
-        run: |
-          export AWS_EC2_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          export AWS_EC2_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          export AWS_EC2_CONTROLLER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          export AWS_EC2_AGENT_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_AGENT }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          
-          echo "$AWS_EC2_TEST_SERVER_IP"
-          echo "$AWS_EC2_SERVER_IP"
-          echo "$AWS_EC2_CONTROLLER_IP"
-          echo "$AWS_EC2_AGENT_IP"
-          
-          echo "AWS_EC2_TEST_SERVER_IP=$AWS_EC2_TEST_SERVER_IP" >> $GITHUB_ENV
-          echo "AWS_EC2_SERVER_IP=$AWS_EC2_SERVER_IP" >> $GITHUB_ENV
-          echo "AWS_EC2_CONTROLLER_IP=$AWS_EC2_CONTROLLER_IP" >> $GITHUB_ENV
-          echo "AWS_EC2_AGENT_IP=$AWS_EC2_AGENT_IP" >> $GITHUB_ENV
-          
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-                      
+                                
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ${{env.working-directory}}
@@ -82,7 +60,29 @@ jobs:
 #             sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
 #             sudo docker stop server
 #             sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
+
+      - name: Setting test environment variables...
+        run: |
+          export AWS_EC2_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_CONTROLLER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_AGENT_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_AGENT }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
           
+          echo "$AWS_EC2_TEST_SERVER_IP"
+          echo "$AWS_EC2_SERVER_IP"
+          echo "$AWS_EC2_CONTROLLER_IP"
+          echo "$AWS_EC2_AGENT_IP"
+          
+          echo "AWS_EC2_TEST_SERVER_IP=$AWS_EC2_TEST_SERVER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_SERVER_IP=$AWS_EC2_SERVER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_CONTROLLER_IP=$AWS_EC2_CONTROLLER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_AGENT_IP=$AWS_EC2_AGENT_IP" >> $GITHUB_ENV
+          
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
       - name: Deploy 😆 - test server
         uses: appleboy/ssh-action@master
         with:
