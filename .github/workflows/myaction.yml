@@ -102,7 +102,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
-            sudo ./controller_run.sh
+            source controller_run.sh
             
       - name: Ngrinder Agent Start
         uses: appleboy/ssh-action@master
@@ -111,6 +111,6 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |      
-            sudo ./agent_run.sh
+            source agent_run.sh
 
 # https://github.com/marketplace/actions/http-request-action
