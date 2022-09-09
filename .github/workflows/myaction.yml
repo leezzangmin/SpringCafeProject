@@ -112,15 +112,15 @@ jobs:
             bash ./agent_run.sh
 
 # https://github.com/marketplace/actions/http-request-action / ngrinder rest api
-#       - name: HTTP Request Action - Ngrinder rest api perf_test
-#         uses: fjogeleit/http-request-action@v1.11.
-#         with:
-#           url: 'http://$AWS_EC2_CONTROLLER_IP/'
-#           method: 'POST'
-#           username: ${{ secrets.AWX_USER }}
-#           password: ${{ secrets.AWX_PASSWORD }}
-#           customHeaders: '{"Content-Type": "application/json"}'
-#           data: '{"key_1": "value_1", "key_2": "value_2"}'
+      - name: HTTP Request Action - Ngrinder rest api perf_test
+        uses: fjogeleit/http-request-action@v1.11.
+        with:
+          url: 'http://$AWS_EC2_CONTROLLER_IP/perftest/api/75/clone_and_start'
+          method: 'POST'
+          username: admin
+          password: admin
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"param": ${{ env.AWS_EC2_TEST_SERVER_IP }} }'
 
 # 결과 email
 # 환경 정리
