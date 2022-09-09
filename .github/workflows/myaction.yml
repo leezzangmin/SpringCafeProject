@@ -123,7 +123,7 @@ jobs:
           username: 'admin'
           password: 'admin'
           customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"param": "${{ env.AWS_EC2_TEST_SERVER_IP }}" }'
+          data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : 60000, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 1, "processes" : 1, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 1, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
           timeout: '60000'
 
 # 결과 email
