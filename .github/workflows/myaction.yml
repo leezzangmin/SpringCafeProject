@@ -84,7 +84,7 @@ jobs:
       - name: Deploy 😆 - test server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.AWS_TEST_EC2_SERVER_IP }}
+          host: ${{ env.AWS_EC2_TEST_SERVER_IP }}
           username: ec2-user
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
