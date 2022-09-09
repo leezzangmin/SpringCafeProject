@@ -57,23 +57,7 @@ jobs:
         run: ./gradlew build --stacktrace --exclude-task test
         working-directory: ${{env.working-directory}}
 
-      - name: Ngrinder Controller Start
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.AWS_EC2_CONTROLLER_IP }}
-          username: ec2-user
-          key: ${{ secrets.AWS_SECRET_PEM }}
-          script: |
-            bash controller_run.sh
-            
-      - name: Ngrinder Agent Start
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.AWS_EC2_AGENT_IP }}
-          username: ec2-user
-          key: ${{ secrets.AWS_SECRET_PEM }}
-          script: |
-            bash ./agent_run.sh
+
 
       - name: Build and Push Docker Image
         uses: mr-smithers-excellent/docker-build-push@v5
@@ -107,8 +91,25 @@ jobs:
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
             sudo docker rmi -f $(sudo docker images -q)
-            bash deploy.sh            
-
+            bash deploy.sh          
+            
+      - name: Ngrinder Controller Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_CONTROLLER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash controller_run.sh
+            
+      - name: Ngrinder Agent Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_AGENT_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash ./agent_run.sh
 
 # https://github.com/marketplace/actions/http-request-action / ngrinder rest api
 #       - name: HTTP Request Action - Ngrinder rest api perf_test
