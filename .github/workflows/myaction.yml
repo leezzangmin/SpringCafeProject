@@ -48,7 +48,15 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          
+                      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ${{env.working-directory}}
+
+      - name: Build with Gradle
+        run: ./gradlew build --stacktrace --exclude-task test
+        working-directory: ${{env.working-directory}}
+
       - name: Ngrinder Controller Start
         uses: appleboy/ssh-action@master
         with:
@@ -66,14 +74,6 @@ jobs:
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
             bash ./agent_run.sh
-            
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        working-directory: ${{env.working-directory}}
-
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace --exclude-task test
-        working-directory: ${{env.working-directory}}
 
       - name: Build and Push Docker Image
         uses: mr-smithers-excellent/docker-build-push@v5
