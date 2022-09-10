@@ -138,10 +138,18 @@ jobs:
           username: admin
           password: admin
           run: |
+            export TEST_RESULT='${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
             $output = '${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
             Write-Host "Time from output $($output.time) statusCode $($output.statusCode) data $($output.data)"
-          
-
+            
+      - name: echo result
+        run: |
+          echo "$output"
+          echo $output
+          echo ${{ env.output }}
+          echo "${{ env.output }}"
+          echo "$TEST_RESULT"
+        shell: bash
 
 # 결과 email
 # 환경 정리
