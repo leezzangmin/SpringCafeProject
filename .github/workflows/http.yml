@@ -1,0 +1,25 @@
+name: http_practice
+ 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./gesipan
+      
+    steps:
+      - name: HTTP Request Action - Ngrinder 테스트결과 조회
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'http://43.201.23.189/perftest/api?page=1'
+          method: 'GET'
+          username: 'admin'
+          password: 'admin'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{}'
+          timeout: '60000'
