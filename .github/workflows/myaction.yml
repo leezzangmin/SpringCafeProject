@@ -131,11 +131,16 @@ jobs:
           
       - name: HTTP Request Action - Ngrinder 테스트결과 조회
         uses: satak/webrequest-action@master
+        id: NgrinderTestResult
         with:
-          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api?page=1'
+          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api?page=0'
           method: GET
           username: admin
           password: admin
+          run: |
+            $output = '${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
+            Write-Host "Time from output $($output.time) statusCode $($output.statusCode) data $($output.data)"
+          
 
 
 # 결과 email
