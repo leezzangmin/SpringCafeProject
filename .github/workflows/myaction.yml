@@ -144,6 +144,7 @@ jobs:
             
       - name: echo result
         run: |
+          echo '${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
           echo "$output"
           echo $output
           echo ${{ env.output }}
