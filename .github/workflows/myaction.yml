@@ -137,14 +137,10 @@ jobs:
           method: GET
           username: admin
           password: admin
-          run: |
-            export TEST_RESULT='${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
-            $output = '${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
-            Write-Host "Time from output $($output.time) statusCode $($output.statusCode) data $($output.data)"
-            
+
       - name: echo result
         run: |
-          echo '${{ steps.NgrinderTestResult.outputs.output }}' | ConvertFrom-Json
+          echo '${{ steps.NgrinderTestResult.outputs.output }}'
           echo "$output"
           echo $output
           echo ${{ env.output }}
