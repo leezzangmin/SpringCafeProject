@@ -21,32 +21,32 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           
-#       - name: Start Ngrinder EC2 - (Controller, Agent, Test Server)
-#         run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
-#         env:
-#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Start Ngrinder EC2 - (Controller, Agent, Test Server)
+        run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
                                 
-#       - name: Grant execute permission for gradlew
-#         run: chmod +x gradlew
-#         working-directory: ${{env.working-directory}}
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ${{env.working-directory}}
 
-#       - name: Build with Gradle
-#         run: ./gradlew build --stacktrace --exclude-task test
-#         working-directory: ${{env.working-directory}}
+      - name: Build with Gradle
+        run: ./gradlew build --stacktrace --exclude-task test
+        working-directory: ${{env.working-directory}}
 
 
 
-#       - name: Build and Push Docker Image
-#         uses: mr-smithers-excellent/docker-build-push@v5
-#         with:
-#           image: ${{ secrets.DOCKERHUB_ID }}/springcafe
-#           tags: latest
-#           registry: docker.io
-#           dockerfile: ${{env.working-directory}}/Dockerfile
-#           username: ${{ secrets.DOCKERHUB_ID }}
-#           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build and Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: ${{ secrets.DOCKERHUB_ID }}/springcafe
+          tags: latest
+          registry: docker.io
+          dockerfile: ${{env.working-directory}}/Dockerfile
+          username: ${{ secrets.DOCKERHUB_ID }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
           
       - name: Setting environment variables...
         run: |
@@ -70,70 +70,70 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-#       - name: Deploy 😆 - main server
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ env.AWS_EC2_SERVER_IP }}
-#           username: ec2-user
-#           key: ${{ secrets.AWS_SECRET_PEM }}
-#           script: |
-#             sudo systemctl restart docker
-#             sudo docker login --username=${{ secrets.DOCKERHUB_ID }} --password=${{ secrets.DOCKERHUB_PASSWORD }}
-#             sudo docker pull ${{ secrets.DOCKERHUB_ID }}/springcafe:latest
-#             sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
-#             sudo docker stop server
-#             sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
+      - name: Deploy 😆 - main server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            sudo systemctl restart docker
+            sudo docker login --username=${{ secrets.DOCKERHUB_ID }} --password=${{ secrets.DOCKERHUB_PASSWORD }}
+            sudo docker pull ${{ secrets.DOCKERHUB_ID }}/springcafe:latest
+            sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
+            sudo docker stop server
+            sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
 
 
-#       - name: Deploy 😆 - test server
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ env.AWS_EC2_TEST_SERVER_IP }}
-#           username: ec2-user
-#           key: ${{ secrets.AWS_SECRET_PEM }}
-#           script: |
-#             sudo docker rmi -f $(sudo docker images -q)
-#             bash deploy.sh          
+      - name: Deploy 😆 - test server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_TEST_SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            sudo docker rmi -f $(sudo docker images -q)
+            bash deploy.sh          
             
-#       - name: Ngrinder Controller Start
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ env.AWS_EC2_CONTROLLER_IP }}
-#           username: ec2-user
-#           key: ${{ secrets.AWS_SECRET_PEM }}
-#           script: |
-#             bash controller_run.sh
+      - name: Ngrinder Controller Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_CONTROLLER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash controller_run.sh
             
-#       - name: Ngrinder Agent Start
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ env.AWS_EC2_AGENT_IP }}
-#           username: ec2-user
-#           key: ${{ secrets.AWS_SECRET_PEM }}
-#           script: |
-#             bash ./agent_run.sh
+      - name: Ngrinder Agent Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_AGENT_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash ./agent_run.sh
             
-#       - name: Sleep for 30 seconds
-#         run: sleep 30s
-#         shell: bash
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
         
         
 # # https://github.com/marketplace/actions/http-request-action / ngrinder rest api
-#       - name: HTTP Request Action - Ngrinder rest api perf_test
-#         uses: fjogeleit/http-request-action@v1
-#         with:
-#           url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api'
-#           method: 'POST'
-#           username: 'admin'
-#           password: 'admin'
-#           customHeaders: '{"Content-Type": "application/json"}'
-#           data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : ${{ env.test-duration }}, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 1, "processes" : 1, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 1, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
-#           timeout: '60000'
+      - name: HTTP Request Action - Ngrinder rest api perf_test
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api'
+          method: 'POST'
+          username: 'admin'
+          password: 'admin'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : ${{ env.test-duration }}, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 1, "processes" : 1, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 1, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
+          timeout: '60000'
 
 
-#       - name: Sleep for 130 seconds - waiting test...
-#         run: sleep 130s
-#         shell: bash
+      - name: Sleep for 130 seconds - waiting test...
+        run: sleep 130s
+        shell: bash
 
       - name: HTTP Request Action - Ngrinder 테스트결과 조회
         uses: satak/webrequest-action@master
