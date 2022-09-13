@@ -135,7 +135,6 @@ jobs:
           password: 'admin'
           customHeaders: '{"Content-Type": "application/json"}'
           data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : ${{ env.test-duration }}, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 1, "processes" : 1, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 1, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
-          timeout: '60000'
 
 
 # 성능테스트가 진행되는 동안 기다림
@@ -163,7 +162,7 @@ jobs:
           status: ${{ job.status }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: always() # Pick up events even if the job fails or is canceled.
+        if: always()
 
 # 테스트가 끝난 후 자원들 정리 - aws cli
       - name: Stop Ngrinder EC2 - (Controller, Agent, Test Server)
