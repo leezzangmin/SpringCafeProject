@@ -20,7 +20,9 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          
+
+
+# test에 필요한 ec2 인스턴스를 aws cli를 통해 실행
       - name: Start Ngrinder EC2 - (Controller, Agent, Test Server)
         run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
         env:
@@ -37,7 +39,6 @@ jobs:
         working-directory: ${{env.working-directory}}
 
 
-
       - name: Build and Push Docker Image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
@@ -47,7 +48,9 @@ jobs:
           dockerfile: ${{env.working-directory}}/Dockerfile
           username: ${{ secrets.DOCKERHUB_ID }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          
+
+
+# aws cli를 사용해서 각 인스턴스의 public ip를 환경변수로 등록
       - name: Setting environment variables...
         run: |
           export AWS_EC2_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
@@ -70,6 +73,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
+# 메인 ec2에 스프링 실행
       - name: Deploy 😆 - main server
         uses: appleboy/ssh-action@master
         with:
@@ -84,7 +88,7 @@ jobs:
             sudo docker stop server
             sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
 
-
+# 테스트용 ec2에 스프링 실행
       - name: Deploy 😆 - test server
         uses: appleboy/ssh-action@master
         with:
@@ -92,9 +96,10 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
-            sudo docker rmi -f $(sudo docker images -q)
             bash deploy.sh          
-            
+
+
+# EC2- Ngrinder Controller를 실행
       - name: Ngrinder Controller Start
         uses: appleboy/ssh-action@master
         with:
@@ -104,6 +109,7 @@ jobs:
           script: |
             bash controller_run.sh
             
+# EC2- Ngrinder Agent를 실행
       - name: Ngrinder Agent Start
         uses: appleboy/ssh-action@master
         with:
@@ -113,12 +119,13 @@ jobs:
           script: |
             bash ./agent_run.sh
             
-      - name: Sleep for 30 seconds
+# Controller와 Agent가 완전히 실행될 때 까지 기다림
+      - name: Sleep for 30 seconds - waiting controller,agent run
         run: sleep 30s
         shell: bash
         
         
-# # https://github.com/marketplace/actions/http-request-action / ngrinder rest api
+# Ngrinder Rest Api 를 통해 성능테스트 생성 - 실행
       - name: HTTP Request Action - Ngrinder rest api perf_test
         uses: fjogeleit/http-request-action@v1
         with:
@@ -131,11 +138,14 @@ jobs:
           timeout: '60000'
 
 
+# 성능테스트가 진행되는 동안 기다림
       - name: Sleep for 130 seconds - waiting test...
         run: sleep 130s
         shell: bash
 
-      - name: HTTP Request Action - Ngrinder 테스트결과 조회
+
+# Ngrinder Rest Api 를 통해 테스트 결과 조회
+      - name: Get Ngrinder test result ...
         uses: satak/webrequest-action@master
         id: NgrinderTestResult
         with:
@@ -144,17 +154,9 @@ jobs:
           username: admin
           password: admin
 
-      - name: echo result
-        run: |
-          echo '${{ steps.NgrinderTestResult.outputs.output }}'
-          echo "$output"
-          echo $output
-          echo ${{ env.output }}
-          echo "${{ env.output }}"
-          echo "$TEST_RESULT"
-        shell: bash
-        
-      - name: 테스트 결과 전송...
+
+# 슬랙으로 테스트 결과 전송
+      - name: send test result...
         uses: 8398a7/action-slack@v3
         with:
           text: '${{ steps.NgrinderTestResult.outputs.output }}'
@@ -163,7 +165,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: always() # Pick up events even if the job fails or is canceled.
 
-
+# 테스트가 끝난 후 자원들 정리 - aws cli
       - name: Stop Ngrinder EC2 - (Controller, Agent, Test Server)
         run: aws ec2 terminate-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
         env:
