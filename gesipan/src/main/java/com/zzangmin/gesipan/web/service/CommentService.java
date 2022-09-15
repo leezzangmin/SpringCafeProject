@@ -50,11 +50,6 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Comment> findByPostId(Long postId) {
-        return commentRepository.findAllByPostId(postId);
-    }
-
-    @Transactional(readOnly = true)
     public PersonalCommentsResponse userComments(Long userId) {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
