@@ -28,10 +28,14 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final TemporaryPostRepository temporaryPostRepository;
 
-    public Post findOne(Long postId) {
+    @Transactional(readOnly = true)
+    public PostResponse findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        return post;
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        int recommendCount = postRecommendRepository.countByPostId(postId);
+
+        return PostResponse.of(post, comments, recommendCount);
     }
 
     @Transactional
