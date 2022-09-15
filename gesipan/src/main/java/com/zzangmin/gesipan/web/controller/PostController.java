@@ -1,13 +1,10 @@
 package com.zzangmin.gesipan.web.controller;
 
-import com.zzangmin.gesipan.dao.PostRecommendRepository;
 import com.zzangmin.gesipan.web.argumentresolver.Auth;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.web.entity.Categories;
-import com.zzangmin.gesipan.web.entity.Comment;
-import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,8 +26,6 @@ public class PostController {
     private final int validateSeconds = 60;
 
     private final PostService postService;
-    private final CommentService commentService;
-    private final PostRecommendRepository postRecommendRepository;
     private final RedisService redisService;
     private final TemporaryPostService temporaryPostService;
 
@@ -41,13 +35,9 @@ public class PostController {
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
         log.info("postId: {}", postId);
         String clientAddress = httpServletRequest.getRemoteAddr();
-
-        Post post = postService.findOne(postId);
-        int recommendCount = postRecommendRepository.countByPostId(postId);
-        List<Comment> comments = commentService.findByPostId(postId);
+        PostResponse singlePost = postService.findOne(postId);
         redisService.increasePostHitCount(clientAddress, postId);
-
-        return ResponseEntity.ok(PostResponse.of(post, comments, recommendCount));
+        return ResponseEntity.ok(singlePost);
     }
 
     // TODO: jwt에서 정보 뽑아오기. DTO 수정해야함

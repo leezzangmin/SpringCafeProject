@@ -6,6 +6,8 @@ import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.entity.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +30,15 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final TemporaryPostRepository temporaryPostRepository;
 
-    public Post findOne(Long postId) {
+    @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
+    @Transactional(readOnly = true)
+    public PostResponse findOne(Long postId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        return post;
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        int recommendCount = postRecommendRepository.countByPostId(postId);
+
+        return PostResponse.of(post, comments, recommendCount);
     }
 
     @Transactional
@@ -56,6 +63,7 @@ public class PostService {
         return postRepository.save(post).getPostId();
     }
 
+    @CacheEvict(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     public void delete(Long postId, Long userId) {
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
@@ -63,6 +71,7 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
+    @CacheEvict(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional
     public void update(Long postId, PostUpdateRequest postUpdateRequest, long userId) {
         Post post = postRepository.findByIdWithUser(postId).
@@ -81,6 +90,7 @@ public class PostService {
     }
 
     // TODO: (post_id, user_id) 복합인덱스 생성하기
+    @CacheEvict(value = "single-post", key = "#postRecommendRequest.postId", cacheManager = "cacheManager")
     @Transactional
     public void postRecommendCount(PostRecommendRequest postRecommendRequest) {
         Post post = postRepository.findById(postRecommendRequest.getPostId()).

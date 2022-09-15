@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.web.service;
 
 import com.zzangmin.gesipan.dao.*;
+import com.zzangmin.gesipan.web.dto.post.PostResponse;
 import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.*;
@@ -55,10 +56,10 @@ class PostServiceTest {
         Long userId = usersRepository.save(user).getUserId();
         Long postId = postRepository.save(post).getPostId();
         //when
-        Post findPost = postService.findOne(postId);
+        PostResponse postResponse = postService.findOne(postId);
         //then
-        Assertions.assertThat(findPost.getPostId()).isEqualTo(post.getPostId());
-        Assertions.assertThat(findPost.getPostContent()).isEqualTo(post.getPostContent());
+        Assertions.assertThat(postResponse.getPostId()).isEqualTo(post.getPostId());
+        Assertions.assertThat(postResponse.getPostContent()).isEqualTo(post.getPostContent());
     }
 
     @Test
