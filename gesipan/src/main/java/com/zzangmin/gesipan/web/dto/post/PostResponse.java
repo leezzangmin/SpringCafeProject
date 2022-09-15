@@ -9,9 +9,11 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostResponse {
 
@@ -27,6 +29,7 @@ public class PostResponse {
     private List<CommentResponse> comments;
 
     @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     private static class CommentResponse {
         private Long commentId;
