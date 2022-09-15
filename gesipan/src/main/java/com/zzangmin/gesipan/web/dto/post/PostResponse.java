@@ -20,8 +20,8 @@ public class PostResponse {
     private String userNickname;
     private Long hitCount;
     private int recommendCount;
-    private String subject;
-    private String content;
+    private String postSubject;
+    private String postContent;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentResponse> comments;
@@ -48,8 +48,8 @@ public class PostResponse {
                 .userNickname(post.getUser().getUserNickname())
                 .hitCount(post.getHitCount())
                 .recommendCount(recommendCount)
-                .subject(post.getPostSubject())
-                .content(post.getPostContent())
+                .postSubject(post.getPostSubject())
+                .postContent(post.getPostContent())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .comments(comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()))
