@@ -2,13 +2,14 @@ package com.zzangmin.gesipan.config.redis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
@@ -22,8 +23,8 @@ import java.io.InputStreamReader;
 
 @Slf4j
 @Profile({"local","deploy","stress"})
+@EnableCaching
 @Configuration
-@EnableRedisRepositories
 public class EmbeddedRedisConfig {
 
     @Value("${spring.redis.port}")
@@ -44,7 +45,7 @@ public class EmbeddedRedisConfig {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setHashKeySerializer(new Jackson2JsonRedisSerializer<>(Long.class));
         redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Long.class));
         return redisTemplate;
@@ -54,7 +55,7 @@ public class EmbeddedRedisConfig {
     public void redisServer() throws IOException {
      //   int port = isRedisRunning() ? findAvailablePort() : this.port;
         redisServer = new RedisServer(port);
-        System.out.println("port = " + port);
+        log.info("redis port: {}", port);
         redisServer.start();
     }
 
