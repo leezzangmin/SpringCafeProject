@@ -14,17 +14,7 @@
 
 </br>
 <details markdown="1">
-<summary> 요구사항 명세:</summary><br>
-
-구현 필요 기능
-1. 게시글 CRUD
-2. 게시글 추천
-3. 무한 대댓글 CRUD
-4. 회원가입, 로그인 - oauth + JWT
-5. admin 페이지
-
-<br>
-
+<summary> 명세:</summary><br>
 
 
 <br>
@@ -34,7 +24,6 @@ ERD:<br>
 
 </br>
 
-배포URL:
 
 </br>
 
@@ -48,20 +37,43 @@ ERD:<br>
 
 ## 💎 Main Features
 
-
+- 기본적인 게시판 CRUD
+- 로그인: github oauth + JWT
+- 기본 CI/CD
+- 배포시 자동화 된 테스트 인프라 생성, 부하테스트 후 결과 슬랙 전송 (Ngrinder Rest API, Github Action, AWS CLI, SLACK)
+- 레디스 캐싱 (조회수 update 배치처리, 게시물 단건조회 등)
 
 ## 📐 Deployment/Diagram
 
 
 ## 🖥️ Build Environment
+### gradle build 
+## (Windows, Bash)
+```
+$ ./gradlew build
+$ java -jar -Dspring.profiles.active=test gesipan-0.0.1-SNAPSHOT.jar 
+```
+## (Mac)
+```
 
-
-### gradle build (Local, Windows)
+```
 
 
 ## 📃 API Specification
 https://www.postman.com/aaron2-postman/workspace/zzangmin-springcafe
 
 ## 🏛️ Depedency Used
+```
+spring-boot-starter-web
+spring-boot-starter-validation
+spring-boot-starter-data-jpa
+com.querydsl:querydsl-jpa
+spring-boot-starter-data-redis
+io.jsonwebtoken:jjwt:0.9.1
+org.projectlombok:lombok
+com.h2database:h2
+mysql:mysql-connector-java
+spring-boot-starter-test
+```
 
 
