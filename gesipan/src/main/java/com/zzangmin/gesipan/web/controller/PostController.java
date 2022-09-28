@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,6 +86,12 @@ public class PostController {
         return ResponseEntity.ok(personalPostsResponse);
     }
 
+    @GetMapping("/posts/recommend")
+    public ResponseEntity<PostRecommendsResponse> recommendedPosts(){//@Auth Long userId) {
+        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(1029L);
+        return ResponseEntity.ok(recommendedPost);
+    }
+
     @PostMapping("/post/temporary")
     public void temporarySave(@RequestBody @Valid TemporaryPostSaveRequest temporaryPostSaveRequest, @Auth Long userId) {
         temporaryPostService.postTemporarySave(userId, temporaryPostSaveRequest);
@@ -99,8 +106,8 @@ public class PostController {
     @GetMapping("/post/search")
     public ResponseEntity<PostSearchResponse> searchPost(@RequestParam(name = "categoryName", required = true) String categoryName,
         @RequestParam(name = "userNickname", required = false) String userNickname,
-        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(name = "startAt", required = false) LocalDateTime startAt,
-        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(name = "endAt", required = false) LocalDateTime endAt) {
+        @DateTimeFormat(iso = ISO.DATE_TIME) @RequestParam(name = "startAt", required = false) LocalDateTime startAt,
+        @DateTimeFormat(iso = ISO.DATE_TIME) @RequestParam(name = "endAt", required = false) LocalDateTime endAt) {
         validateSearchParameters(userNickname, startAt, endAt);
         PostSearchRequest postSearchRequest = new PostSearchRequest(userNickname, startAt, endAt, Categories.castCategoryNameToCategoryId(categoryName));
         log.info("postSearchRequest: {}", postSearchRequest);
