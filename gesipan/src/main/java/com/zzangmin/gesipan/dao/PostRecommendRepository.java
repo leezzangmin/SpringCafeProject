@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.dao;
 
+import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.PostRecommend;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,7 @@ public interface PostRecommendRepository extends JpaRepository<PostRecommend, Lo
 
     @Query("select COALESCE(count(pr.postRecommendId), 0) from PostRecommend pr where pr.post.postId=:postId")
     Integer countByPostId(@Param("postId") Long postId);
+
+    @Query("select pr.post from PostRecommend pr join fetch pr.post.user where pr.user.userId=:userId")
+    List<Post> findByUsersId(@Param("userId") Long userId);
 }
