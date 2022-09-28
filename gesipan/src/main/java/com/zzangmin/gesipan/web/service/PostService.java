@@ -132,6 +132,18 @@ public class PostService {
         return PostSearchResponse.of(posts, recommendCount, commentCount);
     }
 
+    @Transactional(readOnly = true)
+    public PostRecommendsResponse findRecommendedPost(Long userId) {
+        Users user = usersRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
+        List<Post> postRecommends = postRecommendRepository.findByUsersId(userId);
+
+        List<Long> postIds = postRecommends.stream().map(p -> p.getPostId()).collect(Collectors.toList());
+        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
+        List<Integer> commentCount = commentRepository.countByIds(postIds);
+        return PostRecommendsResponse.of(postRecommends, recommendCount, commentCount);
+    }
+
     private void deleteTemporaryPostData(Long userId, Long tempPostId) {
         if (tempPostId != null && temporaryPostRepository.findByUserId(userId)
                 .stream()
@@ -145,6 +157,7 @@ public class PostService {
             throw new IllegalArgumentException("해당 유저의 게시물이 아닙니다.");
         }
     }
+
 
 
 }
