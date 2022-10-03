@@ -87,8 +87,8 @@ public class PostController {
     }
 
     @GetMapping("/posts/recommend")
-    public ResponseEntity<PostRecommendsResponse> recommendedPosts(){//@Auth Long userId) {
-        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(1029L);
+    public ResponseEntity<PostRecommendsResponse> recommendedPosts(@Auth Long userId) {
+        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(userId);
         return ResponseEntity.ok(recommendedPost);
     }
 
