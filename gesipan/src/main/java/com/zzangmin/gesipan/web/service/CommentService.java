@@ -6,9 +6,11 @@ import com.zzangmin.gesipan.dao.UsersRepository;
 import com.zzangmin.gesipan.web.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.web.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.web.dto.comment.PersonalCommentsResponse;
+import com.zzangmin.gesipan.web.dto.notification.NotificationCreateRequest;
 import com.zzangmin.gesipan.web.entity.Comment;
 import com.zzangmin.gesipan.web.entity.Post;
 import com.zzangmin.gesipan.web.entity.Users;
+import com.zzangmin.gesipan.web.entity.entityenum.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +26,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UsersRepository usersRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
     public Long save(CommentSaveRequest commentSaveRequest, Long userId) {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
-        Post post = postRepository.findById(commentSaveRequest.getReferencePostId())
+        Post post = postRepository.findByIdWithUser(commentSaveRequest.getReferencePostId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 없습니다. 잘못된 입력"));
         Comment comment = commentSaveRequest.toEntity(user, post);
+
+        createCommentNotification(user, post);
+
         return commentRepository.save(comment).getCommentId();
     }
 
@@ -61,6 +67,21 @@ public class CommentService {
         if (updatedAt.isBefore(createdAt) || updatedAt.isBefore(createdAt)) {
             throw new IllegalArgumentException("요청된 시간이 조건에 부합하지 않습니다.");
         }
+    }
+
+    private void createCommentNotification(Users user, Post post) {
+        if (user.getUserId().equals(post.getUser().getUserId())) {
+            return;
+        }
+
+        NotificationCreateRequest request = NotificationCreateRequest.builder()
+                .targetUser(post.getUser())
+                .publishedUser(user)
+                .notificationType(NotificationType.COMMENT)
+                .referencePost(post)
+                .notificationMessage(null)
+                .build();
+        notificationService.createNotification(request);
     }
 
     private void validateCommentOwner(Long userId, Comment comment) {
