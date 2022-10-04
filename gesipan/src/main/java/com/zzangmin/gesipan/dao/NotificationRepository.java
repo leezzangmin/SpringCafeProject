@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,8 +16,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<Notification> findAllByUserId(@Param("userId") Long userId);
 
     @Modifying
-    @Query("update Notification n set n.checkedAt =:now " +
-            "where n.notificationId in " +
-            "(select inn.notificationId from Notification inn where inn.checkedAt is not null and inn.targetUser.userId=:userId)")
-    List<Long> checkByUserId(Long userId, LocalDateTime now);
+    @Query(value = "update notification as n set n.checked_at =:now where n.notification_id in (select temp.notification_id from (select notification_id from notification where checked_at is null and target_user_id=:userId) temp)", nativeQuery = true)
+    void checkByUserId(@Param("userId") Long userId, @Param("now") LocalDateTime now);
 }
