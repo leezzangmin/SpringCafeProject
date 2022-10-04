@@ -26,11 +26,13 @@ public class NotificationController {
     @PostMapping("/notifications/checked")
     public ResponseEntity checkAllNotifications(@Auth Long userId) {
         notificationService.checkAll(userId);
+        return ResponseEntity.ok("check all success!");
     }
 
     @PostMapping("/notifications/{notificationId}/checked")
     public ResponseEntity checkOneNotification(@Auth Long userId, @PathVariable Long notificationId) {
-        notificationService.checkOne(userId);
+        notificationService.checkOne(userId, notificationId);
+        return ResponseEntity.ok("check one success!");
     }
 }
 
