@@ -39,7 +39,19 @@ public class NotificationService {
         return notificationRepository.save(notification).getNotificationId();
     }
 
+    @Transactional
     public void checkAll(Long userId) {
         notificationRepository.checkByUserId(userId, LocalDateTime.now());
+    }
+
+    @Transactional
+    public void checkOne(Long userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 알림번호입니다."));
+        if (!userId.equals(notification.getTargetUser().getUserId())) {
+            throw new IllegalArgumentException("해당 유저의 알림이 아닙니다.");
+        }
+
+        notification.updateCheckedAt(LocalDateTime.now());
     }
 }
