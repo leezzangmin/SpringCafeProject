@@ -29,7 +29,7 @@ public class Post {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String postContent;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private Users user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_category_id")
