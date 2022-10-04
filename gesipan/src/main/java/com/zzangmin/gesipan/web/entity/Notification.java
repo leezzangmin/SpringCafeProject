@@ -42,4 +42,7 @@ public class Notification {
 
     private LocalDateTime checkedAt;
 
+    public void updateCheckedAt(LocalDateTime checkedAt) {
+        this.checkedAt = checkedAt;
+    }
 }
