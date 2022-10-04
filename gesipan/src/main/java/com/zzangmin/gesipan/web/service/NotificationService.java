@@ -38,4 +38,8 @@ public class NotificationService {
                 .build();
         return notificationRepository.save(notification).getNotificationId();
     }
+
+    public void checkAll(Long userId) {
+        notificationRepository.checkByUserId(userId, LocalDateTime.now());
+    }
 }
