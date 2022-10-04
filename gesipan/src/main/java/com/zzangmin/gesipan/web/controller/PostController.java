@@ -4,7 +4,7 @@ import com.zzangmin.gesipan.web.argumentresolver.Auth;
 import com.zzangmin.gesipan.web.dto.post.*;
 import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.web.dto.temporarypost.TemporaryPostSaveRequest;
-import com.zzangmin.gesipan.web.entity.Categories;
+import com.zzangmin.gesipan.web.entity.entityenum.Categories;
 import com.zzangmin.gesipan.web.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

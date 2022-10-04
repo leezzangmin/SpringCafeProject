@@ -1,5 +1,4 @@
-package com.zzangmin.gesipan.web.entity;
-
+package com.zzangmin.gesipan.web.entity.entityenum;
 
 public enum Categories {
     //휴지통, 자유, 질문;

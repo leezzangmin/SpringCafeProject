@@ -5,6 +5,7 @@ import com.zzangmin.gesipan.web.dto.post.PostResponse;
 import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
 import com.zzangmin.gesipan.web.entity.*;
+import com.zzangmin.gesipan.web.entity.entityenum.Categories;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
