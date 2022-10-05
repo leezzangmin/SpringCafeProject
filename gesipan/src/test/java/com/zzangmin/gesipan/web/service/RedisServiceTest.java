@@ -4,6 +4,7 @@ import com.zzangmin.gesipan.dao.PostCategoryRepository;
 import com.zzangmin.gesipan.dao.PostRepository;
 import com.zzangmin.gesipan.dao.UsersRepository;
 import com.zzangmin.gesipan.web.entity.*;
+import com.zzangmin.gesipan.web.entity.entityenum.Categories;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

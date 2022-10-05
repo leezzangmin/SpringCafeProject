@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.zzangmin.gesipan.web.entity.entityenum.Categories;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
