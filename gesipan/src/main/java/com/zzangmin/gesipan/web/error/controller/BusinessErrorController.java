@@ -20,21 +20,22 @@ public class BusinessErrorController {
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException e) {
         log.error("IllegalArgumentException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_QUERY_ARGUMENT);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_QUERY_ARGUMENT, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     protected ResponseEntity<ErrorResponse> illegalStateException(IllegalStateException e) {
         log.error("IllegalStateException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_QUERY_STATE);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_QUERY_STATE, e.getMessage());
+
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<ErrorResponse> missingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.error("MissingServletRequestParameterException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.MISSING_INPUT_VALUE);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.MISSING_INPUT_VALUE, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
