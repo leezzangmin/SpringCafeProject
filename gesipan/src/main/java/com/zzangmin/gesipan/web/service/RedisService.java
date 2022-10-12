@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 
-// memory 관리 해야함 -> maxmemory 설정이 있는데 있어도 더 사용할 가능성 있음. - RSS값 모니터링 - 나도 모르는 새 swap이 발생할 수도 있음
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -38,16 +37,6 @@ public class RedisService {
             .count(100)
             .build();
 
-
-    // 작동 안됨 - 트랜잭션 비활성화
-    // @PreDestroy
-    public void doRestTask() {
-
-        System.out.println("RedisService.doRestTask");
-        scheduledIncreasePostHitCounts();
-
-        log.info("redis cache cleanup complete");
-    }
 
     public void increasePostHitCount(String clientAddress, Long postId) {
         if (isFirstIpRequest(clientAddress, postId)) {
