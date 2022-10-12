@@ -68,14 +68,17 @@ public class RedisService {
             hitCounts.add(next.getValue());
         }
 
-        List<Post> posts = postRepository.findAllById(postIds);
-
-        IntStream.range(0, posts.size())
-                .boxed()
-                .forEach(i -> postRepository.updateHitCountByPostId(posts.get(i).getPostId(), hitCounts.get(i)));
+        hitCountBulkUpdate(postIds, hitCounts);
 
         postIds.stream()
                 .forEach(i -> hashOperations.delete(scheduleHitCountHashKey, i));
+    }
+
+    public void hitCountBulkUpdate(List<Long> postIds, List<Long> hitCounts) {
+        List<Post> posts = postRepository.findAllById(postIds);
+        IntStream.range(0, posts.size())
+                .boxed()
+                .forEach(i -> postRepository.updateHitCountByPostId(posts.get(i).getPostId(), hitCounts.get(i)));
     }
 
 
