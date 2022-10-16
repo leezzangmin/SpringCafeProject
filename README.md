@@ -13,14 +13,12 @@
 
 
 </br>
-<details markdown="1">
-<summary> 명세:</summary><br>
 
-
+화면 없이 스프링 백엔드 서버만 제작하는 프로젝트입니다 !
 <br>
 ERD:<br>
-<img width="992" alt="스크린샷 2022-08-22 오후 4 38 40" src="https://user-images.githubusercontent.com/64303390/185865931-837311f3-3f86-462d-ab25-efd6a5aa6f17.png">
-</details>
+
+![스크린샷 2022-10-16 오후 8 23 56](https://user-images.githubusercontent.com/64303390/196032614-d5ed12f4-455e-4ba3-beac-d900421d0535.png)
 
 </br>
 
@@ -37,13 +35,13 @@ ERD:<br>
 
 ## 💎 Main Features
 
-- 기본적인 게시판 CRUD
+- 기본적인 게시판 CRUD (게시글/댓글 CRUD, 게시글 임시저장, 로그인 및 인증/인가, 추천, 알림 등)
 - 로그인: github oauth + JWT
 - 기본 CI/CD
 - 배포시 자동화 된 테스트 인프라 생성, 부하테스트 후 결과 슬랙 전송 (Ngrinder Rest API, Github Action, AWS CLI, SLACK)
 - 레디스 캐싱 (조회수 update 배치처리, 게시물 단건조회 등)
 
-## 📐 Deployment/Diagram
+\\<!-- ## 📐 Deployment/Diagram  -->
 
 
 ## 🖥️ Build Environment
