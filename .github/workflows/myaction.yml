@@ -117,8 +117,8 @@ jobs:
             bash ./agent_run.sh
             
 # Controller와 Agent가 완전히 실행될 때 까지 기다림
-      - name: Sleep for 40 seconds - waiting controller,agent run
-        run: sleep 40s
+      - name: Sleep for 50 seconds - waiting controller,agent run
+        run: sleep 50s
         shell: bash
         
         
@@ -131,7 +131,7 @@ jobs:
           username: 'admin'
           password: 'admin'
           customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : ${{ env.test-duration }}, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 1, "processes" : 1, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 1, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
+          data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : ${{ env.test-duration }}, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 99, "processes" : 3, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 33, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
           timeout: '60000'
 
 
