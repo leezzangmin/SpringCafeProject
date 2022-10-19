@@ -1,16 +1,18 @@
 package com.zzangmin.gesipan.layer.basiccrud.repository.custom;
 
-import static com.zzangmin.gesipan.web.entity.QPost.post;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSearchRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
-import com.zzangmin.gesipan.web.entity.QPost;
+import com.zzangmin.gesipan.layer.basiccrud.entity.QPost;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
+
+import static com.zzangmin.gesipan.layer.basiccrud.entity.QPost.post;
 
 @Repository
 public class CustomPostRepositoryImpl extends QuerydslRepositorySupport implements CustomPostRepository {
