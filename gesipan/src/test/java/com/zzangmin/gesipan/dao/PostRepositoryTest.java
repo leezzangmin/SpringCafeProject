@@ -1,7 +1,13 @@
 package com.zzangmin.gesipan.dao;
 
-import com.zzangmin.gesipan.web.entity.*;
-import com.zzangmin.gesipan.web.entity.entityenum.Categories;
+import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
+import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
+import com.zzangmin.gesipan.layer.basiccrud.entity.UserRole;
+import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +24,10 @@ import java.util.List;
 @DataJpaTest
 class PostRepositoryTest {
 
-    @Autowired PostRepository postRepository;
-    @Autowired PostCategoryRepository postCategoryRepository;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    PostCategoryRepository postCategoryRepository;
     @Autowired
     UsersRepository usersRepository;
 
