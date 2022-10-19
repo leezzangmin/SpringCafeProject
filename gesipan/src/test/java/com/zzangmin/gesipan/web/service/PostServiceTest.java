@@ -1,11 +1,14 @@
 package com.zzangmin.gesipan.web.service;
 
-import com.zzangmin.gesipan.dao.*;
-import com.zzangmin.gesipan.web.dto.post.PostResponse;
-import com.zzangmin.gesipan.web.dto.post.PostSaveRequest;
-import com.zzangmin.gesipan.web.dto.post.PostUpdateRequest;
-import com.zzangmin.gesipan.web.entity.*;
-import com.zzangmin.gesipan.web.entity.entityenum.Categories;
+import com.zzangmin.gesipan.layer.basiccrud.entity.*;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostResponse;
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSaveRequest;
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
