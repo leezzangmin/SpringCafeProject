@@ -4,6 +4,7 @@ import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.custom.CustomPostRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,13 +33,14 @@ public class PostService {
 
     @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional(readOnly = true)
-    public PostResponse findOne(Long postId) {
+    public PostResponse findOne(Long postId, Optional<Long> userId) {
+        System.out.println("userId = " + userId);
         Post post = postRepository.findByIdWithUser(postId).
-                orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
+            orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         List<Comment> comments = commentRepository.findAllByPostId(postId);
         int recommendCount = postRecommendRepository.countByPostId(postId);
-
-        return PostResponse.of(post, comments, recommendCount);
+        boolean isRecommendedFlag = isUserRecommendedPost(postId, userId);
+        return PostResponse.of(post, comments, recommendCount, isRecommendedFlag);
     }
 
     @Transactional
@@ -158,6 +160,11 @@ public class PostService {
         }
     }
 
-
+    private boolean isUserRecommendedPost(Long postId, Optional<Long> userId) {
+        if (userId.isPresent() && postRecommendRepository.findByUsersIdAndPostId(postId, userId.get()).isPresent()) {
+            return true;
+        }
+        return false;
+    }
 
 }
