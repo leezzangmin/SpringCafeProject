@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Optional;
 import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
-// https://velog.io/@kyeongsoo5196/JWT%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%97%B0%EA%B5%AC
 @RequiredArgsConstructor
 @Component
 public class JwtProvider {
@@ -27,26 +27,32 @@ public class JwtProvider {
     // 토큰 유효시간 30분
     private final long tokenValidTime = 30 * 60 * 1000L;
 
-    // 객체 초기화, secretKey를 Base64로 인코딩한다.
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
+    public Optional<Long> getUserId (HttpServletRequest request) {
+        if (isLoginStatus(request)) {
+            return Optional.of(getUserIdFromToken(resolveToken(request).get()));
+        }
+        return Optional.empty();
+    }
+
     public String createToken(Long userId) {
-        Claims claims = Jwts.claims().setSubject(claimSubject); // JWT payload 에 저장되는 정보단위
-        claims.put("userId", userId); // 정보는 key / value 쌍으로 저장된다.
+        Claims claims = Jwts.claims().setSubject(claimSubject);
+        claims.put("userId", userId);
         Date now = new Date();
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
-                .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
+                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public long getUserId(String jwt) {
+    public long getUserIdFromToken(String jwt) {
         return Long.parseLong(Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
@@ -55,16 +61,15 @@ public class JwtProvider {
                 .toString());
     }
 
-    public String resolveToken(HttpServletRequest request) {
+    public Optional<String> resolveToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new IllegalStateException("뭔가 잘못된 인증요청");
+            return Optional.empty();
         }
         return Arrays.stream(cookies)
                 .filter(i -> i.getName().equals("X-AUTH-TOKEN"))
                 .findFirst()
-                .map(i -> i.getValue())
-                .orElseThrow(() -> new IllegalStateException("뭔가 잘못된 인증요청"));
+                .map(i -> i.getValue());
     }
 
     public boolean isValidToken(String jwtToken) {
@@ -80,5 +85,16 @@ public class JwtProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private boolean isLoginStatus(HttpServletRequest request) {
+        Optional<String> jwt = resolveToken(request);
+        if (jwt.isEmpty()) {
+            return false;
+        }
+        if (!isValidToken(jwt.get())) {
+            return false;
+        }
+        return true;
     }
 }
