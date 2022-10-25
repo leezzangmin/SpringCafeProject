@@ -29,7 +29,8 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        String jwt = jwtProvider.resolveToken(httpServletRequest);
-        return jwtProvider.getUserId(jwt);
+        String jwt = jwtProvider.resolveToken(httpServletRequest)
+            .orElseThrow(() -> new IllegalArgumentException("뭔가 잘못된 인증요청"));
+        return jwtProvider.getUserIdFromToken(jwt);
     }
 }

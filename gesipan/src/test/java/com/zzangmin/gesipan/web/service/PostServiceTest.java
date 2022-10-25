@@ -9,6 +9,7 @@ import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostUpdateRequest;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +61,7 @@ class PostServiceTest {
         Long userId = usersRepository.save(user).getUserId();
         Long postId = postRepository.save(post).getPostId();
         //when
-        PostResponse postResponse = postService.findOne(postId);
+        PostResponse postResponse = postService.findOne(postId, Optional.empty());
         //then
         Assertions.assertThat(postResponse.getPostId()).isEqualTo(post.getPostId());
         Assertions.assertThat(postResponse.getPostContent()).isEqualTo(post.getPostContent());

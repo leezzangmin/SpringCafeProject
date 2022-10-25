@@ -11,8 +11,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
@@ -52,10 +50,6 @@ public class EmbeddedRedisConfig {
         return redisTemplate;
     }
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new JpaTransactionManager();
-    }
 
     @PostConstruct
     public void redisServer() throws IOException {

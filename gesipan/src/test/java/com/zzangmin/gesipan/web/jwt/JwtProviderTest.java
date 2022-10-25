@@ -29,7 +29,8 @@ class JwtProviderTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getCookies()).thenReturn(cookies);
-        String getToken = jwtProvider.resolveToken(request);
+        String getToken = jwtProvider.resolveToken(request)
+            .orElseThrow(() -> new IllegalArgumentException("뭔가 잘못된 인증요청"));
 
 
         Assertions.assertThat(givenToken).isEqualTo(getToken);
@@ -41,7 +42,7 @@ class JwtProviderTest {
         //given
         String givenToken = jwtProvider.createToken(1234L);
         //when
-        Long userId = jwtProvider.getUserId(givenToken);
+        Long userId = jwtProvider.getUserIdFromToken(givenToken);
         //then
         Assertions.assertThat(1234L).isEqualTo(userId);
     }

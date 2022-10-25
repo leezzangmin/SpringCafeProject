@@ -27,6 +27,7 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentResponse> comments;
+    private boolean isRecommended;
 
     @Getter
     @NoArgsConstructor
@@ -44,7 +45,7 @@ public class PostResponse {
         }
     }
 
-    public static PostResponse of(Post post, List<Comment> comments, int recommendCount) {
+    public static PostResponse of(Post post, List<Comment> comments, int recommendCount, boolean isRecommendedFlag) {
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .userId(post.getUser().getUserId())
@@ -55,6 +56,7 @@ public class PostResponse {
                 .postContent(post.getPostContent())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
+                .isRecommended(isRecommendedFlag)
                 .comments(comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()))
                 .build();
     }
