@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.layer.basiccrud.controller;
 
 import com.zzangmin.gesipan.argumentresolver.Auth;
+import com.zzangmin.gesipan.jwt.JwtProvider;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
 import com.zzangmin.gesipan.layer.basiccrud.service.RedisService;
@@ -8,6 +9,7 @@ import com.zzangmin.gesipan.layer.basiccrud.service.TemporaryPostService;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class PostController {
     private final PostService postService;
     private final RedisService redisService;
     private final TemporaryPostService temporaryPostService;
+    private final JwtProvider jwtProvider;
 
 
     // TODO: 서블릿에서 아이피 뽑아서 레디스에 캐싱하는거 말고 JWT로 구분해서 넣는것은 어떤지
@@ -38,7 +41,8 @@ public class PostController {
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
         log.info("postId: {}", postId);
         String clientAddress = httpServletRequest.getRemoteAddr();
-        PostResponse singlePost = postService.findOne(postId);
+        Optional<Long> userId = jwtProvider.getUserId(httpServletRequest);
+        PostResponse singlePost = postService.findOne(postId, userId);
         redisService.increasePostHitCount(clientAddress, postId);
         return ResponseEntity.ok(singlePost);
     }
