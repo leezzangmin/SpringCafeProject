@@ -1,11 +1,11 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.TemporaryPost;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

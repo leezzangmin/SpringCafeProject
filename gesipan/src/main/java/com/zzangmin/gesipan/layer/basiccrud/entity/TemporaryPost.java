@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.entity;
 
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.*;
 
 import javax.persistence.*;

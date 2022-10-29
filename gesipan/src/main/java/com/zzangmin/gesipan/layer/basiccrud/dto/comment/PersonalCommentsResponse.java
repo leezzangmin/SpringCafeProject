@@ -2,7 +2,7 @@ package com.zzangmin.gesipan.layer.basiccrud.dto.comment;
 
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.zzangmin.gesipan.layer.basiccrud.dto.post;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

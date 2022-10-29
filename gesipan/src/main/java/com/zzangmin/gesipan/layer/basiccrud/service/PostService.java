@@ -5,6 +5,9 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.custom.CustomPostRepository;
 import java.util.Optional;
+
+import com.zzangmin.gesipan.layer.login.entity.Users;
+import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;

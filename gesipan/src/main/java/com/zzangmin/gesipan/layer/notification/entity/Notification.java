@@ -1,7 +1,7 @@
 package com.zzangmin.gesipan.layer.notification.entity;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

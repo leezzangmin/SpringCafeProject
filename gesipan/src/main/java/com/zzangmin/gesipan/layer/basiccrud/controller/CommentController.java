@@ -1,6 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.controller;
 
-import com.zzangmin.gesipan.argumentresolver.Auth;
+import com.zzangmin.gesipan.layer.login.argumentresolver.Auth;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
