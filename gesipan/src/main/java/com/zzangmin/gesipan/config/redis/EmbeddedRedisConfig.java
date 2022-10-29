@@ -60,10 +60,8 @@ public class EmbeddedRedisConfig {
      //   int port = isRedisRunning() ? findAvailablePort() : this.port;
         String redisPath = new ClassPathResource("redis-server").getPath();
         RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
-                .override(OS.MAC_OS_X, Architecture.x86, redisPath)
-                .override(OS.MAC_OS_X, Architecture.x86_64, redisPath)
-                .override(OS.WINDOWS, Architecture.x86, redisPath)
-                .override(OS.WINDOWS, Architecture.x86_64, redisPath);
+            .override(OS.MAC_OS_X, Architecture.x86, redisPath)
+            .override(OS.MAC_OS_X, Architecture.x86_64, redisPath);
         redisServer = new RedisServer(customProvider, port);
         log.info("redis port: {}", port);
         redisServer.start();
