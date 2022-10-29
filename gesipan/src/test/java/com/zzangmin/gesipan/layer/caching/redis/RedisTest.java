@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.redis;
+package com.zzangmin.gesipan.layer.caching.redis;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

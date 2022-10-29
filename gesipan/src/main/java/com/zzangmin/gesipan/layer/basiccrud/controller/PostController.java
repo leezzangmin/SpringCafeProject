@@ -4,7 +4,7 @@ import com.zzangmin.gesipan.layer.login.argumentresolver.Auth;
 import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
-import com.zzangmin.gesipan.layer.basiccrud.service.RedisService;
+import com.zzangmin.gesipan.layer.caching.redis.RedisService;
 import com.zzangmin.gesipan.layer.basiccrud.service.TemporaryPostService;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;

@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.layer.basiccrud.service;
+package com.zzangmin.gesipan.layer.caching.redis;
 
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;

@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.controller;
+package com.zzangmin.gesipan.layer.basiccrud.controller;
 
 import org.junit.jupiter.api.Test;
 

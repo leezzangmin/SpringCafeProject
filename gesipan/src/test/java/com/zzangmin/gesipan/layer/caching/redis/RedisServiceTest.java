@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.service;
+package com.zzangmin.gesipan.layer.caching.redis;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
@@ -7,7 +7,7 @@ import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.service.RedisService;
+import com.zzangmin.gesipan.layer.caching.redis.RedisService;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

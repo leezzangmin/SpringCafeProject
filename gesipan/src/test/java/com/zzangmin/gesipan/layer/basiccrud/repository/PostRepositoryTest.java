@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.dao;
+package com.zzangmin.gesipan.layer.basiccrud.repository;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;

@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.jwt;
+package com.zzangmin.gesipan.layer.login.service;
 
 import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import org.assertj.core.api.Assertions;

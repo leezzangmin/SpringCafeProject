@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.service;
+package com.zzangmin.gesipan.layer.login.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;

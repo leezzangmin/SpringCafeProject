@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.web.service;
+package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
