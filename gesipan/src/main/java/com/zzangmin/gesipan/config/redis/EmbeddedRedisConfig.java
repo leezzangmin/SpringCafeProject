@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,7 +13,10 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
+import redis.embedded.RedisExecProvider;
 import redis.embedded.RedisServer;
+import redis.embedded.util.Architecture;
+import redis.embedded.util.OS;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -54,7 +58,13 @@ public class EmbeddedRedisConfig {
     @PostConstruct
     public void redisServer() throws IOException {
      //   int port = isRedisRunning() ? findAvailablePort() : this.port;
-        redisServer = new RedisServer(port);
+        String redisPath = new ClassPathResource("redis-server").getPath();
+        RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
+                .override(OS.MAC_OS_X, Architecture.x86, redisPath)
+                .override(OS.MAC_OS_X, Architecture.x86_64, redisPath)
+                .override(OS.WINDOWS, Architecture.x86, redisPath)
+                .override(OS.WINDOWS, Architecture.x86_64, redisPath);
+        redisServer = new RedisServer(customProvider, port);
         log.info("redis port: {}", port);
         redisServer.start();
     }
