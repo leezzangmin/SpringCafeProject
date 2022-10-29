@@ -1,6 +1,6 @@
-package com.zzangmin.gesipan.interceptor;
+package com.zzangmin.gesipan.layer.login.interceptor;
 
-import com.zzangmin.gesipan.jwt.JwtProvider;
+import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;

@@ -1,7 +1,7 @@
 package com.zzangmin.gesipan.layer.basiccrud.controller;
 
-import com.zzangmin.gesipan.argumentresolver.Auth;
-import com.zzangmin.gesipan.jwt.JwtProvider;
+import com.zzangmin.gesipan.layer.login.argumentresolver.Auth;
+import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
 import com.zzangmin.gesipan.layer.basiccrud.service.RedisService;

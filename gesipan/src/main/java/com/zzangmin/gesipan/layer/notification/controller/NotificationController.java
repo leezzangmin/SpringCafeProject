@@ -1,6 +1,6 @@
 package com.zzangmin.gesipan.layer.notification.controller;
 
-import com.zzangmin.gesipan.argumentresolver.Auth;
+import com.zzangmin.gesipan.layer.login.argumentresolver.Auth;
 import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationsResponse;
 import com.zzangmin.gesipan.layer.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;

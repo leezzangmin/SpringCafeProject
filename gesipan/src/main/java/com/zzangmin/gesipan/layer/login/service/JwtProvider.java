@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.jwt;
+package com.zzangmin.gesipan.layer.login.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

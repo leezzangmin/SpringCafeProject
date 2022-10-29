@@ -1,12 +1,12 @@
-package com.zzangmin.gesipan.layer.basiccrud.service;
+package com.zzangmin.gesipan.layer.login.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zzangmin.gesipan.layer.basiccrud.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.dto.oauth.GithubToken;
-import com.zzangmin.gesipan.layer.basiccrud.dto.oauth.UserResources;
-import com.zzangmin.gesipan.layer.basiccrud.entity.UserRole;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.login.dto.oauth.GithubToken;
+import com.zzangmin.gesipan.layer.login.dto.oauth.UserResources;
+import com.zzangmin.gesipan.layer.login.entity.UserRole;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

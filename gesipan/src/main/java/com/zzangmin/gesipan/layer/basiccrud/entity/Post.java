@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.*;
 
 import java.time.LocalDateTime;

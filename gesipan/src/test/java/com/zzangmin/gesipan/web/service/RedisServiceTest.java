@@ -2,11 +2,11 @@ package com.zzangmin.gesipan.web.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
-import com.zzangmin.gesipan.layer.basiccrud.entity.UserRole;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.entity.UserRole;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.basiccrud.service.RedisService;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
 import org.assertj.core.api.Assertions;

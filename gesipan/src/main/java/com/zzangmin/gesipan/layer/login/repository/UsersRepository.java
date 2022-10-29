@@ -1,6 +1,6 @@
-package com.zzangmin.gesipan.layer.basiccrud.repository;
+package com.zzangmin.gesipan.layer.login.repository;
 
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

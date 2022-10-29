@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.argumentresolver;
+package com.zzangmin.gesipan.layer.login.argumentresolver;
 
 
 import java.lang.annotation.ElementType;

@@ -1,6 +1,6 @@
-package com.zzangmin.gesipan.argumentresolver;
+package com.zzangmin.gesipan.layer.login.argumentresolver;
 
-import com.zzangmin.gesipan.jwt.JwtProvider;
+import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

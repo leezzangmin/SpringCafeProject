@@ -1,6 +1,6 @@
 package com.zzangmin.gesipan.practice;
 
-import com.zzangmin.gesipan.jwt.JwtProvider;
+import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

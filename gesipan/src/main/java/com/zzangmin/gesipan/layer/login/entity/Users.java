@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.layer.basiccrud.entity;
+package com.zzangmin.gesipan.layer.login.entity;
 
 import javax.persistence.*;
 

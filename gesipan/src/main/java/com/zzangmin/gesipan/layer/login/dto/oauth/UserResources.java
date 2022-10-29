@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.layer.basiccrud.dto.oauth;
+package com.zzangmin.gesipan.layer.login.dto.oauth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

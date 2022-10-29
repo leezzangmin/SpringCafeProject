@@ -1,7 +1,7 @@
-package com.zzangmin.gesipan.layer.basiccrud.service;
+package com.zzangmin.gesipan.layer.login.service;
 
-import com.zzangmin.gesipan.layer.basiccrud.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Users;
+import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

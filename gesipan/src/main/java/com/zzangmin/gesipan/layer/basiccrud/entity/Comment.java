@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.layer.basiccrud.entity;
 
 import javax.persistence.*;
 
+import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
