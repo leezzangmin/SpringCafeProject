@@ -19,12 +19,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class RedisService {
-
 
     private final long clientAddressPostRequestWriteExpireDurationSec = 86400;
     private final long scheduledIncreaseSeconds = 10;
@@ -46,12 +44,6 @@ public class RedisService {
         log.debug("same user requests duplicate in 24hours: {}, {}", clientAddress, postId);
     }
 
-    /**
-     * fixedRate, fixedDelay 차이점
-     *
-     *  fixedRate는 작업 수행시간과 상관없이 일정 주기마다 메소드를 호출하는 것이고,
-     * fixedDelay는 (작업 수행 시간을 포함하여) 작업을 마친 후부터 주기 타이머가 돌아 메소드를 호출하는 것이다.
-     */
     @Transactional
     @Scheduled(fixedRate = scheduledIncreaseSeconds, timeUnit = TimeUnit.SECONDS)
     public void scheduledIncreasePostHitCounts() {
@@ -74,7 +66,7 @@ public class RedisService {
                 .forEach(i -> hashOperations.delete(scheduleHitCountHashKey, i));
     }
 
-    public void hitCountBulkUpdate(List<Long> postIds, List<Long> hitCounts) {
+    private void hitCountBulkUpdate(List<Long> postIds, List<Long> hitCounts) {
         List<Post> posts = postRepository.findAllById(postIds);
         IntStream.range(0, posts.size())
                 .boxed()
@@ -101,11 +93,8 @@ public class RedisService {
         log.debug("user post request key: {}", key);
         redisTemplate.opsForValue()
                 .set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
-        // 컬렉션에 담으면 item 개별로 expire 불가능 -> 컬렉션 전체에 대해서 expire만 가능
     }
 
-    // key 형식 : 'client Address + postId' ->  '127.0.0.1:500'
-    // TODO : ip -> JWT로 구분하기
     private String generateKey(String clientAddress, Long postId) {
         return clientAddress + ":" + postId;
     }
