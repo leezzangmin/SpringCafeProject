@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 class RedisServiceTest {
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private RedisService redisService;
     @Autowired
@@ -49,8 +49,7 @@ class RedisServiceTest {
         //when
         redisService.increasePostHitCount("123.123.123.123", 444L);
         //then
-        Assertions.assertThat(redisTemplate.opsForHash().hasKey("scheduleHitCounts", 444L)).isTrue();
-        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(1L);
+        Assertions.assertThat(redisTemplate.opsForValue().get("scheduleHitCounts:444")).isEqualTo("1");
         Assertions.assertThat(redisTemplate.hasKey("123.123.123.123:444")).isTrue();
     }
 
@@ -62,7 +61,7 @@ class RedisServiceTest {
         redisService.increasePostHitCount("123.123.123.123", 444L);
         redisService.increasePostHitCount("123.123.123.123", 444L);
         //then
-        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(1L);
+        Assertions.assertThat(redisTemplate.opsForValue().get("scheduleHitCounts:444")).isEqualTo("1");
     }
 
     @Test
@@ -74,7 +73,7 @@ class RedisServiceTest {
         redisService.increasePostHitCount("123.123.123.123", 444L);
         redisService.increasePostHitCount("000.000.000.000", 444L);
         //then
-        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(2L);
+        Assertions.assertThat(redisTemplate.opsForValue().get("scheduleHitCounts:444")).isEqualTo("2");
     }
 
     @Test
@@ -121,9 +120,9 @@ class RedisServiceTest {
         usersRepository.save(user);
         Post savedPost = postRepository.save(post);
 
-        HashOperations<String, Long, Long> hashOperations = redisTemplate.opsForHash();
-        hashOperations
-                .increment("scheduleHitCounts", savedPost.getPostId(), 15);
+        redisTemplate.opsForValue()
+                .increment("scheduleHitCounts:" + savedPost.getPostId().toString(), 15);
+        System.out.println("scheduleHitCounts:" + savedPost.getPostId().toString());
         //when
         redisService.scheduledIncreasePostHitCounts();
         //then
@@ -131,7 +130,7 @@ class RedisServiceTest {
         Assertions.assertThat(savedPost.getHitCount() + 15)
                 .isEqualTo(post1.getHitCount());
 
-        Long scheduleHitCounts = hashOperations.get("scheduleHitCounts", savedPost.getPostId());
+        String scheduleHitCounts = redisTemplate.opsForValue().get("scheduleHitCounts:" + savedPost.getPostId().toString());
         Assertions.assertThat(scheduleHitCounts).isNull();
     }
 }
