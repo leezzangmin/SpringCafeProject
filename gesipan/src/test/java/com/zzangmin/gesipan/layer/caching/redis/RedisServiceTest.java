@@ -7,7 +7,6 @@ import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.caching.redis.RedisService;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,7 @@ import java.time.LocalDateTime;
 class RedisServiceTest {
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private RedisService redisService;
     @Autowired
@@ -36,8 +35,6 @@ class RedisServiceTest {
     @Autowired
     private UsersRepository usersRepository;
 
-    // 레디스는 롤백이 없다.
-    // 초기상태로 만드는 메서드를 만들어서 사용해야한다 ?
     @BeforeEach
     private void deleteAll() {
         redisTemplate.getConnectionFactory()
@@ -52,8 +49,7 @@ class RedisServiceTest {
         //when
         redisService.increasePostHitCount("123.123.123.123", 444L);
         //then
-        Assertions.assertThat(redisTemplate.opsForHash().hasKey("scheduleHitCounts", 444L)).isTrue();
-        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(1L);
+        Assertions.assertThat(redisTemplate.opsForValue().get("scheduleHitCounts:444")).isEqualTo("1");
         Assertions.assertThat(redisTemplate.hasKey("123.123.123.123:444")).isTrue();
     }
 
@@ -65,7 +61,7 @@ class RedisServiceTest {
         redisService.increasePostHitCount("123.123.123.123", 444L);
         redisService.increasePostHitCount("123.123.123.123", 444L);
         //then
-        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(1L);
+        Assertions.assertThat(redisTemplate.opsForValue().get("scheduleHitCounts:444")).isEqualTo("1");
     }
 
     @Test
@@ -77,7 +73,20 @@ class RedisServiceTest {
         redisService.increasePostHitCount("123.123.123.123", 444L);
         redisService.increasePostHitCount("000.000.000.000", 444L);
         //then
-        Assertions.assertThat(redisTemplate.opsForHash().get("scheduleHitCounts",444L)).isEqualTo(2L);
+        Assertions.assertThat(redisTemplate.opsForValue().get("scheduleHitCounts:444")).isEqualTo("2");
+    }
+
+    @Test
+    @DisplayName("중복방지를 위해 ip로 게시글을 방문한 기록이 유지되어야 한다.")
+    void 중복ip기록() {
+        //given
+
+        //when
+        redisService.increasePostHitCount("123.123.123.123",123L);
+        //then
+        String record = redisTemplate.opsForValue()
+                .get("123.123.123.123:123").toString();
+        Assertions.assertThat(record).isNotNull();
     }
 
     @Test
@@ -111,9 +120,9 @@ class RedisServiceTest {
         usersRepository.save(user);
         Post savedPost = postRepository.save(post);
 
-        HashOperations<String, Long, Long> hashOperations = redisTemplate.opsForHash();
-        hashOperations
-                .increment("scheduleHitCounts", savedPost.getPostId(), 15);
+        redisTemplate.opsForValue()
+                .increment("scheduleHitCounts:" + savedPost.getPostId().toString(), 15);
+        System.out.println("scheduleHitCounts:" + savedPost.getPostId().toString());
         //when
         redisService.scheduledIncreasePostHitCounts();
         //then
@@ -121,7 +130,7 @@ class RedisServiceTest {
         Assertions.assertThat(savedPost.getHitCount() + 15)
                 .isEqualTo(post1.getHitCount());
 
-        Long scheduleHitCounts = hashOperations.get("scheduleHitCounts", savedPost.getPostId());
+        String scheduleHitCounts = redisTemplate.opsForValue().get("scheduleHitCounts:" + savedPost.getPostId().toString());
         Assertions.assertThat(scheduleHitCounts).isNull();
     }
 }
