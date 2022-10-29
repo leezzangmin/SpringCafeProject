@@ -1,6 +1,5 @@
 package com.zzangmin.gesipan.layer.login.service;
 
-import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -6,11 +6,11 @@ import com.querydsl.jpa.JPQLQuery;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSearchRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.QPost;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.stereotype.Repository;
 
 import static com.zzangmin.gesipan.layer.basiccrud.entity.QPost.post;
 
