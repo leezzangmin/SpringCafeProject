@@ -53,17 +53,19 @@ public class RedisService {
 
         while (cursor.hasNext()) {
             String key = new String(cursor.next(), Charsets.UTF_8);
-            System.out.println("key = " + key);
+            Long postId = extractPostIdFromHitCountKey(key);
             String value = redisTemplate.opsForValue().getAndDelete(key);
-            postIds.add(Long.valueOf(key));
+
+            postIds.add(postId);
             hitCounts.add(Long.valueOf(value));
         }
-        System.out.println("postIds = " + postIds);System.out.println("postIds = " + postIds);
-        System.out.println("postIds = " + postIds);System.out.println("postIds = " + postIds);System.out.println("postIds = " + postIds);System.out.println("postIds = " + postIds);
 
         hitCountBulkUpdate(postIds, hitCounts);
     }
 
+    private Long extractPostIdFromHitCountKey(String key) {
+        return Long.valueOf(key.split(":")[1]);
+    }
     private void hitCountBulkUpdate(List<Long> postIds, List<Long> hitCounts) {
         List<Post> posts = postRepository.findAllById(postIds);
         IntStream.range(0, posts.size())
