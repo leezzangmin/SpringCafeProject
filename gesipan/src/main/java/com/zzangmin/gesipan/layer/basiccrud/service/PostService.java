@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.*;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ public class PostService {
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
     private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final TemporaryPostRepository temporaryPostRepository;
 
     @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
@@ -40,10 +43,10 @@ public class PostService {
         System.out.println("userId = " + userId);
         Post post = postRepository.findByIdWithUser(postId).
             orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        List<CommentResponse> commentResponses = commentService.pagination(postId, PageRequest.of(0, 10));
         int recommendCount = postRecommendRepository.countByPostId(postId);
         boolean isRecommendedFlag = isUserRecommendedPost(postId, userId);
-        return PostResponse.of(post, comments, recommendCount, isRecommendedFlag);
+        return PostResponse.of(post, commentResponses, recommendCount, isRecommendedFlag);
     }
 
     @Transactional
