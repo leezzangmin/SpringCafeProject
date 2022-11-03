@@ -30,7 +30,7 @@ public class PostResponse {
     private List<CommentResponse> comments;
     private boolean isRecommended;
 
-    public static PostResponse of(Post post, List<Comment> comments, int recommendCount, boolean isRecommendedFlag) {
+    public static PostResponse of(Post post, List<CommentResponse> commentResponses, int recommendCount, boolean isRecommendedFlag) {
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .userId(post.getUser().getUserId())
@@ -42,7 +42,7 @@ public class PostResponse {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .isRecommended(isRecommendedFlag)
-                .comments(comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()))
+                .comments(commentResponses)
                 .build();
     }
 
