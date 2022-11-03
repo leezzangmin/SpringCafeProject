@@ -1,4 +1,4 @@
-package com.zzangmin.gesipan.layer.basiccrud.dto.post;
+package com.zzangmin.gesipan.layer.basiccrud.dto.comment;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import lombok.AllArgsConstructor;
