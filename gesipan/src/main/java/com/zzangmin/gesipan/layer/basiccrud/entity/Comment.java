@@ -3,13 +3,11 @@ package com.zzangmin.gesipan.layer.basiccrud.entity;
 import javax.persistence.*;
 
 import com.zzangmin.gesipan.layer.login.entity.Users;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@ToString(exclude = {"post", "user"})
 @Getter
 @Builder
 @AllArgsConstructor
