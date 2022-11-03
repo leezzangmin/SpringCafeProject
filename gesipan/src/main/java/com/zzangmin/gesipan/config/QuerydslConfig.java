@@ -4,6 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zzangmin.gesipan.layer.basiccrud.repository.custom.CustomPostRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +21,7 @@ public class QuerydslConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public CustomPostRepository customPostRepository() {
         return new CustomPostRepository(jpaQueryFactory());
     }

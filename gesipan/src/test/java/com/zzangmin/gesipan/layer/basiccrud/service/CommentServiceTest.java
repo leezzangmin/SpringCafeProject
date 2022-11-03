@@ -1,33 +1,38 @@
-package com.zzangmin.gesipan.layer.basiccrud.repository;
+package com.zzangmin.gesipan.layer.basiccrud.service;
 
+import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
+import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
+import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
-@DataJpaTest
-class PostRepositoryTest {
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+class CommentServiceTest {
+
+    @Autowired
+    CommentService commentService;
     @Autowired
     PostRepository postRepository;
     @Autowired
     PostCategoryRepository postCategoryRepository;
     @Autowired
     UsersRepository usersRepository;
+    @Autowired
+    CommentRepository commentRepository;
 
     PostCategory postCategory;
     Users user;
@@ -62,34 +67,28 @@ class PostRepositoryTest {
     }
 
     @Test
-    void findByIdWithUser() {
+    void pagination() {
         //given
-        Long userId = user.getUserId();
-        Long postCategoryId = postCategory.getPostCategoryId();
-        Long postId = post.getPostId();
+        LocalDateTime now = LocalDateTime.now();
+        Comment comment1 = Comment.builder()
+                .commentContent("testContent")
+                .createdAt(now)
+                .updatedAt(now)
+                .user(user)
+                .post(post)
+                .build();
+        Comment comment2 = Comment.builder()
+                .commentContent("testContent")
+                .createdAt(now)
+                .updatedAt(now)
+                .user(user)
+                .post(post)
+                .build();
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
         //when
-        Post post = postRepository.findByIdWithUser(postId).get();
+        commentService.pagination(post.getPostId(), PageRequest.of(0,10));
         //then
-        org.assertj.core.api.Assertions.assertThat(post.getPostId()).isEqualTo(postId);
-        org.assertj.core.api.Assertions.assertThat(post.getUser().getUserId()).isEqualTo(userId);
 
-    }
-
-    @Test
-    void findPageByCategoryId() {
-        //given
-        Long userId = user.getUserId();
-        Long postCategoryId = postCategory.getPostCategoryId();
-        Long postId = post.getPostId();
-        Pageable pageable = PageRequest.of(0,10);
-
-        //when
-        List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(postCategoryId, pageable);
-        List<Post> posts = postRepository.paginationByPostIds(postIds);
-        List<Long> nonCategorizedPosts = postRepository.findPaginationPostIdsByCategoryId(99999L, pageable);
-
-        //then
-        org.assertj.core.api.Assertions.assertThat(posts.size()).isLessThan(10).isGreaterThan(0);
-        Assertions.assertThat(nonCategorizedPosts.size()).isEqualTo(0);
     }
 }

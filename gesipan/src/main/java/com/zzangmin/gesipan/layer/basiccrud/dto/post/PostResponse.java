@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.dto.post;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import lombok.AllArgsConstructor;
@@ -29,23 +30,7 @@ public class PostResponse {
     private List<CommentResponse> comments;
     private boolean isRecommended;
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class CommentResponse {
-        private Long commentId;
-        private Long userId;
-        private String userNickname;
-        private String content;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-
-        private static CommentResponse of(Comment comment) {
-            return new CommentResponse(comment.getCommentId(), comment.getUser().getUserId(), comment.getUser().getUserName(), comment.getCommentContent(), comment.getCreatedAt(), comment.getUpdatedAt());
-        }
-    }
-
-    public static PostResponse of(Post post, List<Comment> comments, int recommendCount, boolean isRecommendedFlag) {
+    public static PostResponse of(Post post, List<CommentResponse> commentResponses, int recommendCount, boolean isRecommendedFlag) {
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .userId(post.getUser().getUserId())
@@ -57,7 +42,7 @@ public class PostResponse {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .isRecommended(isRecommendedFlag)
-                .comments(comments.stream().map(i -> CommentResponse.of(i)).collect(Collectors.toList()))
+                .comments(commentResponses)
                 .build();
     }
 

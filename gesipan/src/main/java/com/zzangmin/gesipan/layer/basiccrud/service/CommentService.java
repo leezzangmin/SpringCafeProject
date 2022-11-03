@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
@@ -13,11 +14,13 @@ import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.notification.entity.NotificationType;
 import com.zzangmin.gesipan.layer.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -64,6 +67,15 @@ public class CommentService {
         return PersonalCommentsResponse.of(user, comments);
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentResponse> pagination(Long postId, Pageable pageable) {
+        List<Long> commentIds = commentRepository.findCommentIdsByPaginationByPostId(postId, pageable);
+        List<Comment> comments = commentRepository.findByIdsWithUsers(commentIds);
+        return comments.stream()
+                .map(c -> CommentResponse.of(c))
+                .collect(Collectors.toList());
+    }
+
     private void validateTime(LocalDateTime updatedAt, LocalDateTime createdAt) {
         if (updatedAt.isBefore(createdAt) || updatedAt.isBefore(createdAt)) {
             throw new IllegalArgumentException("요청된 시간이 조건에 부합하지 않습니다.");
@@ -90,5 +102,6 @@ public class CommentService {
             throw new IllegalArgumentException("해당 유저의 댓글이 아닙니다.");
         }
     }
+
 
 }
