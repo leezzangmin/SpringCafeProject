@@ -39,7 +39,6 @@ class PostServiceTest {
     void findOne() {
         //given
         PostCategory postCategory = PostCategory.builder()
-                .postCategoryId(1L)
                 .categoryName(Categories.FREE)
                 .build();
         Users user = Users.builder()
@@ -99,7 +98,6 @@ class PostServiceTest {
     @DisplayName("임시 게시물을 불러와서 저장하면 임시 게시물은 삭제되어야 한다.")
     void save2() {
         //given
-        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",1L, LocalDateTime.now(), 1L);
         PostCategory postCategory = PostCategory.builder()
                 .categoryName(Categories.FREE)
                 .build();
@@ -118,11 +116,13 @@ class PostServiceTest {
                 .user(user)
                 .build();
 
+
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
         Long tempPostId = temporaryPostRepository.save(temporaryPost).getTempPostId();
+        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",postCategoryId, LocalDateTime.now(), tempPostId);
         //when
-        Long savedPostId = postService.save(1L, postSaveRequest);
+        Long savedPostId = postService.save(userId, postSaveRequest);
         //then
         List<TemporaryPost> temporaryPosts = temporaryPostRepository.findByUserId(1L);
         Assertions.assertThat(temporaryPosts.size()).isEqualTo(0);
