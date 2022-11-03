@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.controller;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.layer.login.argumentresolver.Auth;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
@@ -7,10 +8,12 @@ import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse
 import com.zzangmin.gesipan.layer.basiccrud.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,6 +46,13 @@ public class CommentController {
     public ResponseEntity<PersonalCommentsResponse> myComments(@Auth Long userId) {
         log.info("my comments userId: {}", userId);
         return ResponseEntity.ok(commentService.userComments(userId));
+    }
+
+    @GetMapping("/comments")
+    public ResponseEntity<List<CommentResponse>> commentPagination(@RequestParam Long postId, Pageable pageable) {
+        log.info("comment pagination: {}", pageable);
+        List<CommentResponse> commentResponses = commentService.pagination(postId, pageable);
+        return ResponseEntity.ok(commentResponses);
     }
 
 }
