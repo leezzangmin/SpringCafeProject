@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
-@RequiredArgsConstructor
 @Component
 public class JwtProvider {
 
@@ -26,6 +24,13 @@ public class JwtProvider {
 
     // 토큰 유효시간 30분
     private final long tokenValidTime = 30 * 60 * 1000L;
+
+    private JwtProvider() {
+    }
+
+    public JwtProvider(String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     @PostConstruct
     protected void init() {
