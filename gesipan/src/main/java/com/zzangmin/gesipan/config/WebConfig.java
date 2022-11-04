@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginCheckInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login","/post/{postId}", "/posts", "/oauth/github_url")
+                .excludePathPatterns("/login","/post/{postId}", "/posts", "/oauth/github_url", "/comments", "/post/search", "")
                 .order(1);
     }
 
