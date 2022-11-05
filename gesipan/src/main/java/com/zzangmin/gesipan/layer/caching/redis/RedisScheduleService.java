@@ -1,8 +1,8 @@
 package com.zzangmin.gesipan.layer.caching.redis;
 
 import com.google.common.base.Charsets;
-import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
@@ -21,29 +21,16 @@ import java.util.stream.IntStream;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class RedisService {
-
-    private final long clientAddressPostRequestWriteExpireDurationSec = 86400;
-    private final long scheduledIncreaseSeconds = 10;
-    private final String scheduleHitCountKey = "scheduleHitCounts";
-
+public class RedisScheduleService {
     private final RedisTemplate<String, String> redisTemplate;
     private final PostRepository postRepository;
 
-    public void increasePostHitCount(String clientAddress, Long postId) {
-        if (isFirstIpRequest(clientAddress, postId)) {
-            insertHitCountsToSchedulingList(postId);
-            cacheClientRequest(clientAddress, postId);
-        }
-        log.debug("same user requests duplicate in 24hours: {}, {}", clientAddress, postId);
-    }
-
     @Transactional
-    @Scheduled(fixedRate = scheduledIncreaseSeconds, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = RedisKeyUtils.scheduledIncreaseSeconds, timeUnit = TimeUnit.SECONDS)
     public void scheduledIncreasePostHitCounts() {
         log.debug("스케줄 태스크 {}", LocalDateTime.now());
         ScanOptions scanOptions = ScanOptions.scanOptions()
-                .match(scheduleHitCountKey + ":*")
+                .match(RedisKeyUtils.scheduleHitCountKey + ":*")
                 .count(100)
                 .build();
 
@@ -66,6 +53,7 @@ public class RedisService {
     private Long extractPostIdFromHitCountKey(String key) {
         return Long.valueOf(key.split(":")[1]);
     }
+
     private void hitCountBulkUpdate(List<Long> postIds, List<Long> hitCounts) {
         List<Post> posts = postRepository.findAllById(postIds);
         IntStream.range(0, posts.size())
@@ -74,31 +62,4 @@ public class RedisService {
     }
 
 
-    private void insertHitCountsToSchedulingList(Long postId) {
-        redisTemplate.opsForValue()
-                        .increment(generateScheduleKey(postId), 1);
-    }
-
-    private boolean isFirstIpRequest(String clientAddress, Long postId) {
-        String key = generateCacheKey(clientAddress, postId);
-        log.debug("user post request key: {}", key);
-        if (redisTemplate.hasKey(key)) {
-            return false;
-        }
-        return true;
-    }
-
-    private void cacheClientRequest(String clientAddress, Long postId) {
-        String key = generateCacheKey(clientAddress, postId);
-        log.debug("user post request key: {}", key);
-        redisTemplate.opsForValue()
-                .set(key, "", clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
-    }
-
-    private String generateCacheKey(String clientAddress, Long postId) {
-        return clientAddress + ":" + postId;
-    }
-    private String generateScheduleKey(Long postId) {
-        return scheduleHitCountKey + ":" + postId;
-    }
 }
