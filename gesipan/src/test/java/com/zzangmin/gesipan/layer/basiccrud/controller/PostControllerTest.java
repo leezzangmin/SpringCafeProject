@@ -3,7 +3,7 @@ package com.zzangmin.gesipan.layer.basiccrud.controller;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostResponse;
 import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
 import com.zzangmin.gesipan.layer.basiccrud.service.TemporaryPostService;
-import com.zzangmin.gesipan.layer.caching.redis.RedisService;
+import com.zzangmin.gesipan.layer.caching.redis.RedisPostHitCountBulkUpdateService;
 import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -32,7 +31,7 @@ class PostControllerTest {
     PostService postService;
 
     @MockBean
-    RedisService redisService;
+    RedisPostHitCountBulkUpdateService redisPostHitCountBulkUpdateService;
 
     @MockBean
     JwtProvider jwtProvider;
