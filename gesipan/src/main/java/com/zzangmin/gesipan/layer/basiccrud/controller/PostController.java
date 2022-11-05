@@ -4,7 +4,7 @@ import com.zzangmin.gesipan.layer.login.argumentresolver.Auth;
 import com.zzangmin.gesipan.layer.login.service.JwtProvider;
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
-import com.zzangmin.gesipan.layer.caching.redis.RedisService;
+import com.zzangmin.gesipan.layer.caching.redis.RedisPostHitCountBulkUpdateService;
 import com.zzangmin.gesipan.layer.basiccrud.service.TemporaryPostService;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
@@ -28,10 +28,10 @@ import java.time.temporal.ChronoUnit;
 @RestController
 public class PostController {
 
-    private final int validateSeconds = 60;
+    private final int validateDifferenceOfTwoLocalDateTimeSeconds = 60;
 
     private final PostService postService;
-    private final RedisService redisService;
+    private final RedisPostHitCountBulkUpdateService redisPostHitCountBulkUpdateService;
     private final TemporaryPostService temporaryPostService;
     private final JwtProvider jwtProvider;
 
@@ -43,7 +43,7 @@ public class PostController {
         String clientAddress = httpServletRequest.getRemoteAddr();
         Optional<Long> userId = jwtProvider.getUserId(httpServletRequest);
         PostResponse singlePost = postService.findOne(postId, userId);
-        redisService.increasePostHitCount(clientAddress, postId);
+        redisPostHitCountBulkUpdateService.increasePostHitCount(clientAddress, postId);
         return ResponseEntity.ok(singlePost);
     }
 
@@ -139,7 +139,7 @@ public class PostController {
     }
 
     private void validateRequestDate(LocalDateTime givenDate) {
-        if (ChronoUnit.SECONDS.between(LocalDateTime.now(), givenDate) > validateSeconds) {
+        if (ChronoUnit.SECONDS.between(LocalDateTime.now(), givenDate) > validateDifferenceOfTwoLocalDateTimeSeconds) {
             throw new IllegalArgumentException("입력된 날짜가 조건에 부합하지 않습니다.");
         }
     }
