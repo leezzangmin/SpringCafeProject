@@ -30,6 +30,14 @@ public class Users {
     @Embedded
     private BaseTime baseTime;
 
+    public LocalDateTime getCreatedAt() {
+        return baseTime.getCreatedAt();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return baseTime.getUpdatedAt();
+    }
+
     public void update(String userName, String userNickname, LocalDateTime updateTime) {
         this.userName = userName;
         this.userNickname = userNickname;
