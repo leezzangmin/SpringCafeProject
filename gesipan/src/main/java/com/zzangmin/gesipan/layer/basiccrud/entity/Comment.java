@@ -39,7 +39,7 @@ public class Comment {
 
     public void update(String commentContent, LocalDateTime updatedAt) {
         this.commentContent = commentContent;
-        baseTime.refreshUpdatedAt(updatedAt);
+        this.baseTime.refreshUpdatedAt(updatedAt);
     }
 
 }

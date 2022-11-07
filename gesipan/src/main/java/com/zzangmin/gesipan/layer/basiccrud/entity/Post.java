@@ -1,14 +1,8 @@
 package com.zzangmin.gesipan.layer.basiccrud.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.*;
 
@@ -35,17 +29,23 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_category_id")
     private PostCategory postCategory;
-    @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime createdAt;
-    @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime updatedAt;
     @Column(nullable = true, columnDefinition = "BIGINT default 0")
     private Long hitCount;
+    @Embedded
+    private BaseTime baseTime;
+
+    public LocalDateTime getCreatedAt() {
+        return baseTime.getCreatedAt();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return baseTime.getUpdatedAt();
+    }
 
     public void update(String postSubject, String postContent, LocalDateTime updateAt) {
         this.postSubject = postSubject;
         this.postContent = postContent;
-        this.updatedAt = updateAt;
+        this.baseTime.refreshUpdatedAt(updateAt);
     }
 
 
