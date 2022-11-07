@@ -4,6 +4,7 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
@@ -54,8 +55,7 @@ class PostServiceTest {
                 .postContent("내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
                 .hitCount(0L)
                 .build();
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
@@ -148,8 +148,7 @@ class PostServiceTest {
                 .postContent("delete내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
                 .build();
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
@@ -182,8 +181,7 @@ class PostServiceTest {
                 .postContent("update내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
                 .build();
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();

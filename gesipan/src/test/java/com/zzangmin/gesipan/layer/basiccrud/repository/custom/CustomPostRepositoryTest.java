@@ -6,6 +6,7 @@ import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSearchRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import java.time.LocalDateTime;
@@ -55,8 +56,7 @@ class CustomPostRepositoryTest {
             .postContent("내용")
             .user(user)
             .postCategory(postCategory)
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
             .hitCount(0L)
             .build();
         em.persist(postCategory);

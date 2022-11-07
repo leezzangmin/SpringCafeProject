@@ -58,8 +58,7 @@ class CommentServiceTest {
                 .postContent("test내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .hitCount(0L)
                 .build();
         usersRepository.save(user).getUserId();
