@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.layer.basiccrud.dto.comment;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.Getter;
 import lombok.ToString;
@@ -26,8 +27,7 @@ public class CommentSaveRequest {
     public Comment toEntity(Users user, Post post) {
         return Comment.builder()
                 .commentContent(this.commentContent)
-                .createdAt(this.createdAt)
-                .updatedAt(this.createdAt)
+                .baseTime(new BaseTime(this.createdAt, this.createdAt))
                 .user(user)
                 .post(post)
                 .build();
