@@ -58,8 +58,7 @@ class RedisScheduleServiceTest {
                 .userName("가짜이름")
                 .userNickname("가짜닉네임")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
         Post post = Post.builder()
                 .postSubject("가짜제목")

@@ -47,8 +47,7 @@ class PostServiceTest {
                 .userName("이창민")
                 .userNickname("zzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
         Post post = Post.builder()
                 .postSubject("제목")
@@ -82,8 +81,7 @@ class PostServiceTest {
                 .userName("이창민")
                 .userNickname("zzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
 
         Long userId = usersRepository.save(user).getUserId();
@@ -106,8 +104,7 @@ class PostServiceTest {
                 .userName("이창민")
                 .userNickname("zzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
         TemporaryPost temporaryPost = TemporaryPost.builder()
                 .postSubject("temp제목")
@@ -140,8 +137,7 @@ class PostServiceTest {
                 .userName("이창민")
                 .userNickname("zzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
         Post post = Post.builder()
                 .postSubject("delete제목")
@@ -173,8 +169,7 @@ class PostServiceTest {
                 .userName("이창민")
                 .userNickname("zzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
         Post post = Post.builder()
                 .postSubject("update제목")

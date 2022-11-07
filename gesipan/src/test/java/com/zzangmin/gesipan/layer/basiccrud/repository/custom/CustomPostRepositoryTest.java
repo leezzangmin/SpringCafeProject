@@ -48,8 +48,7 @@ class CustomPostRepositoryTest {
             .userName("이창민")
             .userNickname("zzangmin")
             .userRole(UserRole.NORMAL)
-            .createdAt(LocalDateTime.of(2022,2,2,2,2))
-            .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+            .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
             .build();
         post = Post.builder()
             .postSubject("제목")
