@@ -41,7 +41,8 @@ public class CustomPostRepository {
 
     private BooleanExpression betweenDate(LocalDateTime startAt, LocalDateTime endAt) {
         if (startAt != null) {
-            return post.createdAt.between(startAt, endAt);
+
+            return post.baseTime.createdAt.between(startAt, endAt);
         }
         return null;
     }
