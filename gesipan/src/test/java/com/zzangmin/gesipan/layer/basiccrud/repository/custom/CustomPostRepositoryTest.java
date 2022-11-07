@@ -6,6 +6,7 @@ import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSearchRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import java.time.LocalDateTime;
@@ -47,16 +48,14 @@ class CustomPostRepositoryTest {
             .userName("이창민")
             .userNickname("zzangmin")
             .userRole(UserRole.NORMAL)
-            .createdAt(LocalDateTime.of(2022,2,2,2,2))
-            .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+            .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
             .build();
         post = Post.builder()
             .postSubject("제목")
             .postContent("내용")
             .user(user)
             .postCategory(postCategory)
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
             .hitCount(0L)
             .build();
         em.persist(postCategory);

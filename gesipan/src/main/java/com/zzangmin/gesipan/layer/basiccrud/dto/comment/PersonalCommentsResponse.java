@@ -33,11 +33,11 @@ public class PersonalCommentsResponse {
     public static PersonalCommentsResponse of(Users user, List<Comment> comments) {
         return new PersonalCommentsResponse(user.getUserId(), user.getUserNickname(),
                 comments.stream()
-                        .map(i -> PersonalCommentResponse.builder()
-                                        .referencePostId(i.getPost().getPostId())
-                                        .commentId(i.getCommentId())
-                                        .commentContent(i.getCommentContent())
-                                        .createdAt(i.getCreatedAt())
+                        .map(comment -> PersonalCommentResponse.builder()
+                                        .referencePostId(comment.getPost().getPostId())
+                                        .commentId(comment.getCommentId())
+                                        .commentContent(comment.getCommentContent())
+                                        .createdAt(comment.getCreatedAt())
                                         .build())
                         .collect(Collectors.toList())
         );

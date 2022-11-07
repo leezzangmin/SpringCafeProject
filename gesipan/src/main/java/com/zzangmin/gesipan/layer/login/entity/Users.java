@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.layer.login.entity;
 
 import javax.persistence.*;
 
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -26,14 +27,20 @@ public class Users {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 45, columnDefinition = "VARCHAR(45)")
     private UserRole userRole;
-    @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime createdAt;
-    @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime updatedAt;
+    @Embedded
+    private BaseTime baseTime;
+
+    public LocalDateTime getCreatedAt() {
+        return baseTime.getCreatedAt();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return baseTime.getUpdatedAt();
+    }
 
     public void update(String userName, String userNickname, LocalDateTime updateTime) {
         this.userName = userName;
         this.userNickname = userNickname;
-        this.updatedAt = updateTime;
+        this.baseTime.refreshUpdatedAt(updateTime);
     }
 }

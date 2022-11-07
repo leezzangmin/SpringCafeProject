@@ -7,6 +7,7 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
@@ -48,8 +49,7 @@ class CommentServiceTest {
                 .userName("이창민")
                 .userNickname("zzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
 
         post = Post.builder()
@@ -57,8 +57,7 @@ class CommentServiceTest {
                 .postContent("test내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .hitCount(0L)
                 .build();
         usersRepository.save(user).getUserId();
@@ -72,15 +71,13 @@ class CommentServiceTest {
         LocalDateTime now = LocalDateTime.now();
         Comment comment1 = Comment.builder()
                 .commentContent("testContent")
-                .createdAt(now)
-                .updatedAt(now)
+                .baseTime(new BaseTime(now, now))
                 .user(user)
                 .post(post)
                 .build();
         Comment comment2 = Comment.builder()
                 .commentContent("testContent")
-                .createdAt(now)
-                .updatedAt(now)
+                .baseTime(new BaseTime(now, now))
                 .user(user)
                 .post(post)
                 .build();

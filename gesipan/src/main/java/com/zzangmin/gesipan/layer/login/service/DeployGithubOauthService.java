@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.layer.login.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.login.dto.oauth.GithubToken;
 import com.zzangmin.gesipan.layer.login.dto.oauth.UserResources;
@@ -70,8 +71,7 @@ public class DeployGithubOauthService implements GithubOauthService {
                                         .userName(userResources.getUserName())
                                         .userNickname(userResources.getUserNickname())
                                         .userRole(UserRole.NORMAL)
-                                        .createdAt(now)
-                                        .updatedAt(now)
+                                        .baseTime(new BaseTime(now, now))
                                         .build()));
         if (!user.getUserName().equals(userResources.getUserName()) || !user.getUserNickname().equals(userResources.getUserNickname())) {
             user.update(userResources.getUserName(), userResources.getUserNickname(), now);

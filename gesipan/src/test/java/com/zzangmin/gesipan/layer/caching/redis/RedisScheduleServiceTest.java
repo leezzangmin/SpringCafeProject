@@ -5,6 +5,7 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
@@ -57,16 +58,14 @@ class RedisScheduleServiceTest {
                 .userName("가짜이름")
                 .userNickname("가짜닉네임")
                 .userRole(UserRole.NORMAL)
-                .createdAt(LocalDateTime.of(2022,2,2,2,2))
-                .updatedAt(LocalDateTime.of(2022,2,2,2,2))
+                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
                 .build();
         Post post = Post.builder()
                 .postSubject("가짜제목")
                 .postContent("가짜내용")
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
                 .hitCount(0L)
                 .build();
 

@@ -7,6 +7,7 @@ import com.zzangmin.gesipan.layer.basiccrud.repository.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.custom.CustomPostRepository;
 import java.util.Optional;
 
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,8 +62,7 @@ public class PostService {
                 .postContent(postSaveRequest.getPostContent())
                 .user(user)
                 .postCategory(postCategory)
-                .createdAt(postSaveRequest.getCreatedAt())
-                .updatedAt(postSaveRequest.getCreatedAt())
+                .baseTime(new BaseTime(postSaveRequest.getCreatedAt(), postSaveRequest.getCreatedAt()))
                 .hitCount(0L) // TODO: DB 디폴트값 만들고 해당 줄 지우기
                 .build();
 

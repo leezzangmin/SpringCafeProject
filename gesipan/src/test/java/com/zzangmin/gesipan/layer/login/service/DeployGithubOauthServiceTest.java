@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.layer.login.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.login.service.DevelopGithubOauthService;
 import com.zzangmin.gesipan.layer.login.dto.oauth.GithubToken;
@@ -75,8 +76,7 @@ class DeployGithubOauthServiceTest {
                 .userName("이창민")
                 .userNickname("leezzangmin")
                 .userRole(UserRole.NORMAL)
-                .createdAt(now)
-                .updatedAt(now)
+                .baseTime(new BaseTime(now, now))
                 .build();
         given(usersRepository.findByEmail(eq("ckdals123@naver.com"))).willReturn(Optional.ofNullable(user));
         //when
