@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.layer.basiccrud.entity;
 
 import javax.persistence.*;
 
+import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.*;
 
@@ -25,14 +26,20 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;
-    @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime createdAt;
-    @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime updatedAt;
+    @Embedded
+    private BaseTime baseTime;
+
+    public LocalDateTime getCreatedAt() {
+        return baseTime.getCreatedAt();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return baseTime.getUpdatedAt();
+    }
 
     public void update(String commentContent, LocalDateTime updatedAt) {
         this.commentContent = commentContent;
-        this.updatedAt = updatedAt;
+        baseTime.refreshUpdatedAt(updatedAt);
     }
 
 }
