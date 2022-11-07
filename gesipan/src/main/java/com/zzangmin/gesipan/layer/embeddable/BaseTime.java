@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Embeddable
 public class BaseTime {
 
-    @Column(nullable = false, columnDefinition = "DATETIME")
+    @Column(nullable = false, columnDefinition = "DATETIME", updatable = false)
     private LocalDateTime createdAt;
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime updatedAt;
