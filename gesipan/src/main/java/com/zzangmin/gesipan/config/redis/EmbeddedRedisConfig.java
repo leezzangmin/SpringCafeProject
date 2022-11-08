@@ -58,13 +58,14 @@ public class EmbeddedRedisConfig {
     @PostConstruct
     public void redisServer() throws IOException {
      //   int port = isRedisRunning() ? findAvailablePort() : this.port;
-        String redisPath = new ClassPathResource("redis-server").getPath();
+        String macRedisPath = new ClassPathResource("redis-server").getPath();
+        String ubuntuRedisPath = new ClassPathResource("redis-server-ubuntu").getPath();
         RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
-                .override(OS.UNIX, redisPath)
-                .override(OS.UNIX, Architecture.x86_64, redisPath)
-                .override(OS.UNIX, Architecture.x86, redisPath)
-                .override(OS.MAC_OS_X, Architecture.x86, redisPath)
-                .override(OS.MAC_OS_X, Architecture.x86_64, redisPath);
+            .override(OS.UNIX, ubuntuRedisPath)
+            .override(OS.UNIX, Architecture.x86_64, ubuntuRedisPath)
+            .override(OS.UNIX, Architecture.x86, ubuntuRedisPath)
+            .override(OS.MAC_OS_X, Architecture.x86, macRedisPath)
+            .override(OS.MAC_OS_X, Architecture.x86_64, macRedisPath);
         redisServer = new RedisServer(customProvider, port);
         log.info("redis port: {}", port);
         redisServer.start();
