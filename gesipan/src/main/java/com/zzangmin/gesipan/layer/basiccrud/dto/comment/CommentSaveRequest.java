@@ -4,6 +4,7 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.Users;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -13,16 +14,17 @@ import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 @ToString
 @Getter
+@AllArgsConstructor
 public class CommentSaveRequest {
 
     @NotNull
     @Positive
-    private Long referencePostId;
+    private final Long referencePostId;
     @NotNull
-    private String commentContent;
+    private final String commentContent;
     @NotNull
     @PastOrPresent
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
     public Comment toEntity(Users user, Post post) {
         return Comment.builder()

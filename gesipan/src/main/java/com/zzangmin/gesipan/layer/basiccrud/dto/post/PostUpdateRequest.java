@@ -13,15 +13,14 @@ import java.time.LocalDateTime;
 
 @ToString
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class PostUpdateRequest {
     @NotBlank
     @Length(max = 1000)
-    private String postSubject;
+    private final String postSubject;
     @NotBlank
-    private String postContent;
+    private final String postContent;
     @NotNull
     @PastOrPresent
-    private LocalDateTime updatedAt;
+    private final LocalDateTime updatedAt;
 }

@@ -70,14 +70,14 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponse> pagination(Long postId, Pageable pageable) {
         List<Long> commentIds = commentRepository.findCommentIdsByPaginationByPostId(postId, pageable);
-        List<Comment> comments = commentRepository.findByIdsWithUsers(commentIds);
+        final List<Comment> comments = commentRepository.findByIdsWithUsers(commentIds);
         return comments.stream()
                 .map(c -> CommentResponse.of(c))
                 .collect(Collectors.toList());
     }
 
     private void validateTime(LocalDateTime updatedAt, LocalDateTime createdAt) {
-        if (updatedAt.isBefore(createdAt) || updatedAt.isBefore(createdAt)) {
+        if ((updatedAt.isBefore(createdAt) || updatedAt.isBefore(createdAt))) {
             throw new IllegalArgumentException("요청된 시간이 조건에 부합하지 않습니다.");
         }
     }

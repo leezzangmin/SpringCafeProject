@@ -17,17 +17,18 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PersonalCommentsResponse {
 
-    private Long userId;
-    private String userNickname;
-    private List<PersonalCommentResponse> personalCommentResponses = new ArrayList<>();
+    private final Long userId;
+    private final String userNickname;
+    private final List<PersonalCommentResponse> personalCommentResponses;
 
     @Getter
     @Builder
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     static class PersonalCommentResponse {
-        private Long referencePostId;
-        private Long commentId;
-        private String commentContent;
-        private LocalDateTime createdAt;
+        private final Long referencePostId;
+        private final Long commentId;
+        private final String commentContent;
+        private final LocalDateTime createdAt;
     }
 
     public static PersonalCommentsResponse of(Users user, List<Comment> comments) {

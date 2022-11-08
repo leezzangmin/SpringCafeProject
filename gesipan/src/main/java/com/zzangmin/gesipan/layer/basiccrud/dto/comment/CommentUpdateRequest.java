@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.dto.comment;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
@@ -7,12 +8,13 @@ import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class CommentUpdateRequest {
 
     @NotNull
-    private String commentContent;
+    private final String commentContent;
     @NotNull
     @PastOrPresent
-    private LocalDateTime updatedAt;
+    private final LocalDateTime updatedAt;
 
 }

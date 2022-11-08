@@ -10,14 +10,13 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)//https://coding-today.tistory.com/24 [오늘도 코딩:티스토리]
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserResources {
     @JsonProperty("email")
-    private String userEmail;
+    private final String userEmail;
     @JsonProperty("name")
-    private String userName;
+    private final String userName;
     @JsonProperty("login")
-    private String userNickname;
+    private final String userNickname;
 
 }

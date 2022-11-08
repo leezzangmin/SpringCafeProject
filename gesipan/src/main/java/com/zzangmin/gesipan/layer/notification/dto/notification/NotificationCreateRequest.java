@@ -12,9 +12,9 @@ import lombok.Getter;
 @Getter
 public class NotificationCreateRequest {
 
-    private Users targetUser;
-    private Users publishedUser;
-    private Post referencePost;
-    private NotificationType notificationType;
-    private String notificationMessage;
+    private final Users targetUser;
+    private final Users publishedUser;
+    private final Post referencePost;
+    private final NotificationType notificationType;
+    private final String notificationMessage;
 }

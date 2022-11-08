@@ -16,21 +16,21 @@ import lombok.ToString;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostSearchResponse {
 
-    private List<SinglePost> posts;
-    private int searchCount;
+    private final List<SinglePost> posts;
+    private final int searchCount;
 
     @Getter
     @Builder(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PACKAGE)
     private static class SinglePost {
-        private Long postId;
-        private String postContent;
-        private LocalDateTime createdAt;
-        private Long hitCount;
-        private Long userId;
-        private String userNickname;
-        private int recommendCount;
-        private int commentCount;
+        private final Long postId;
+        private final String postContent;
+        private final LocalDateTime createdAt;
+        private final Long hitCount;
+        private final Long userId;
+        private final String userNickname;
+        private final int recommendCount;
+        private final int commentCount;
     }
 
     public static PostSearchResponse of(List<Post> posts, List<Integer> recommendCount, List<Integer> commentsCount) {

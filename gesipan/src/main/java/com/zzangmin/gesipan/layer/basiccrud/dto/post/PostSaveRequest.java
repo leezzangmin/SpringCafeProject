@@ -15,21 +15,20 @@ import java.time.LocalDateTime;
 
 @ToString
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class PostSaveRequest {
 
     @NotBlank
     @Length(max = 1000)
-    private String postSubject;
+    private final String postSubject;
     @NotBlank
-    private String postContent;
+    private final String postContent;
     @NotNull @Positive
-    private Long postCategoryId;
+    private final Long postCategoryId;
     @NotNull
     @PastOrPresent
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    private Long tempPostId;
+    private final Long tempPostId;
 
 }

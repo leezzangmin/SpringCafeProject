@@ -8,16 +8,14 @@ import lombok.ToString;
 
 @ToString
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class GithubToken {
 
     @JsonProperty("access_token")
-    private String accessToken;
-    private String scope;
+    private final String accessToken;
+    private final String scope;
     @JsonProperty("token_type")
-    private String tokenType;
-
+    private final String tokenType;
 
     public String getTokenHeaderString() {
         return "token " + this.accessToken;
