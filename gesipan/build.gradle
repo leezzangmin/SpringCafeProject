@@ -84,3 +84,8 @@ compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
 // https://www.inflearn.com/questions/536382
+test {
+	testLogging {
+		exceptionFormat = 'full'
+	}
+}
