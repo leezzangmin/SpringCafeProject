@@ -1,0 +1,147 @@
+name: stress_test_zzangmin
+ 
+on:
+  workflow_run:
+    workflows: ["ci_zzangmin"]
+    types:
+      - completed
+  workflow_dispatch:
+  
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./gesipan
+      test-duration: 120000
+      
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+
+# test에 필요한 ec2 인스턴스를 aws cli를 통해 실행
+      - name: Start Ngrinder EC2 - (Controller, Agent, Test Server)
+        run: aws ec2 start-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} ${{ secrets.AWS_EC2_SPRING_SERVER }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          
+          
+# 인스턴스가 로드 될 때 까지 100초 기다림
+      - name: Sleep for 100 seconds - waiting controller,agent run
+        run: sleep 100s
+        shell: bash                 
+
+# aws cli를 사용해서 각 인스턴스의 public ip를 환경변수로 등록
+      - name: Setting environment variables...
+        run: |
+          export AWS_EC2_TEST_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_CONTROLLER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          export AWS_EC2_AGENT_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_AGENT }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          
+          echo "$AWS_EC2_TEST_SERVER_IP"
+          echo "$AWS_EC2_CONTROLLER_IP"
+          echo "$AWS_EC2_AGENT_IP"
+          
+          echo "AWS_EC2_TEST_SERVER_IP=$AWS_EC2_TEST_SERVER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_CONTROLLER_IP=$AWS_EC2_CONTROLLER_IP" >> $GITHUB_ENV
+          echo "AWS_EC2_AGENT_IP=$AWS_EC2_AGENT_IP" >> $GITHUB_ENV
+          
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+# 테스트용 ec2에 스프링 실행
+      - name: Deploy 😆 - test server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_TEST_SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash deploy.sh        
+            
+            
+# EC2- Ngrinder Controller를 실행
+      - name: Ngrinder Controller Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_CONTROLLER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash controller_run.sh
+            
+# EC2- Ngrinder Agent를 실행
+      - name: Ngrinder Agent Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_AGENT_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            bash ./agent_run.sh
+            
+# Controller와 Agent가 완전히 실행될 때 까지 기다림
+      - name: Sleep for 100 seconds - waiting controller,agent run
+        run: sleep 100s
+        shell: bash
+        
+        
+# Ngrinder Rest Api 를 통해 성능테스트 생성 - 실행
+      - name: HTTP Request Action - Ngrinder rest api perf_test
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api'
+          method: 'POST'
+          username: 'admin'
+          password: 'admin'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"param" : "${{ env.AWS_EC2_TEST_SERVER_IP }}", "testName" : "zzangmin_perftest", "tagString" : "spring perf", "description" : "zzangminzzang", "scheduledTime" : "", "useRampUp": false, "rampUpType" : "PROCESS", "threshold" : "D", "scriptName" : "first.groovy", "duration" : ${{ env.test-duration }}, "runCount" : 1, "agentCount" : 1, "vuserPerAgent" : 1, "processes" : 1, "rampUpInitCount" : 0, "rampUpInitSleepTime" : 0, "rampUpStep" : 1, "rampUpIncrementInterval" : 1000, "threads": 1, "testComment" : "제발돼라", "samplingInterval" : 2, "ignoreSampleCount" : 0, "status" : "READY"}'
+          timeout: '60000'
+
+
+# 성능테스트가 진행되는 동안 기다림
+      - name: Sleep for 140 seconds - waiting test...
+        run: sleep 140s
+        shell: bash
+
+
+# Ngrinder Rest Api 를 통해 테스트 결과 조회
+      - name: Get Ngrinder test result ...
+        uses: satak/webrequest-action@master
+        id: NgrinderTestResult
+        with:
+          url: 'http://${{ env.AWS_EC2_CONTROLLER_IP }}/perftest/api?page=0'
+          method: GET
+          username: admin
+          password: admin
+
+
+# 슬랙으로 테스트 결과 전송
+      - name: send test result...
+        uses: 8398a7/action-slack@v3
+        with:
+          text: '${{ steps.NgrinderTestResult.outputs.output }}'
+          status: ${{ job.status }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+# 테스트가 끝난 후 자원들 정리 - aws cli
+      - name: Stop Ngrinder EC2 - (Controller, Agent, Test Server)
+        run: aws ec2 stop-instances --instance-ids ${{ secrets.AWS_EC2_NGRINDER_CONTROLLER }} ${{ secrets.AWS_EC2_NGRINDER_AGENT }} ${{ secrets.AWS_EC2_SPRING_TEST_SERVER }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
