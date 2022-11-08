@@ -1,8 +1,12 @@
-name: cd_zz
+name: cd_zzangmin
  
 on:
-  workflow_dispatch:
-
+  workflow_run:
+   workflows: ["ci_zzangmin"]
+   types:
+    - completed
+  workflow_dispatch: 
+  
 permissions:
   contents: read
 
@@ -21,16 +25,12 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-# aws cli를 사용해서 각 인스턴스의 public ip를 환경변수로 등록
+# aws cli를 사용해서 메인서버 인스턴스의 public ip를 환경변수로 등록
       - name: Setting environment variables...
         run: |
           export AWS_EC2_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
-          
           echo "$AWS_EC2_SERVER_IP"
-          
           echo "AWS_EC2_SERVER_IP=$AWS_EC2_SERVER_IP" >> $GITHUB_ENV
-          
-          
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
