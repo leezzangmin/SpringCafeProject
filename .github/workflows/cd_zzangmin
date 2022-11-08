@@ -1,0 +1,52 @@
+name: cd_zz
+ 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./gesipan
+      test-duration: 120000
+      
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+# aws cli를 사용해서 각 인스턴스의 public ip를 환경변수로 등록
+      - name: Setting environment variables...
+        run: |
+          export AWS_EC2_SERVER_IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AWS_EC2_SPRING_SERVER }} --query 'Reservations[].Instances[].PublicIpAddress' --output text)
+          
+          echo "$AWS_EC2_SERVER_IP"
+          
+          echo "AWS_EC2_SERVER_IP=$AWS_EC2_SERVER_IP" >> $GITHUB_ENV
+          
+          
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+# 메인 ec2에 스프링 실행
+      - name: Deploy 😆 - main server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.AWS_EC2_SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.AWS_SECRET_PEM }}
+          script: |
+            sudo systemctl restart docker
+            sudo docker login --username=${{ secrets.DOCKERHUB_ID }} --password=${{ secrets.DOCKERHUB_PASSWORD }}
+            sudo docker pull ${{ secrets.DOCKERHUB_ID }}/springcafe:latest
+            sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
+            sudo docker stop server
+            sudo docker run -p 80:80 -d --rm -e profile=deploy -e AWS_DB_USERNAME=$AWS_DB_USERNAME -e AWS_DB_PASSWORD=$AWS_DB_PASSWORD -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e JWT_SECRET=$JWT_SECRET --name server server_image
