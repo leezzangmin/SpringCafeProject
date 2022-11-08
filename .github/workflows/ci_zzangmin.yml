@@ -1,10 +1,10 @@
-name: CI_zz
+name: ci_zzangmin
  
 on:
 #  workflow_dispatch:
- push:
-  branches:
-   - githubactions/cicd
+#  push:
+#   branches:
+#    - githubactions/cicd
  workflow_dispatch:
 
 permissions:
