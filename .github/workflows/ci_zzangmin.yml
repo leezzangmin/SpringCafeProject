@@ -1,7 +1,10 @@
 name: CI_zz
  
 on:
-  workflow_dispatch:
+#  workflow_dispatch:
+ push:
+  branches:
+   - githubactions/cicd
 
 permissions:
   contents: read
