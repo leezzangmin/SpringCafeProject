@@ -1,10 +1,10 @@
 name: ci_zzangmin
  
 on:
- workflow_dispatch:
- push:
-  branches:
-   - githubactions/cicd
+#  workflow_dispatch:
+  push:
+   branches:
+    - githubactions/cicd
 
 permissions:
   contents: read
@@ -40,3 +40,11 @@ jobs:
           dockerfile: ${{env.working-directory}}/Dockerfile
           username: ${{ secrets.DOCKERHUB_ID }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          
+      - name: trigger CD EVENT
+        run: gh api /repos/leezzangmin/SpringCafeProject/dispatches -f event_type='ci_event'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT}}
+
+
+          
