@@ -1,9 +1,6 @@
 name: cd_zzangmin
  
 on:
-  push:
-   branches:
-    - githubactions/cicd
   workflow_run:
    workflows: ["ci_zzangmin"]
    types:
