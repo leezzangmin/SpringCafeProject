@@ -62,4 +62,13 @@ class CommentServiceTest {
         Assertions.assertThat(pagination.get(1).getUserId()).isEqualTo(comment2.getUser().getUserId());
     }
 
+    @DisplayName("DB에 존재하지 않는 commentId로 삭제 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void delete() {
+        //given
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.delete(9999999L, 12345L));
+    }
+
 }
