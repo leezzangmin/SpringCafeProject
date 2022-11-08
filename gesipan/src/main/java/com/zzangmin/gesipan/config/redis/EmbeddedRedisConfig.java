@@ -42,6 +42,7 @@ public class EmbeddedRedisConfig {
         return new LettuceConnectionFactory(host, port);
     }
 
+
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
