@@ -1,14 +1,14 @@
 package com.zzangmin.gesipan.layer.embeddable;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
