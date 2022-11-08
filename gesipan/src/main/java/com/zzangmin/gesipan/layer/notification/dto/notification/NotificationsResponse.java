@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 @Getter
 public class NotificationsResponse {
 
-    private int notificationCount;
-    private List<SingleNotification> notifications;
+    private final int notificationCount;
+    private final List<SingleNotification> notifications;
 
     @Builder(access = AccessLevel.PRIVATE)
     @Getter
     static class SingleNotification {
-        private long notificationId;
-        private long publishedUserId;
-        private long referencePostId;
-        private NotificationType notificationType;
-        private String notificationMessage;
-        private LocalDateTime createdAt;
-        private boolean isCheckedFlag;
+        private final long notificationId;
+        private final long publishedUserId;
+        private final long referencePostId;
+        private final NotificationType notificationType;
+        private final String notificationMessage;
+        private final LocalDateTime createdAt;
+        private final boolean isCheckedFlag;
     }
 
     public static NotificationsResponse of(List<Notification> notifications) {
@@ -45,5 +45,4 @@ public class NotificationsResponse {
                         .collect(Collectors.toList())
         );
     }
-
 }

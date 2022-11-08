@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.dto.post;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -7,9 +8,10 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @ToString
+@AllArgsConstructor
 public class PostRecommendRequest {
     @NotNull
-    private long postId;
+    private final long postId;
     @NotNull
-    private long userId;
+    private final long userId;
 }

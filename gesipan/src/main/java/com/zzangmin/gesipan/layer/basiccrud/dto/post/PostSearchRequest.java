@@ -10,9 +10,9 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 public class PostSearchRequest {
-    private String userNickname;
-    private LocalDateTime startAt;
-    private LocalDateTime endAt;
+    private final String userNickname;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
     @NotNull
-    private Long postCategoryId;
+    private final Long postCategoryId;
 }

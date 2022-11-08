@@ -20,19 +20,19 @@ import java.util.stream.IntStream;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PersonalPostsResponse {
 
-    private Long userId;
-    private String userNickname;
-    private List<PersonalPostResponse> posts;
+    private final Long userId;
+    private final String userNickname;
+    private final List<PersonalPostResponse> posts;
 
     @Getter
     @Builder
     static class PersonalPostResponse {
-        private Long postId;
-        private String postSubject;
-        private LocalDateTime createdAt;
-        private Long hitCount;
-        private int recommendCount;
-        private int commentCount;
+        private final Long postId;
+        private final String postSubject;
+        private final LocalDateTime createdAt;
+        private final Long hitCount;
+        private final int recommendCount;
+        private final int commentCount;
     }
 
     public static PersonalPostsResponse of(Users user, List<Post> posts, List<Integer> recommendCount, List<Integer> commentCount) {

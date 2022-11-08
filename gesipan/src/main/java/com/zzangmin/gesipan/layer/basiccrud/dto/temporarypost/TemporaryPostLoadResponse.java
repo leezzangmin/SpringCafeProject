@@ -14,15 +14,15 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 public class TemporaryPostLoadResponse {
-    private Long userId;
-    private List<TemporaryPostLoadResponses> savedPosts;
+    private final Long userId;
+    private final List<TemporaryPostLoadResponses> savedPosts;
 
     @Getter
     @Builder
     private static class TemporaryPostLoadResponses {
-        private String postSubject;
-        private String postContent;
-        private LocalDateTime createdAt;
+        private final String postSubject;
+        private final String postContent;
+        private final LocalDateTime createdAt;
     }
 
     public static TemporaryPostLoadResponse of(Long userId, List<TemporaryPost> temporaryPosts) {
@@ -34,7 +34,6 @@ public class TemporaryPostLoadResponse {
                         .createdAt(i.getCreatedAt())
                         .build())
                         .collect(Collectors.toList())
-
         );
     }
 }
