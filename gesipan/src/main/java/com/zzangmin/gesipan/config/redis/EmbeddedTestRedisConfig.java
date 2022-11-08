@@ -57,6 +57,8 @@ public class EmbeddedTestRedisConfig {
         //   int port = isRedisRunning() ? findAvailablePort() : this.port;
         String redisPath = new ClassPathResource("redis-server").getPath();
         RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
+                .override(OS.UNIX, Architecture.x86_64, redisPath)
+                .override(OS.UNIX, Architecture.x86, redisPath)
                 .override(OS.MAC_OS_X, Architecture.x86, redisPath)
                 .override(OS.MAC_OS_X, Architecture.x86_64, redisPath);
         redisServer = new RedisServer(customProvider, port);
