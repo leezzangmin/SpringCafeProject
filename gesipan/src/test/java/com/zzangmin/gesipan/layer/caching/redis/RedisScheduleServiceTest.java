@@ -44,7 +44,7 @@ class RedisScheduleServiceTest {
                 .flushAll();
     }
 
-    @Test
+    //@Test
     @DisplayName("해시에 들어있던 값들이 스케줄 잡이 끝나면 사라져있어야 한다. 조회수도 상승되어야 한다.")
     void scheduledIncreasePostHitCounts() {
         //given
