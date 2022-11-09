@@ -233,5 +233,25 @@ class CommentServiceTest {
         Assertions.assertThatThrownBy(() -> commentService.save(commentSaveRequest, user.getUserId()));
     }
 
+    @DisplayName("저장이 정상적으로 수행되어야 한다.")
+    @Test
+    void save() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        postCategoryRepository.save(post.getPostCategory());
+        usersRepository.save(user);
+        postRepository.save(post);
+        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(post.getPostId(), "save_comment_content", LocalDateTime.of(2022,02,02,02,02,02));
+        //when
+        Long savedId = commentService.save(commentSaveRequest, user.getUserId());
+        //then
+        Comment comment = commentRepository.findById(savedId).get();
+        Assertions.assertThat(comment.getCommentId()).isEqualTo(savedId);
+        Assertions.assertThat(comment.getCommentContent()).isEqualTo("save_comment_content");
+        Assertions.assertThat(comment.getPost().getPostId()).isEqualTo(post.getPostId());
+        Assertions.assertThat(comment.getUser().getUserId()).isEqualTo(user.getUserId());
+    }
+
 
 }
