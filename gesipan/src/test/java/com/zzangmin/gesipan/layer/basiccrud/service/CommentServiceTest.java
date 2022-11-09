@@ -64,11 +64,27 @@ class CommentServiceTest {
 
     @DisplayName("DB에 존재하지 않는 commentId로 삭제 요청을 보내면 오류가 발생해야 한다.")
     @Test
-    void delete() {
+    void delete_NoCommentIdError() {
         //given
         //when
         //then
         Assertions.assertThatThrownBy(() -> commentService.delete(9999999L, 12345L));
+    }
+
+    @DisplayName("댓글 소유자가 아닌 Users가 요청하면 오류가 발생해야 한다.")
+    @Test
+    void delete_NotOwnerError() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment = EntityFactory.generateCommentObject(post, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.delete(comment.getCommentId(), 1234567895413L));
     }
 
 }
