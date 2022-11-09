@@ -45,6 +45,7 @@ jobs:
           key: ${{ secrets.AWS_SECRET_PEM }}
           script: |
             sudo systemctl restart docker
+            sudo docker rm -f $(sudo docker ps -aq)
             sudo docker login --username=${{ secrets.DOCKERHUB_ID }} --password=${{ secrets.DOCKERHUB_PASSWORD }}
             sudo docker pull ${{ secrets.DOCKERHUB_ID }}/springcafe:latest
             sudo docker tag ${{ secrets.DOCKERHUB_ID }}/springcafe:latest server_image
