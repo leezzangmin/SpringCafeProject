@@ -153,4 +153,27 @@ class CommentServiceTest {
         //then
         Assertions.assertThatThrownBy(() -> commentService.update(comment.getCommentId(), commentUpdateRequest, fakeUserId));
     }
+
+    @DisplayName("댓글 소유자가 정상적인 요청을 보내면 갱신이 되어야 한다.")
+    @Test
+    void update_owner() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        CommentUpdateRequest commentUpdateRequest = new CommentUpdateRequest("update_request_string", now);
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment = EntityFactory.generateCommentObject(post, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment);
+        //when
+        commentService.update(comment.getCommentId(), commentUpdateRequest, user.getUserId());
+        //then
+        Comment updatedComment = commentRepository.findById(comment.getCommentId()).get();
+        Assertions.assertThat(updatedComment.getCommentContent()).isEqualTo("update_request_string");
+        Assertions.assertThat(updatedComment.getUpdatedAt()).isEqualTo(now);
+    }
+
+
 }
