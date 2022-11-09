@@ -77,7 +77,7 @@ public class CommentService {
     }
 
     private void validateTime(LocalDateTime updatedAt, LocalDateTime createdAt) {
-        if ((updatedAt.isBefore(createdAt) || updatedAt.isBefore(createdAt))) {
+        if ((updatedAt.isBefore(createdAt) || updatedAt.isEqual(createdAt))) {
             throw new IllegalArgumentException("요청된 시간이 조건에 부합하지 않습니다.");
         }
     }
