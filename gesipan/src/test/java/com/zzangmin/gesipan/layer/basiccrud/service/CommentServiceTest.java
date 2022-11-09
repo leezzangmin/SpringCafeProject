@@ -1,7 +1,9 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
@@ -19,9 +21,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CommentServiceTest {
@@ -173,6 +172,85 @@ class CommentServiceTest {
         Comment updatedComment = commentRepository.findById(comment.getCommentId()).get();
         Assertions.assertThat(updatedComment.getCommentContent()).isEqualTo("update_request_string");
         Assertions.assertThat(updatedComment.getUpdatedAt()).isEqualTo(now);
+    }
+
+    @DisplayName("존재하지 않는 userId로 유저의 댓글조회 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void userComments_invalidUserId() {
+        //given
+        Long invalidUserId = 123145345L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.userComments(invalidUserId));
+    }
+
+    @DisplayName("정상 userId로 요청을 보내면 해당 유저가 작성한 댓글이 반환되어야 한다.")
+    @Test
+    void userComments_validUserId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment1 = EntityFactory.generateCommentObject(post, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        //when
+        PersonalCommentsResponse userComments = commentService.userComments(user.getUserId());
+        //then
+        Assertions.assertThat(userComments.getUserId()).isEqualTo(user.getUserId());
+
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(0).getCommentId()).isEqualTo(comment1.getCommentId());
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(1).getCommentId()).isEqualTo(comment2.getCommentId());
+
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(0).getReferencePostId()).isEqualTo(comment1.getPost().getPostId());
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(1).getReferencePostId()).isEqualTo(comment2.getPost().getPostId());
+    }
+
+    @DisplayName("유효하지 않은 userId로 저장요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidUserId() {
+        //given
+        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(123L, "comment_content", LocalDateTime.now());
+        Long invalidUserId = 12347189461L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.save(commentSaveRequest, invalidUserId));
+    }
+
+    @DisplayName("유효하지 않은 postId로 저장요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Long invalidPostId = 99923549259L;
+        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(invalidPostId, "comment_content", LocalDateTime.now());
+        usersRepository.save(user);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.save(commentSaveRequest, user.getUserId()));
+    }
+
+    @DisplayName("저장이 정상적으로 수행되어야 한다.")
+    @Test
+    void save() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        postCategoryRepository.save(post.getPostCategory());
+        usersRepository.save(user);
+        postRepository.save(post);
+        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(post.getPostId(), "save_comment_content", LocalDateTime.of(2022,02,02,02,02,02));
+        //when
+        Long savedId = commentService.save(commentSaveRequest, user.getUserId());
+        //then
+        Comment comment = commentRepository.findById(savedId).get();
+        Assertions.assertThat(comment.getCommentId()).isEqualTo(savedId);
+        Assertions.assertThat(comment.getCommentContent()).isEqualTo("save_comment_content");
+        Assertions.assertThat(comment.getPost().getPostId()).isEqualTo(post.getPostId());
+        Assertions.assertThat(comment.getUser().getUserId()).isEqualTo(user.getUserId());
     }
 
 

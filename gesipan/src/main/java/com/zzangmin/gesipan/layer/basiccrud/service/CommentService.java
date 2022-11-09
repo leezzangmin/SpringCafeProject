@@ -7,7 +7,6 @@ import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
-import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationCreateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.login.entity.Users;
@@ -39,7 +38,7 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 없습니다. 잘못된 입력"));
         Comment comment = commentSaveRequest.toEntity(user, post);
 
-        createCommentNotification(user, post);
+        notificationService.createNotification(user, post, NotificationType.COMMENT, LocalDateTime.now());
 
         return commentRepository.save(comment).getCommentId();
     }
@@ -82,26 +81,10 @@ public class CommentService {
         }
     }
 
-    private void createCommentNotification(Users user, Post post) {
-        if (user.getUserId().equals(post.getUser().getUserId())) {
-            return;
-        }
-
-        NotificationCreateRequest request = NotificationCreateRequest.builder()
-                .targetUser(post.getUser())
-                .publishedUser(user)
-                .notificationType(NotificationType.COMMENT)
-                .referencePost(post)
-                .notificationMessage(null)
-                .build();
-        notificationService.createNotification(request);
-    }
-
     private void validateCommentOwner(Long userId, Comment comment) {
         if (!comment.getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException("해당 유저의 댓글이 아닙니다.");
         }
     }
-
 
 }
