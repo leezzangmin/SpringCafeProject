@@ -1,6 +1,9 @@
 package com.zzangmin.gesipan.layer.notification.service;
 
 
+import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
+import com.zzangmin.gesipan.layer.login.entity.Users;
+import com.zzangmin.gesipan.layer.notification.entity.NotificationType;
 import com.zzangmin.gesipan.layer.notification.repository.NotificationRepository;
 import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationCreateRequest;
 import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationsResponse;
@@ -26,17 +29,21 @@ public class NotificationService {
         return NotificationsResponse.of(notifications);
     }
 
+
     @Transactional
-    public long createNotification(NotificationCreateRequest request) {
+    public void createNotification(Users user, Post post, NotificationType type, LocalDateTime createdAt) {
+        if (user.getUserId().equals(post.getUser().getUserId())) {
+            return;
+        }
         Notification notification = Notification.builder()
-                .targetUser(request.getTargetUser())
-                .publishedUser(request.getPublishedUser())
-                .notificationType(request.getNotificationType())
-                .referencePost(request.getReferencePost())
-                .notificationMessage(request.getNotificationMessage())
-                .createdAt(LocalDateTime.now())
+                .targetUser(post.getUser())
+                .publishedUser(user)
+                .notificationType(type)
+                .referencePost(post)
+                .notificationMessage(null)
+                .createdAt(createdAt)
                 .build();
-        return notificationRepository.save(notification).getNotificationId();
+        notificationRepository.save(notification);
     }
 
     @Transactional
