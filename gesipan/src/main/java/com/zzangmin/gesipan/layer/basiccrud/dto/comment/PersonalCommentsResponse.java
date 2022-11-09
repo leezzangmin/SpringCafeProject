@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,12 +18,12 @@ public class PersonalCommentsResponse {
 
     private final Long userId;
     private final String userNickname;
-    private final List<PersonalCommentResponse> personalCommentResponses;
+    private final List<SingleCommentResponse> singleCommentResponses;
 
     @Getter
     @Builder
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    static class PersonalCommentResponse {
+    public static class SingleCommentResponse {
         private final Long referencePostId;
         private final Long commentId;
         private final String commentContent;
@@ -34,7 +33,7 @@ public class PersonalCommentsResponse {
     public static PersonalCommentsResponse of(Users user, List<Comment> comments) {
         return new PersonalCommentsResponse(user.getUserId(), user.getUserNickname(),
                 comments.stream()
-                        .map(comment -> PersonalCommentResponse.builder()
+                        .map(comment -> SingleCommentResponse.builder()
                                         .referencePostId(comment.getPost().getPostId())
                                         .commentId(comment.getCommentId())
                                         .commentContent(comment.getCommentContent())
