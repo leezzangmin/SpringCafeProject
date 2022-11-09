@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,6 +86,23 @@ class CommentServiceTest {
         //when
         //then
         Assertions.assertThatThrownBy(() -> commentService.delete(comment.getCommentId(), 1234567895413L));
+    }
+
+    @DisplayName("댓글 소유자인 Users가 요청하면 삭제되어야 한다.")
+    @Test
+    void delete_Owner() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment = EntityFactory.generateCommentObject(post, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment);
+        //when
+        commentService.delete(comment.getCommentId(), user.getUserId());
+        //then
+        Assertions.assertThat(commentRepository.findById(comment.getCommentId())).isEmpty();
     }
 
 }
