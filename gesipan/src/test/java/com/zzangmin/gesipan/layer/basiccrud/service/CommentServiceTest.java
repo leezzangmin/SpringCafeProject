@@ -90,7 +90,7 @@ class CommentServiceTest {
         Assertions.assertThatThrownBy(() -> commentService.delete(comment.getCommentId(), 1234567895413L));
     }
 
-    @DisplayName("댓글 소유자인 Users가 요청하면 삭제되어야 한다.")
+    @DisplayName("댓글 소유자인 Users가 삭제를 요청하면 삭제되어야 한다.")
     @Test
     void delete_Owner() {
         //given
@@ -136,4 +136,21 @@ class CommentServiceTest {
         Assertions.assertThatThrownBy(() -> commentService.update(comment.getCommentId(), commentUpdateRequest, user.getUserId()));
     }
 
+    @DisplayName("댓글 소유자가 아닌 Users가 갱신을 요청하면 오류가 발생해야 한다.")
+    @Test
+    void update_notOwner() {
+        //given
+        CommentUpdateRequest commentUpdateRequest = new CommentUpdateRequest("fake", LocalDateTime.now());
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment = EntityFactory.generateCommentObject(post, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment);
+        Long fakeUserId = 1234125135614256134L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.update(comment.getCommentId(), commentUpdateRequest, fakeUserId));
+    }
 }
