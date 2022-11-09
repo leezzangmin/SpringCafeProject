@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,6 +105,18 @@ class CommentServiceTest {
         commentService.delete(comment.getCommentId(), user.getUserId());
         //then
         Assertions.assertThat(commentRepository.findById(comment.getCommentId())).isEmpty();
+    }
+
+    @DisplayName("DB에 존재하지 않는 commentId로 갱신 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void update_NoCommentId() {
+        //given
+        Long noCommentId = 1234567789L;
+        Long noUserId = 123123123123123L;
+        CommentUpdateRequest commentUpdateRequest = new CommentUpdateRequest("fake", LocalDateTime.now());
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.update(noCommentId, commentUpdateRequest, noUserId));
     }
 
 }
