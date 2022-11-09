@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
@@ -208,4 +209,14 @@ class CommentServiceTest {
         Assertions.assertThat(userComments.getSingleCommentResponses().get(1).getReferencePostId()).isEqualTo(comment2.getPost().getPostId());
     }
 
+    @DisplayName("유효하지 않은 userId로 저장요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidUserId() {
+        //given
+        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(123L, "comment_content", LocalDateTime.now());
+        Long invalidUserId = 12347189461L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.save(commentSaveRequest, invalidUserId));
+    }
 }
