@@ -175,5 +175,15 @@ class CommentServiceTest {
         Assertions.assertThat(updatedComment.getUpdatedAt()).isEqualTo(now);
     }
 
+    @DisplayName("존재하지 않는 userId로 유저의 댓글조회 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void userComments_invalidUserId() {
+        //given
+        Long invalidUserId = 123145345L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.userComments(invalidUserId));
+    }
+
 
 }
