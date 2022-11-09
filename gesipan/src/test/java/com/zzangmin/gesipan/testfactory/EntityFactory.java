@@ -51,6 +51,17 @@ public class EntityFactory {
             .build();
     }
 
+    public static Comment generateCommentObject(Users user) {
+        Post post = generateRandomPostObject();
+
+        return Comment.builder()
+                .commentContent(UUID.randomUUID().toString())
+                .post(post)
+                .user(user)
+                .baseTime(generateFixedBaseTime())
+                .build();
+    }
+
     public static Comment generateCommentObject(Post post, Users user) {
         return Comment.builder()
             .commentContent(UUID.randomUUID().toString())
