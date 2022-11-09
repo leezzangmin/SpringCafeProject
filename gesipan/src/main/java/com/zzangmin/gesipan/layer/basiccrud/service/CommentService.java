@@ -7,7 +7,6 @@ import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
-import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationCreateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.login.entity.Users;

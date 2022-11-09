@@ -5,7 +5,6 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.notification.entity.NotificationType;
 import com.zzangmin.gesipan.layer.notification.repository.NotificationRepository;
-import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationCreateRequest;
 import com.zzangmin.gesipan.layer.notification.dto.notification.NotificationsResponse;
 import com.zzangmin.gesipan.layer.notification.entity.Notification;
 import lombok.RequiredArgsConstructor;
