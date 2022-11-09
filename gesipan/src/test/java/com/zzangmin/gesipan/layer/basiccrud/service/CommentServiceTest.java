@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
+import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
@@ -19,9 +20,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CommentServiceTest {
@@ -185,5 +183,29 @@ class CommentServiceTest {
         Assertions.assertThatThrownBy(() -> commentService.userComments(invalidUserId));
     }
 
+    @DisplayName("정상 userId로 요청을 보내면 해당 유저가 작성한 댓글이 반환되어야 한다.")
+    @Test
+    void userComments_validUserId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment1 = EntityFactory.generateCommentObject(post, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        //when
+        PersonalCommentsResponse userComments = commentService.userComments(user.getUserId());
+        //then
+        Assertions.assertThat(userComments.getUserId()).isEqualTo(user.getUserId());
+
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(0).getCommentId()).isEqualTo(comment1.getCommentId());
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(1).getCommentId()).isEqualTo(comment2.getCommentId());
+
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(0).getReferencePostId()).isEqualTo(comment1.getPost().getPostId());
+        Assertions.assertThat(userComments.getSingleCommentResponses().get(1).getReferencePostId()).isEqualTo(comment2.getPost().getPostId());
+    }
 
 }
