@@ -219,4 +219,19 @@ class CommentServiceTest {
         //then
         Assertions.assertThatThrownBy(() -> commentService.save(commentSaveRequest, invalidUserId));
     }
+
+    @DisplayName("유효하지 않은 postId로 저장요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Long invalidPostId = 99923549259L;
+        CommentSaveRequest commentSaveRequest = new CommentSaveRequest(invalidPostId, "comment_content", LocalDateTime.now());
+        usersRepository.save(user);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.save(commentSaveRequest, user.getUserId()));
+    }
+
+
 }
