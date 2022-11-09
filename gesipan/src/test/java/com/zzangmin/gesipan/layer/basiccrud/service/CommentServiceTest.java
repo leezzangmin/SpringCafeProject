@@ -119,4 +119,21 @@ class CommentServiceTest {
         Assertions.assertThatThrownBy(() -> commentService.update(noCommentId, commentUpdateRequest, noUserId));
     }
 
+    @DisplayName("갱신 요청 시간이 comment 생성시간과 같거나 앞서면 오류가 발생해야 한다.")
+    @Test
+    void update_invalidDateTime() {
+        //given
+        CommentUpdateRequest commentUpdateRequest = new CommentUpdateRequest("fake", LocalDateTime.of(1955,05,05,05,05,05));
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment = EntityFactory.generateCommentObject(post, user);
+        postCategoryRepository.save(post.getPostCategory());
+        usersRepository.save(user);
+        postRepository.save(post);
+        commentRepository.save(comment);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> commentService.update(comment.getCommentId(), commentUpdateRequest, user.getUserId()));
+    }
+
 }
