@@ -316,6 +316,15 @@ class PostServiceTest {
         Assertions.assertThat(page_2.getPostPageResponseList().size()).isEqualTo(1);
     }
 
+    @DisplayName("너무 많은(100개 초과) 게시글을 페이징 요청하면 오류가 발생해야 한다.")
+    @Test
+    void pagination_tooBigRequestSize() {
+        //given
+        PageRequest pageable = PageRequest.of(0, 101);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.pagination(1L, pageable));
+    }
 
 
 }
