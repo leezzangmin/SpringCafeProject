@@ -36,7 +36,7 @@ public class PostService {
     private final PostRecommendRepository postRecommendRepository;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
-    private final TemporaryPostRepository temporaryPostRepository;
+    private final TemporaryPostService temporaryPostService;
 
     @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional(readOnly = true)
@@ -65,7 +65,7 @@ public class PostService {
                 .hitCount(0L) // TODO: DB 디폴트값 만들고 해당 줄 지우기
                 .build();
 
-        deleteTemporaryPostData(userId, postSaveRequest.getTempPostId());
+        temporaryPostService.postTemporaryDelete(userId, postSaveRequest.getTempPostId());
 
         return postRepository.save(post).getPostId();
     }
@@ -149,14 +149,6 @@ public class PostService {
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
         List<Integer> commentCount = commentRepository.countByIds(postIds);
         return PostRecommendsResponse.of(postRecommends, recommendCount, commentCount);
-    }
-
-    private void deleteTemporaryPostData(Long userId, Long tempPostId) {
-        if (tempPostId != null && temporaryPostRepository.findByUserId(userId)
-                .stream()
-                .anyMatch(i -> i.getTempPostId().equals(tempPostId))) {
-            temporaryPostRepository.deleteById(tempPostId);
-        }
     }
 
     private void validatePostOwner(Long userId, Post post) {
