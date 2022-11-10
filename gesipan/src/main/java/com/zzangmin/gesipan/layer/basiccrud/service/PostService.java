@@ -41,7 +41,6 @@ public class PostService {
     @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public PostResponse findOne(Long postId, Optional<Long> userId) {
-        System.out.println("userId = " + userId);
         Post post = postRepository.findByIdWithUser(postId).
             orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         List<CommentResponse> commentResponses = commentService.pagination(postId, PageRequest.of(0, 10));
