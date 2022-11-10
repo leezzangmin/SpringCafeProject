@@ -101,6 +101,17 @@ public class EntityFactory {
             .build();
     }
 
+    public static Post generateRandomPostObject(Users user, PostCategory postCategory) {
+        return Post.builder()
+                .postSubject(generateRandomUUIDString())
+                .postContent(generateRandomUUIDString())
+                .user(user)
+                .postCategory(postCategory)
+                .hitCount(0L)
+                .baseTime(generateRandomBaseTime())
+                .build();
+    }
+
     public static Users generateRandomUsersObject() {
         return Users.builder()
             .userEmail(generateRandomUUIDString())
