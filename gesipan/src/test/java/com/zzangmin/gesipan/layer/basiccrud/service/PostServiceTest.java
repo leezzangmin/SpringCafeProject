@@ -196,8 +196,30 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postRepository.findById(postId).get());
     }
 
+    @DisplayName("존재하지 않는 userId로 삭제 요청을 하면 오류가 발생해야 한다.")
     @Test
+    void delete_invalidUserId() {
+        //given
+        Long invalidUserId = 23478659134999L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete( 1L, invalidUserId));
+    }
+
+    @DisplayName("존재하지 않는 postId로 삭제 요청을 하면 오류가 발생해야 한다.")
+    @Test
+    void delete_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Long invalidPostId = 9998659134999L;
+        usersRepository.save(user);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete(invalidPostId, user.getUserId()));
+    }
+
     @DisplayName("post가 업데이트 되어야 한다.")
+    @Test
     void update() {
         //given
         Users user = EntityFactory.generateRandomUsersObject();
@@ -215,5 +237,7 @@ class PostServiceTest {
         Assertions.assertThat(findPost.getPostContent()).isEqualTo("수정내용");
         Assertions.assertThat(findPost.getUpdatedAt()).isEqualTo(updateTime);
     }
+
+
 
 }
