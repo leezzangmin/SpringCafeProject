@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
+import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
@@ -34,6 +35,7 @@ class PostServiceTest {
     @Autowired private PostCategoryRepository postCategoryRepository;
     @Autowired private TemporaryPostRepository temporaryPostRepository;
     @Autowired private PostService postService;
+    @Autowired private CommentRepository commentRepository;
 
     @DisplayName("게시물 단건조회를 요청하면 올바른 내용을 가진 게시물 DTO가 반환되어야 한다. ")
     @Test
@@ -70,6 +72,43 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postService.findOne(invalidPostId, Optional.empty()));
     }
 
+    @DisplayName("단건조회를 요청하면 댓글이 최대 10개까지만 조회되어야 한다.")
+    @Test
+    void findOne_commentSizeMaximum10() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+        Comment comment1 = EntityFactory.generateCommentObject(post, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post, user);
+        Comment comment3 = EntityFactory.generateCommentObject(post, user);
+        Comment comment4 = EntityFactory.generateCommentObject(post, user);
+        Comment comment5 = EntityFactory.generateCommentObject(post, user);
+        Comment comment6 = EntityFactory.generateCommentObject(post, user);
+        Comment comment7 = EntityFactory.generateCommentObject(post, user);
+        Comment comment8 = EntityFactory.generateCommentObject(post, user);
+        Comment comment9 = EntityFactory.generateCommentObject(post, user);
+        Comment comment10 = EntityFactory.generateCommentObject(post, user);
+        Comment comment11 = EntityFactory.generateCommentObject(post, user);
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        commentRepository.save(comment4);
+        commentRepository.save(comment5);
+        commentRepository.save(comment6);
+        commentRepository.save(comment7);
+        commentRepository.save(comment8);
+        commentRepository.save(comment9);
+        commentRepository.save(comment10);
+        commentRepository.save(comment11);
+        //when
+        PostResponse singlePost = postService.findOne(post.getPostId(),Optional.empty());
+        //then
+        Assertions.assertThat(singlePost.getComments().size()).isLessThan(11);
+    }
 
     @DisplayName("Post가 저장되어야 한다.")
     @Test
