@@ -70,6 +70,7 @@ public class PostService {
 
     @CacheEvict(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     public void delete(Long postId, Long userId) {
+        Users user = usersService.findOne(userId);
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         validatePostOwner(userId, post);
