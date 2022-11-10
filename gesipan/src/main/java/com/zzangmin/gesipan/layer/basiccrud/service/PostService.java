@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.Users;
-import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
+import com.zzangmin.gesipan.layer.login.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,12 +31,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CustomPostRepository customPostRepository;
-    private final UsersRepository usersRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final TemporaryPostService temporaryPostService;
+    private final UsersService usersService;
 
     @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional(readOnly = true)
@@ -51,8 +51,7 @@ public class PostService {
 
     @Transactional
     public Long save(Long userId, PostSaveRequest postSaveRequest) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
+        Users user = usersService.findOne(userId);
         PostCategory postCategory = postCategoryRepository.findById(postSaveRequest.getPostCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 postCategoryId가 없습니다. 게시판 없음"));
 
@@ -102,8 +101,7 @@ public class PostService {
     public void postRecommendCount(PostRecommendRequest postRecommendRequest) {
         Post post = postRepository.findById(postRecommendRequest.getPostId()).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        Users user = usersRepository.findById(postRecommendRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
+        Users user = usersService.findOne(postRecommendRequest.getUserId());
 
         postRecommendRepository.findByUsersIdAndPostId(post.getPostId(), user.getUserId())
                 .ifPresent(i -> {throw new IllegalStateException("해당 유저가 이미 추천한 게시물입니다.");});
@@ -118,8 +116,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PersonalPostsResponse userPosts(Long userId) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
+        Users user = usersService.findOne(userId);
         List<Post> personalPosts = postRepository.findByUserId(userId);
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(personalPosts.stream()
                 .map(i -> i.getPostId())
@@ -141,8 +138,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostRecommendsResponse findRecommendedPost(Long userId) {
-        Users user = usersRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 userId가 없습니다"));
+        Users user = usersService.findOne(userId);
         List<Post> postRecommends = postRecommendRepository.findByUsersId(userId);
 
         List<Long> postIds = postRecommends.stream().map(p -> p.getPostId()).collect(Collectors.toList());
