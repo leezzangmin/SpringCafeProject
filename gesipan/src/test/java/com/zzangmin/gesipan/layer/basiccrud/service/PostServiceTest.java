@@ -345,4 +345,21 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
     }
 
+    @DisplayName("추천하려는 게시물이 이미 추천한 게시물이면 오류가 발생해야 한다.")
+    @Test
+    void postRecommend_alreadyRecommended() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
+        postService.postRecommend(postRecommendRequest);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+    }
+
+
 }
