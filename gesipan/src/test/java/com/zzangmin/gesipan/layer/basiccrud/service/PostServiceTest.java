@@ -2,10 +2,7 @@ package com.zzangmin.gesipan.layer.basiccrud.service;
 
 import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
-import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.*;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 
@@ -36,6 +33,8 @@ class PostServiceTest {
     @Autowired private TemporaryPostRepository temporaryPostRepository;
     @Autowired private PostService postService;
     @Autowired private CommentRepository commentRepository;
+    @Autowired private final PostRecommendRepository postRecommendRepository;
+
 
     @DisplayName("게시물 단건조회를 요청하면 올바른 내용을 가진 게시물 DTO가 반환되어야 한다. ")
     @Test
@@ -356,6 +355,23 @@ class PostServiceTest {
         postRepository.save(post);
         PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
         postService.postRecommend(postRecommendRequest);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+    }
+
+    @DisplayName("추천하려는 user의 userId가 존재하지 않으면 오류가 발생해야 한다.")
+    @Test
+    void postRecommend_invalidUserId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+
+        Long invalidUserId = 9999999999999L;
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), invalidUserId);
         //when
         //then
         Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
