@@ -33,7 +33,7 @@ class PostServiceTest {
     @Autowired private TemporaryPostRepository temporaryPostRepository;
     @Autowired private PostService postService;
     @Autowired private CommentRepository commentRepository;
-    @Autowired private final PostRecommendRepository postRecommendRepository;
+    @Autowired private PostRecommendRepository postRecommendRepository;
 
 
     @DisplayName("게시물 단건조회를 요청하면 올바른 내용을 가진 게시물 DTO가 반환되어야 한다. ")
@@ -377,5 +377,19 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
     }
 
-
+    @DisplayName("게시글 추천이 수행되어야 한다.")
+    @Test
+    void postRecommend() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
+        //when
+        postService.postRecommend(postRecommendRequest);
+        //then
+        Assertions.assertThat(postRecommendRepository.countByPostId(post.getPostId())).isEqualTo(1);
+    }
 }
