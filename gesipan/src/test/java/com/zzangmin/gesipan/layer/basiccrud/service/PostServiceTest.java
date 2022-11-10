@@ -268,6 +268,22 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postService.update(invalidPostId, postUpdateRequest, user.getUserId()));
     }
 
+    @DisplayName("게시글의 주인이 아닌 유저가 갱신을 요청하면 오류가 발생해야 한다.")
+    @Test
+    void update_notOwner() {
+        //given
+        Users notOwner = EntityFactory.generateRandomUsersObject();
+        Users postOwner = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(postOwner);
+        usersRepository.save(postOwner);
+        usersRepository.save(notOwner);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", LocalDateTime.now());
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.update(post.getPostId(), postUpdateRequest, notOwner.getUserId()));
+    }
 
 
 }
