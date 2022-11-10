@@ -88,6 +88,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostsPageResponse pagination(Long categoryId, Pageable pageable) {
+        validatePageRequestSize(pageable);
         List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(categoryId, pageable);
         List<Post> posts = postRepository.paginationByPostIds(postIds);
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
@@ -160,4 +161,11 @@ public class PostService {
         return false;
     }
 
+
+    private void validatePageRequestSize(Pageable pageable) {
+        // 오류를 발생시키는 게 맞나? 그냥 100개 초과 요청하면 100개만 리턴해주는 게 비즈니스적으로 맞는 흐름일까
+        if (pageable.getPageSize() > 100) {
+            throw new IllegalArgumentException("가져오려는 게시글 숫자가 너무 큽니다. 100 이하로 요청해주세요.");
+        }
+    }
 }
