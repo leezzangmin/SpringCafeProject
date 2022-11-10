@@ -4,21 +4,24 @@ import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@ToString
 @Getter
 @AllArgsConstructor
 public class PostsPageResponse {
     private final Long categoryId;
     private final List<PostPageResponse> postPageResponseList;
 
+    @ToString
     @Getter
     @Builder
-    private static class PostPageResponse {
+    public static class PostPageResponse {
         private final Long postId;
         private final String postSubject;
         private final LocalDateTime createdAt;
