@@ -127,6 +127,23 @@ class PostServiceTest {
         Assertions.assertThat(findPost.getPostSubject()).isEqualTo(postSaveRequest.getPostSubject());
     }
 
+    @DisplayName("올바르지 않은 userId로 게시글 저장 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidUserId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostSaveRequest postSaveRequest = new PostSaveRequest("asdf", "dddd", post.getPostCategory().getPostCategoryId(), LocalDateTime.now(), null);
+        Long invalidUserId = 1345987569834759L;
+        //when
+
+        //then
+        Assertions.assertThatThrownBy(() -> postService.save(invalidUserId, postSaveRequest));
+    }
+
     @Test
     @DisplayName("임시 게시물을 불러와서 저장하면 임시 게시물은 삭제되어야 한다.")
     void save2() {
