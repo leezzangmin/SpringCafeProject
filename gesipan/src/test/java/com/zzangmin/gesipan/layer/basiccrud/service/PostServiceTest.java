@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostsPageResponse;
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -284,6 +286,36 @@ class PostServiceTest {
         //then
         Assertions.assertThatThrownBy(() -> postService.update(post.getPostId(), postUpdateRequest, notOwner.getUserId()));
     }
+
+    @DisplayName("게시글 페이징이 정상적으로 수행되어야 한다.")
+    @Test
+    void paginationTest() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        PostCategory postCategory = EntityFactory.generatePostCategoryObject(Categories.FREE);
+        Post post1 = EntityFactory.generateRandomPostObject(user, postCategory);
+        Post post2 = EntityFactory.generateRandomPostObject(user, postCategory);
+        Post post3 = EntityFactory.generateRandomPostObject(user, postCategory);
+        usersRepository.save(user);
+        postCategoryRepository.save(postCategory);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        int pageSize = 2;
+        PageRequest pageable_1 = PageRequest.of(0, pageSize);
+        PageRequest pageable_2 = PageRequest.of(1, pageSize);
+        //when
+        PostsPageResponse page_1 = postService.pagination(postCategory.getPostCategoryId(), pageable_1);
+        PostsPageResponse page_2 = postService.pagination(postCategory.getPostCategoryId(), pageable_2);
+        //then
+        Assertions.assertThat(page_1.getPostPageResponseList().size()).isEqualTo(2);
+        Assertions.assertThat(page_1.getPostPageResponseList().get(0).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(page_1.getPostPageResponseList().get(1).getPostId()).isEqualTo(post2.getPostId());
+        Assertions.assertThat(page_1.getCategoryId()).isEqualTo(postCategory.getPostCategoryId());
+
+        Assertions.assertThat(page_2.getPostPageResponseList().size()).isEqualTo(1);
+    }
+
 
 
 }
