@@ -1,6 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostsPageResponse;
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
@@ -8,9 +8,7 @@ import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostResponse;
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSaveRequest;
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostUpdateRequest;
+
 import java.util.Optional;
 
 import com.zzangmin.gesipan.testfactory.EntityFactory;
@@ -334,5 +332,17 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postService.pagination(1L, pageable));
     }
 
+    @DisplayName("추천하려는 postId의 게시물이 존재하지 않으면 오류가 발생해야 한다.")
+    @Test
+    void postRecommend_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        usersRepository.save(user);
+        Long invalidPostId = 9999999999L;
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(invalidPostId, user.getUserId());
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+    }
 
 }
