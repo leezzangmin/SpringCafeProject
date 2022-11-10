@@ -35,6 +35,15 @@ public class TemporaryPostService {
         temporaryPostRepository.save(temporaryPost);
     }
 
+    @Transactional
+    void postTemporaryDelete(Long userId, Long temporaryPostId) {
+        if (temporaryPostId != null && temporaryPostRepository.findByUserId(userId)
+                .stream()
+                .anyMatch(i -> i.getTempPostId().equals(temporaryPostId))) {
+            temporaryPostRepository.deleteById(temporaryPostId);
+        }
+    }
+
     @Transactional(readOnly = true)
     public TemporaryPostLoadResponse temporaryPostLoad(Long userId) {
         List<TemporaryPost> postTemporaries = temporaryPostRepository.findByUserId(userId);

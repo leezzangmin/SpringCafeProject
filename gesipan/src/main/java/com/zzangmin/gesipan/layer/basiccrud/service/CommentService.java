@@ -3,13 +3,13 @@ package com.zzangmin.gesipan.layer.basiccrud.service;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.layer.basiccrud.repository.CommentRepository;
 import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
-import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.CommentUpdateRequest;
 import com.zzangmin.gesipan.layer.basiccrud.dto.comment.PersonalCommentsResponse;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.login.entity.Users;
+import com.zzangmin.gesipan.layer.login.service.UsersService;
 import com.zzangmin.gesipan.layer.notification.entity.NotificationType;
 import com.zzangmin.gesipan.layer.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +27,12 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UsersRepository usersRepository;
-    private final PostRepository postRepository;
     private final NotificationService notificationService;
+    private final UsersService usersService;
+    private final PostRepository postRepository;
 
     public Long save(CommentSaveRequest commentSaveRequest, Long userId) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
+        Users user = usersService.findOne(userId);
         Post post = postRepository.findByIdWithUser(commentSaveRequest.getReferencePostId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 없습니다. 잘못된 입력"));
         Comment comment = commentSaveRequest.toEntity(user, post);
@@ -60,8 +59,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public PersonalCommentsResponse userComments(Long userId) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다. 잘못된 입력"));
+        Users user = usersService.findOne(userId);
         List<Comment> comments = commentRepository.findAllByUserIdWithPostId(userId);
         return PersonalCommentsResponse.of(user, comments);
     }

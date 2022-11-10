@@ -1,18 +1,14 @@
 package com.zzangmin.gesipan.layer.basiccrud.service;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.layer.basiccrud.entity.*;
-import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
-import com.zzangmin.gesipan.layer.basiccrud.repository.TemporaryPostRepository;
-import com.zzangmin.gesipan.layer.embeddable.BaseTime;
-import com.zzangmin.gesipan.layer.login.entity.UserRole;
+import com.zzangmin.gesipan.layer.basiccrud.repository.*;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostResponse;
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSaveRequest;
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostUpdateRequest;
+
 import java.util.Optional;
+
+import com.zzangmin.gesipan.testfactory.EntityFactory;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,28 +32,18 @@ class PostServiceTest {
     @Autowired private PostCategoryRepository postCategoryRepository;
     @Autowired private TemporaryPostRepository temporaryPostRepository;
     @Autowired private PostService postService;
+    @Autowired private CommentRepository commentRepository;
+    @Autowired private PostRecommendRepository postRecommendRepository;
 
+
+    @DisplayName("게시물 단건조회를 요청하면 올바른 내용을 가진 게시물 DTO가 반환되어야 한다. ")
     @Test
     void findOne() {
         //given
-        PostCategory postCategory = PostCategory.builder()
-                .categoryName(Categories.FREE)
-                .build();
-        Users user = Users.builder()
-                .userEmail("ckdals1234@naver.com")
-                .userName("이창민")
-                .userNickname("zzangmin")
-                .userRole(UserRole.NORMAL)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .build();
-        Post post = Post.builder()
-                .postSubject("제목")
-                .postContent("내용")
-                .user(user)
-                .postCategory(postCategory)
-                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
-                .hitCount(0L)
-                .build();
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
         Long postId = postRepository.save(post).getPostId();
@@ -67,24 +54,71 @@ class PostServiceTest {
         Assertions.assertThat(postResponse.getPostContent()).isEqualTo(post.getPostContent());
     }
 
+    @DisplayName("존재하지 않는 id를 가진 게시물 단건조회를 요청하면 오류가 발생해야 한다.")
     @Test
+    void findOne_noPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
+        Long invalidPostId = 9991231435145L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.findOne(invalidPostId, Optional.empty()));
+    }
+
+    @DisplayName("단건조회를 요청하면 댓글이 최대 10개까지만 조회되어야 한다.")
+    @Test
+    void findOne_commentSizeMaximum10() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+        Comment comment1 = EntityFactory.generateCommentObject(post, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post, user);
+        Comment comment3 = EntityFactory.generateCommentObject(post, user);
+        Comment comment4 = EntityFactory.generateCommentObject(post, user);
+        Comment comment5 = EntityFactory.generateCommentObject(post, user);
+        Comment comment6 = EntityFactory.generateCommentObject(post, user);
+        Comment comment7 = EntityFactory.generateCommentObject(post, user);
+        Comment comment8 = EntityFactory.generateCommentObject(post, user);
+        Comment comment9 = EntityFactory.generateCommentObject(post, user);
+        Comment comment10 = EntityFactory.generateCommentObject(post, user);
+        Comment comment11 = EntityFactory.generateCommentObject(post, user);
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        commentRepository.save(comment4);
+        commentRepository.save(comment5);
+        commentRepository.save(comment6);
+        commentRepository.save(comment7);
+        commentRepository.save(comment8);
+        commentRepository.save(comment9);
+        commentRepository.save(comment10);
+        commentRepository.save(comment11);
+        //when
+        PostResponse singlePost = postService.findOne(post.getPostId(),Optional.empty());
+        //then
+        Assertions.assertThat(singlePost.getComments().size()).isLessThan(11);
+    }
+
     @DisplayName("Post가 저장되어야 한다.")
+    @Test
     void save() {
         //given
-        PostCategory postCategory = PostCategory.builder()
-                .categoryName(Categories.FREE)
-                .build();
-        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
-        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1", postCategoryId, LocalDateTime.now(), null);
-        Users user = Users.builder()
-                .userEmail("ckdals1234@naver.com")
-                .userName("이창민")
-                .userNickname("zzangmin")
-                .userRole(UserRole.NORMAL)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .build();
+        PostCategory postCategory = EntityFactory.generatePostCategoryObject(Categories.FREE);
+        Users user = EntityFactory.generateRandomUsersObject();
 
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
+        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1", postCategoryId, LocalDateTime.now(), null);
         //when
         Long saveId = postService.save(userId, postSaveRequest);
         //then
@@ -92,27 +126,47 @@ class PostServiceTest {
         Assertions.assertThat(findPost.getPostSubject()).isEqualTo(postSaveRequest.getPostSubject());
     }
 
+    @DisplayName("올바르지 않은 userId로 게시글 저장 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidUserId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostSaveRequest postSaveRequest = new PostSaveRequest("asdf", "dddd", post.getPostCategory().getPostCategoryId(), LocalDateTime.now(), null);
+        Long invalidUserId = 1345987569834759L;
+        //when
+
+        //then
+        Assertions.assertThatThrownBy(() -> postService.save(invalidUserId, postSaveRequest));
+    }
+
+    @DisplayName("올바르지 않은 postCategoryId로 게시글 저장 요청을 보내면 오류가 발생해야 한다.")
+    @Test
+    void save_invalidPostCategoryId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        Long invalidPostCategoryId = 13849137489999999L;
+        PostSaveRequest postSaveRequest = new PostSaveRequest("asdf", "dddd", invalidPostCategoryId, LocalDateTime.now(), null);
+        //when
+
+        //then
+        Assertions.assertThatThrownBy(() -> postService.save(user.getUserId(), postSaveRequest));
+    }
+
     @Test
     @DisplayName("임시 게시물을 불러와서 저장하면 임시 게시물은 삭제되어야 한다.")
     void save2() {
         //given
-        PostCategory postCategory = PostCategory.builder()
-                .categoryName(Categories.FREE)
-                .build();
-        Users user = Users.builder()
-                .userEmail("ckdals1234@naver.com")
-                .userName("이창민")
-                .userNickname("zzangmin")
-                .userRole(UserRole.NORMAL)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .build();
-        TemporaryPost temporaryPost = TemporaryPost.builder()
-                .postSubject("temp제목")
-                .postContent("temp내용")
-                .createdAt(LocalDateTime.now())
-                .user(user)
-                .build();
-
+        PostCategory postCategory = EntityFactory.generatePostCategoryObject(Categories.FREE);
+        Users user = EntityFactory.generateRandomUsersObject();
+        TemporaryPost temporaryPost = EntityFactory.generateRandomTemporaryPostObject(user);
 
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
@@ -129,24 +183,9 @@ class PostServiceTest {
     @DisplayName("Post가 삭제되어야 한다.")
     void delete() {
         //given
-        PostCategory postCategory = PostCategory.builder()
-                .categoryName(Categories.FREE)
-                .build();
-        Users user = Users.builder()
-                .userEmail("ckdals1234@naver.com")
-                .userName("이창민")
-                .userNickname("zzangmin")
-                .userRole(UserRole.NORMAL)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .build();
-        Post post = Post.builder()
-                .postSubject("delete제목")
-                .postContent("delete내용")
-                .user(user)
-                .postCategory(postCategory)
-                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
-                .build();
-        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Long postCategoryId = postCategoryRepository.save(post.getPostCategory()).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
         Long postId = postRepository.save(post).getPostId();
         //when
@@ -154,35 +193,56 @@ class PostServiceTest {
         //then
         Assertions.assertThatThrownBy(() -> postService.delete(postId, 100000L));
         Assertions.assertThatThrownBy(() -> postRepository.findById(postId).get());
-
     }
 
+    @DisplayName("존재하지 않는 userId로 삭제 요청을 하면 오류가 발생해야 한다.")
     @Test
+    void delete_invalidUserId() {
+        //given
+        Long invalidUserId = 23478659134999L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete( 1L, invalidUserId));
+    }
+
+    @DisplayName("존재하지 않는 postId로 삭제 요청을 하면 오류가 발생해야 한다.")
+    @Test
+    void delete_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Long invalidPostId = 9998659134999L;
+        usersRepository.save(user);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete(invalidPostId, user.getUserId()));
+    }
+
+    @DisplayName("게시글의 주인이 아닌 유저가 삭제를 요청하면 오류가 발생해야 한다.")
+    @Test
+    void delete_notOwner() {
+        //given
+        Users notOwner = EntityFactory.generateRandomUsersObject();
+        Users postOwner = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(postOwner);
+        usersRepository.save(postOwner);
+        usersRepository.save(notOwner);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete(post.getPostId(), notOwner.getUserId()));
+    }
+
     @DisplayName("post가 업데이트 되어야 한다.")
+    @Test
     void update() {
         //given
-        PostCategory postCategory = PostCategory.builder()
-                .categoryName(Categories.FREE)
-                .build();
-        Users user = Users.builder()
-                .userEmail("ckdals1234@naver.com")
-                .userName("이창민")
-                .userNickname("zzangmin")
-                .userRole(UserRole.NORMAL)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .build();
-        Post post = Post.builder()
-                .postSubject("update제목")
-                .postContent("update내용")
-                .user(user)
-                .postCategory(postCategory)
-                .baseTime(new BaseTime(LocalDateTime.now(), LocalDateTime.now()))
-                .build();
-        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Long postCategoryId = postCategoryRepository.save(post.getPostCategory()).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
         Long postId = postRepository.save(post).getPostId();
-
-        LocalDateTime updateTime = LocalDateTime.parse("2022-07-04T12:39:00");
+        LocalDateTime updateTime = LocalDateTime.parse("2022-11-10T12:39:00");
         PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", updateTime);
         //when
         postService.update(postId, postUpdateRequest, userId);
@@ -191,5 +251,145 @@ class PostServiceTest {
         Assertions.assertThat(findPost.getPostSubject()).isEqualTo("수정제목");
         Assertions.assertThat(findPost.getPostContent()).isEqualTo("수정내용");
         Assertions.assertThat(findPost.getUpdatedAt()).isEqualTo(updateTime);
+    }
+
+    @DisplayName("존재하지 않는 postId로 갱신 요청을 하면 오류가 발생해야 한다.")
+    @Test
+    void update_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Long invalidPostId = 999999999L;
+        LocalDateTime updateTime = LocalDateTime.parse("2022-11-10T12:39:00");
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", updateTime);
+        usersRepository.save(user);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.update(invalidPostId, postUpdateRequest, user.getUserId()));
+    }
+
+    @DisplayName("게시글의 주인이 아닌 유저가 갱신을 요청하면 오류가 발생해야 한다.")
+    @Test
+    void update_notOwner() {
+        //given
+        Users notOwner = EntityFactory.generateRandomUsersObject();
+        Users postOwner = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(postOwner);
+        usersRepository.save(postOwner);
+        usersRepository.save(notOwner);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", LocalDateTime.now());
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.update(post.getPostId(), postUpdateRequest, notOwner.getUserId()));
+    }
+
+    @DisplayName("게시글 페이징이 정상적으로 수행되어야 한다.")
+    @Test
+    void paginationTest() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        PostCategory postCategory = EntityFactory.generatePostCategoryObject(Categories.FREE);
+        Post post1 = EntityFactory.generateRandomPostObject(user, postCategory);
+        Post post2 = EntityFactory.generateRandomPostObject(user, postCategory);
+        Post post3 = EntityFactory.generateRandomPostObject(user, postCategory);
+        Comment comment1 = EntityFactory.generateCommentObject(post1, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post1, user);
+        Comment comment3 = EntityFactory.generateCommentObject(post1, user);
+        usersRepository.save(user);
+        postCategoryRepository.save(postCategory);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        int pageSize = 2;
+        PageRequest pageable_1 = PageRequest.of(0, pageSize);
+        PageRequest pageable_2 = PageRequest.of(1, pageSize);
+        //when
+        PostsPageResponse page_1 = postService.pagination(postCategory.getPostCategoryId(), pageable_1);
+        PostsPageResponse page_2 = postService.pagination(postCategory.getPostCategoryId(), pageable_2);
+        //then
+        Assertions.assertThat(page_1.getPostPageResponseList().size()).isEqualTo(2);
+        Assertions.assertThat(page_1.getPostPageResponseList().get(0).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(page_1.getPostPageResponseList().get(1).getPostId()).isEqualTo(post2.getPostId());
+        Assertions.assertThat(page_1.getCategoryId()).isEqualTo(postCategory.getPostCategoryId());
+        Assertions.assertThat(page_1.getPostPageResponseList().get(0).getCommentCount()).isEqualTo(3);
+        Assertions.assertThat(page_1.getPostPageResponseList().get(1).getCommentCount()).isEqualTo(0);
+
+        Assertions.assertThat(page_2.getPostPageResponseList().size()).isEqualTo(1);
+    }
+
+    @DisplayName("너무 많은(100개 초과) 게시글을 페이징 요청하면 오류가 발생해야 한다.")
+    @Test
+    void pagination_tooBigRequestSize() {
+        //given
+        PageRequest pageable = PageRequest.of(0, 101);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.pagination(1L, pageable));
+    }
+
+    @DisplayName("추천하려는 postId의 게시물이 존재하지 않으면 오류가 발생해야 한다.")
+    @Test
+    void postRecommend_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        usersRepository.save(user);
+        Long invalidPostId = 9999999999L;
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(invalidPostId, user.getUserId());
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+    }
+
+    @DisplayName("추천하려는 게시물이 이미 추천한 게시물이면 오류가 발생해야 한다.")
+    @Test
+    void postRecommend_alreadyRecommended() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
+        postService.postRecommend(postRecommendRequest);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+    }
+
+    @DisplayName("추천하려는 user의 userId가 존재하지 않으면 오류가 발생해야 한다.")
+    @Test
+    void postRecommend_invalidUserId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+
+        Long invalidUserId = 9999999999999L;
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), invalidUserId);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+    }
+
+    @DisplayName("게시글 추천이 수행되어야 한다.")
+    @Test
+    void postRecommend() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
+        //when
+        postService.postRecommend(postRecommendRequest);
+        //then
+        Assertions.assertThat(postRecommendRepository.countByPostId(post.getPostId())).isEqualTo(1);
     }
 }

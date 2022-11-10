@@ -1,9 +1,6 @@
 package com.zzangmin.gesipan.testfactory;
 
-import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Comment;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
-import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
+import com.zzangmin.gesipan.layer.basiccrud.entity.*;
 import com.zzangmin.gesipan.layer.embeddable.BaseTime;
 import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
@@ -104,6 +101,17 @@ public class EntityFactory {
             .build();
     }
 
+    public static Post generateRandomPostObject(Users user, PostCategory postCategory) {
+        return Post.builder()
+                .postSubject(generateRandomUUIDString())
+                .postContent(generateRandomUUIDString())
+                .user(user)
+                .postCategory(postCategory)
+                .hitCount(0L)
+                .baseTime(generateRandomBaseTime())
+                .build();
+    }
+
     public static Users generateRandomUsersObject() {
         return Users.builder()
             .userEmail(generateRandomUUIDString())
@@ -122,6 +130,25 @@ public class EntityFactory {
     public static BaseTime generateFixedBaseTime() {
         LocalDateTime fixed = LocalDateTime.of(2022,01, 01, 01, 01, 01);
         return new BaseTime(fixed, fixed);
+    }
+
+    public static TemporaryPost generateRandomTemporaryPostObject() {
+        Users user = generateRandomUsersObject();
+        return TemporaryPost.builder()
+                .postSubject("temp제목")
+                .postContent("temp내용")
+                .createdAt(LocalDateTime.now())
+                .user(user)
+                .build();
+    }
+
+    public static TemporaryPost generateRandomTemporaryPostObject(Users user) {
+        return TemporaryPost.builder()
+                .postSubject("temp제목")
+                .postContent("temp내용")
+                .createdAt(LocalDateTime.now())
+                .user(user)
+                .build();
     }
 
     private static String generateRandomUUIDString() {

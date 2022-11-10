@@ -20,7 +20,7 @@ public interface PostRecommendRepository extends JpaRepository<PostRecommend, Lo
     List<Integer> countAllByPostId(@Param("postIds") List<Long> postIds);
 
     @Query("select COALESCE(count(pr.postRecommendId), 0) from PostRecommend pr where pr.post.postId=:postId")
-    Integer countByPostId(@Param("postId") Long postId);
+    int countByPostId(@Param("postId") Long postId);
 
     @Query("select pr.post from PostRecommend pr join fetch pr.post.user where pr.user.userId=:userId")
     List<Post> findByUsersId(@Param("userId") Long userId);
