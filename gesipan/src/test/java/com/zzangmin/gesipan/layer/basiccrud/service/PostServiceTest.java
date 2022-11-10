@@ -296,11 +296,17 @@ class PostServiceTest {
         Post post1 = EntityFactory.generateRandomPostObject(user, postCategory);
         Post post2 = EntityFactory.generateRandomPostObject(user, postCategory);
         Post post3 = EntityFactory.generateRandomPostObject(user, postCategory);
+        Comment comment1 = EntityFactory.generateCommentObject(post1, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post1, user);
+        Comment comment3 = EntityFactory.generateCommentObject(post1, user);
         usersRepository.save(user);
         postCategoryRepository.save(postCategory);
         postRepository.save(post1);
         postRepository.save(post2);
         postRepository.save(post3);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
         int pageSize = 2;
         PageRequest pageable_1 = PageRequest.of(0, pageSize);
         PageRequest pageable_2 = PageRequest.of(1, pageSize);
@@ -312,6 +318,8 @@ class PostServiceTest {
         Assertions.assertThat(page_1.getPostPageResponseList().get(0).getPostId()).isEqualTo(post1.getPostId());
         Assertions.assertThat(page_1.getPostPageResponseList().get(1).getPostId()).isEqualTo(post2.getPostId());
         Assertions.assertThat(page_1.getCategoryId()).isEqualTo(postCategory.getPostCategoryId());
+        Assertions.assertThat(page_1.getPostPageResponseList().get(0).getCommentCount()).isEqualTo(3);
+        Assertions.assertThat(page_1.getPostPageResponseList().get(1).getCommentCount()).isEqualTo(0);
 
         Assertions.assertThat(page_2.getPostPageResponseList().size()).isEqualTo(1);
     }
