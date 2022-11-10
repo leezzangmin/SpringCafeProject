@@ -31,18 +31,18 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CustomPostRepository customPostRepository;
-    private final PostCategoryRepository postCategoryRepository;
     private final PostRecommendRepository postRecommendRepository;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final TemporaryPostService temporaryPostService;
     private final UsersService usersService;
+    private final PostCategoryService postCategoryService;
 
     @Cacheable(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public PostResponse findOne(Long postId, Optional<Long> userId) {
-        Post post = postRepository.findByIdWithUser(postId).
-            orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
+        Post post = postRepository.findByIdWithUser(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         List<CommentResponse> commentResponses = commentService.pagination(postId, PageRequest.of(0, 10));
         int recommendCount = postRecommendRepository.countByPostId(postId);
         boolean isRecommendedFlag = isUserRecommendedPost(postId, userId);
@@ -52,8 +52,7 @@ public class PostService {
     @Transactional
     public Long save(Long userId, PostSaveRequest postSaveRequest) {
         Users user = usersService.findOne(userId);
-        PostCategory postCategory = postCategoryRepository.findById(postSaveRequest.getPostCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 postCategoryId가 없습니다. 게시판 없음"));
+        PostCategory postCategory =postCategoryService.findOne(postSaveRequest.getPostCategoryId());
 
         Post post = Post.builder()
                 .postSubject(postSaveRequest.getPostSubject())
