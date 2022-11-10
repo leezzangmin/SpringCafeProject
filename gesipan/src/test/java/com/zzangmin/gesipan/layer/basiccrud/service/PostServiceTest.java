@@ -218,6 +218,22 @@ class PostServiceTest {
         Assertions.assertThatThrownBy(() -> postService.delete(invalidPostId, user.getUserId()));
     }
 
+    @DisplayName("게시글의 주인이 아닌 유저가 삭제를 요청하면 오류가 발생해야 한다.")
+    @Test
+    void delete_notOwner() {
+        //given
+        Users notOwner = EntityFactory.generateRandomUsersObject();
+        Users postOwner = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(postOwner);
+        usersRepository.save(postOwner);
+        usersRepository.save(notOwner);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.delete(post.getPostId(), notOwner.getUserId()));
+    }
+
     @DisplayName("post가 업데이트 되어야 한다.")
     @Test
     void update() {
@@ -236,6 +252,20 @@ class PostServiceTest {
         Assertions.assertThat(findPost.getPostSubject()).isEqualTo("수정제목");
         Assertions.assertThat(findPost.getPostContent()).isEqualTo("수정내용");
         Assertions.assertThat(findPost.getUpdatedAt()).isEqualTo(updateTime);
+    }
+
+    @DisplayName("존재하지 않는 postId로 갱신 요청을 하면 오류가 발생해야 한다.")
+    @Test
+    void update_invalidPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Long invalidPostId = 999999999L;
+        LocalDateTime updateTime = LocalDateTime.parse("2022-11-10T12:39:00");
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest("수정제목", "수정내용", updateTime);
+        usersRepository.save(user);
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.update(invalidPostId, postUpdateRequest, user.getUserId()));
     }
 
 
