@@ -81,7 +81,7 @@ public class PostController {
     @PostMapping("/post/recommend")
     public ResponseEntity<String> recommendPost(@RequestBody @Valid PostRecommendRequest postRecommendRequest) {
         log.info("post recommend : {}", postRecommendRequest);
-        postService.postRecommendCount(postRecommendRequest);
+        postService.postRecommend(postRecommendRequest);
         return ResponseEntity.ok("recommend success");
     }
 

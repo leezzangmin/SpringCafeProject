@@ -99,7 +99,7 @@ public class PostService {
     // TODO: (post_id, user_id) 복합인덱스 생성하기
     @CacheEvict(value = "single-post", key = "#postRecommendRequest.postId", cacheManager = "cacheManager")
     @Transactional
-    public void postRecommendCount(PostRecommendRequest postRecommendRequest) {
+    public void postRecommend(PostRecommendRequest postRecommendRequest) {
         Post post = postRepository.findById(postRecommendRequest.getPostId()).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         Users user = usersService.findOne(postRecommendRequest.getUserId());
