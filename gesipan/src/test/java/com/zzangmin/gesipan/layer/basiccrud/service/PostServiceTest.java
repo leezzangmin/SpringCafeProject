@@ -53,6 +53,24 @@ class PostServiceTest {
         Assertions.assertThat(postResponse.getPostContent()).isEqualTo(post.getPostContent());
     }
 
+    @DisplayName("존재하지 않는 id를 가진 게시물 단건조회를 요청하면 오류가 발생해야 한다.")
+    @Test
+    void findOne_noPostId() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
+        Long invalidPostId = 9991231435145L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.findOne(invalidPostId, Optional.empty()));
+    }
+
+
     @DisplayName("Post가 저장되어야 한다.")
     @Test
     void save() {
