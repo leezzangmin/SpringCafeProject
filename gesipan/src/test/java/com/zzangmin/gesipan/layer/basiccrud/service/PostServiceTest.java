@@ -438,11 +438,40 @@ class PostServiceTest {
     @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 댓글 count가 정확하게 반환되어야 한다.")
     @Test
     void userPosts_commentCount() {
-        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment0 = EntityFactory.generateCommentObject(post, user);
+        Comment comment1 = EntityFactory.generateCommentObject(post, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post, user);
+        Comment comment3 = EntityFactory.generateCommentObject(post, user);
+        Comment comment4 = EntityFactory.generateCommentObject(post, user);
+        Comment comment5 = EntityFactory.generateCommentObject(post, user);
+        Comment comment6 = EntityFactory.generateCommentObject(post, user);
+        Comment comment7 = EntityFactory.generateCommentObject(post, user);
+        Comment comment8 = EntityFactory.generateCommentObject(post, user);
+        Comment comment9 = EntityFactory.generateCommentObject(post, user);
+        Comment comment10 = EntityFactory.generateCommentObject(post, user);
+        Comment comment11 = EntityFactory.generateCommentObject(post, user);
 
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment0);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        commentRepository.save(comment4);
+        commentRepository.save(comment5);
+        commentRepository.save(comment6);
+        commentRepository.save(comment7);
+        commentRepository.save(comment8);
+        commentRepository.save(comment9);
+        commentRepository.save(comment10);
+        commentRepository.save(comment11);
         //when
-
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
         //then
+        Assertions.assertThat(userPosts.getPosts().get(0).getCommentCount()).isEqualTo(12);
     }
 
     @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 추천 count가 정확하게 반환되어야 한다.")
