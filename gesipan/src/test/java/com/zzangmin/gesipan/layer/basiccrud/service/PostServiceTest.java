@@ -425,4 +425,34 @@ class PostServiceTest {
     }
 
 
+    @DisplayName("존재하지 않는 userId로 개인 게시글 조회를 요청하면 오류가 발생해야 한다.")
+    @Test
+    void userPosts_invalidUserId() {
+        //given
+        Long invalidUserId = 99999999999123123L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.userPosts(invalidUserId));
+    }
+
+    @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 댓글 count가 정확하게 반환되어야 한다.")
+    @Test
+    void userPosts_commentCount() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 추천 count가 정확하게 반환되어야 한다.")
+    @Test
+    void userPosts_recommendCount() {
+        //given
+
+        //when
+
+        //then
+    }
+
 }
