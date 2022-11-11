@@ -478,10 +478,28 @@ class PostServiceTest {
     @Test
     void userPosts_recommendCount() {
         //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Users recommendUser0 = EntityFactory.generateRandomUsersObject();
+        Users recommendUser1 = EntityFactory.generateRandomUsersObject();
+        Users recommendUser2 = EntityFactory.generateRandomUsersObject();
+        usersRepository.save(user);
+        usersRepository.save(recommendUser0);
+        usersRepository.save(recommendUser1);
+        usersRepository.save(recommendUser2);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
 
+        PostRecommendRequest postRecommendRequest0 = new PostRecommendRequest(post.getPostId(), recommendUser0.getUserId());
+        PostRecommendRequest postRecommendRequest1 = new PostRecommendRequest(post.getPostId(), recommendUser1.getUserId());
+        PostRecommendRequest postRecommendRequest2 = new PostRecommendRequest(post.getPostId(), recommendUser2.getUserId());
+        postService.postRecommend(postRecommendRequest0);
+        postService.postRecommend(postRecommendRequest1);
+        postService.postRecommend(postRecommendRequest2);
         //when
-
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
         //then
+        Assertions.assertThat(userPosts.getPosts().get(0).getRecommendCount()).isEqualTo(3);
     }
 
 }
