@@ -22,7 +22,7 @@ public class PostSearchResponse {
     @Getter
     @Builder(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PACKAGE)
-    private static class SinglePost {
+    public static class SinglePost {
         private final Long postId;
         private final String postContent;
         private final LocalDateTime createdAt;
