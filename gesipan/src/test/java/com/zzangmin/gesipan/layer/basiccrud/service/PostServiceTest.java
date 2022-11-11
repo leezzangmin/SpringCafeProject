@@ -392,4 +392,37 @@ class PostServiceTest {
         //then
         Assertions.assertThat(postRecommendRepository.countByPostId(post.getPostId())).isEqualTo(1);
     }
+
+
+    @DisplayName("유저 개인 게시글 조회가 수행되어야 한다.")
+    @Test
+    void userPosts() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post0 = EntityFactory.generateRandomPostObject(user);
+        Post post1 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        usersRepository.save(user);
+        postCategoryRepository.save(post1.getPostCategory());
+        postRepository.save(post0);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        //when
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        //then
+        Assertions.assertThat(userPosts.getUserId()).isEqualTo(user.getUserId());
+        Assertions.assertThat(userPosts.getUserNickname()).isEqualTo(user.getUserNickname());
+        Assertions.assertThat(userPosts.getPosts().size()).isEqualTo(3);
+
+        Assertions.assertThat(userPosts.getPosts().get(0).getPostId()).isEqualTo(post0.getPostId());
+        Assertions.assertThat(userPosts.getPosts().get(1).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(userPosts.getPosts().get(2).getPostId()).isEqualTo(post2.getPostId());
+
+        Assertions.assertThat(userPosts.getPosts().get(0).getPostSubject()).isEqualTo(post0.getPostSubject());
+        Assertions.assertThat(userPosts.getPosts().get(1).getPostSubject()).isEqualTo(post1.getPostSubject());
+        Assertions.assertThat(userPosts.getPosts().get(2).getPostSubject()).isEqualTo(post2.getPostSubject());
+
+    }
+
+
 }
