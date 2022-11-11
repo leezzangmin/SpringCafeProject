@@ -26,7 +26,7 @@ public class PersonalPostsResponse {
 
     @Getter
     @Builder
-    static class PersonalPostResponse {
+    public static class PersonalPostResponse {
         private final Long postId;
         private final String postSubject;
         private final LocalDateTime createdAt;

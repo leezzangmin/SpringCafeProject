@@ -392,4 +392,155 @@ class PostServiceTest {
         //then
         Assertions.assertThat(postRecommendRepository.countByPostId(post.getPostId())).isEqualTo(1);
     }
+
+
+    @DisplayName("유저 개인 게시글 조회가 수행되어야 한다.")
+    @Test
+    void userPosts() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post0 = EntityFactory.generateRandomPostObject(user);
+        Post post1 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        usersRepository.save(user);
+        postCategoryRepository.save(post1.getPostCategory());
+        postRepository.save(post0);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        //when
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        //then
+        Assertions.assertThat(userPosts.getUserId()).isEqualTo(user.getUserId());
+        Assertions.assertThat(userPosts.getUserNickname()).isEqualTo(user.getUserNickname());
+        Assertions.assertThat(userPosts.getPosts().size()).isEqualTo(3);
+
+        Assertions.assertThat(userPosts.getPosts().get(0).getPostId()).isEqualTo(post0.getPostId());
+        Assertions.assertThat(userPosts.getPosts().get(1).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(userPosts.getPosts().get(2).getPostId()).isEqualTo(post2.getPostId());
+
+        Assertions.assertThat(userPosts.getPosts().get(0).getPostSubject()).isEqualTo(post0.getPostSubject());
+        Assertions.assertThat(userPosts.getPosts().get(1).getPostSubject()).isEqualTo(post1.getPostSubject());
+        Assertions.assertThat(userPosts.getPosts().get(2).getPostSubject()).isEqualTo(post2.getPostSubject());
+
+    }
+
+
+    @DisplayName("존재하지 않는 userId로 개인 게시글 조회를 요청하면 오류가 발생해야 한다.")
+    @Test
+    void userPosts_invalidUserId() {
+        //given
+        Long invalidUserId = 99999999999123123L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.userPosts(invalidUserId));
+    }
+
+    @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 댓글 count가 정확하게 반환되어야 한다.")
+    @Test
+    void userPosts_commentCount() {
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Comment comment0 = EntityFactory.generateCommentObject(post, user);
+        Comment comment1 = EntityFactory.generateCommentObject(post, user);
+        Comment comment2 = EntityFactory.generateCommentObject(post, user);
+        Comment comment3 = EntityFactory.generateCommentObject(post, user);
+        Comment comment4 = EntityFactory.generateCommentObject(post, user);
+        Comment comment5 = EntityFactory.generateCommentObject(post, user);
+        Comment comment6 = EntityFactory.generateCommentObject(post, user);
+        Comment comment7 = EntityFactory.generateCommentObject(post, user);
+        Comment comment8 = EntityFactory.generateCommentObject(post, user);
+        Comment comment9 = EntityFactory.generateCommentObject(post, user);
+        Comment comment10 = EntityFactory.generateCommentObject(post, user);
+        Comment comment11 = EntityFactory.generateCommentObject(post, user);
+
+        usersRepository.save(user);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+        commentRepository.save(comment0);
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+        commentRepository.save(comment4);
+        commentRepository.save(comment5);
+        commentRepository.save(comment6);
+        commentRepository.save(comment7);
+        commentRepository.save(comment8);
+        commentRepository.save(comment9);
+        commentRepository.save(comment10);
+        commentRepository.save(comment11);
+        //when
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        //then
+        Assertions.assertThat(userPosts.getPosts().get(0).getCommentCount()).isEqualTo(12);
+    }
+
+    @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 추천 count가 정확하게 반환되어야 한다.")
+    @Test
+    void userPosts_recommendCount() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        Users recommendUser0 = EntityFactory.generateRandomUsersObject();
+        Users recommendUser1 = EntityFactory.generateRandomUsersObject();
+        Users recommendUser2 = EntityFactory.generateRandomUsersObject();
+        usersRepository.save(user);
+        usersRepository.save(recommendUser0);
+        usersRepository.save(recommendUser1);
+        usersRepository.save(recommendUser2);
+        postCategoryRepository.save(post.getPostCategory());
+        postRepository.save(post);
+
+        PostRecommendRequest postRecommendRequest0 = new PostRecommendRequest(post.getPostId(), recommendUser0.getUserId());
+        PostRecommendRequest postRecommendRequest1 = new PostRecommendRequest(post.getPostId(), recommendUser1.getUserId());
+        PostRecommendRequest postRecommendRequest2 = new PostRecommendRequest(post.getPostId(), recommendUser2.getUserId());
+        postService.postRecommend(postRecommendRequest0);
+        postService.postRecommend(postRecommendRequest1);
+        postService.postRecommend(postRecommendRequest2);
+        //when
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        //then
+        Assertions.assertThat(userPosts.getPosts().get(0).getRecommendCount()).isEqualTo(3);
+    }
+
+    @DisplayName("게시글 검색이 정상적으로 수행되어야 한다.")
+    @Test
+    void searchPosts() {
+        //given
+        Users users = EntityFactory.generateRandomUsersObject();
+        Users recommendUser = EntityFactory.generateRandomUsersObject();
+        Post post0 = EntityFactory.generateRandomPostObject(users);
+        Post post1 = EntityFactory.generateRandomPostObject(users, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(users, post0.getPostCategory());
+        Post post3 = EntityFactory.generateRandomPostObject(users, post0.getPostCategory());
+        Comment comment = EntityFactory.generateCommentObject(post0, recommendUser);
+
+        usersRepository.save(users);
+        usersRepository.save(recommendUser);
+        postCategoryRepository.save(post0.getPostCategory());
+        postRepository.save(post0);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        commentRepository.save(comment);
+
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post0.getPostId(), recommendUser.getUserId());
+        postService.postRecommend(postRecommendRequest);
+        PostSearchRequest postSearchRequest = new PostSearchRequest(users.getUserNickname(), LocalDateTime.of(1900, 01, 01, 01, 01, 01), LocalDateTime.of(2022, 12, 31, 01, 01, 01), post0.getPostCategory().getPostCategoryId());
+        //when
+        PostSearchResponse posts = postService.searchPosts(postSearchRequest);
+        //then
+        Assertions.assertThat(posts.getSearchCount()).isEqualTo(4);
+        Assertions.assertThat(posts.getPosts().size()).isEqualTo(4);
+
+        Assertions.assertThat(posts.getPosts().get(0).getPostId()).isEqualTo(post0.getPostId());
+        Assertions.assertThat(posts.getPosts().get(1).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(posts.getPosts().get(2).getPostId()).isEqualTo(post2.getPostId());
+        Assertions.assertThat(posts.getPosts().get(3).getPostId()).isEqualTo(post3.getPostId());
+
+        Assertions.assertThat(posts.getPosts().get(0).getRecommendCount()).isEqualTo(1);
+
+        Assertions.assertThat(posts.getPosts().get(0).getCommentCount()).isEqualTo(1);
+
+    }
+
 }
