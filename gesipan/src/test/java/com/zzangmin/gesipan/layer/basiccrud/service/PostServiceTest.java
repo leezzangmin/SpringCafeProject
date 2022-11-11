@@ -502,4 +502,45 @@ class PostServiceTest {
         Assertions.assertThat(userPosts.getPosts().get(0).getRecommendCount()).isEqualTo(3);
     }
 
+    @DisplayName("게시글 검색이 정상적으로 수행되어야 한다.")
+    @Test
+    void searchPosts() {
+        //given
+        Users users = EntityFactory.generateRandomUsersObject();
+        Users recommendUser = EntityFactory.generateRandomUsersObject();
+        Post post0 = EntityFactory.generateRandomPostObject(users);
+        Post post1 = EntityFactory.generateRandomPostObject(users, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(users, post0.getPostCategory());
+        Post post3 = EntityFactory.generateRandomPostObject(users, post0.getPostCategory());
+        Comment comment = EntityFactory.generateCommentObject(post0, recommendUser);
+
+        usersRepository.save(users);
+        usersRepository.save(recommendUser);
+        postCategoryRepository.save(post0.getPostCategory());
+        postRepository.save(post0);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        commentRepository.save(comment);
+
+        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post0.getPostId(), recommendUser.getUserId());
+        postService.postRecommend(postRecommendRequest);
+        PostSearchRequest postSearchRequest = new PostSearchRequest(users.getUserNickname(), LocalDateTime.of(1900, 01, 01, 01, 01, 01), LocalDateTime.of(2022, 12, 31, 01, 01, 01), post0.getPostCategory().getPostCategoryId());
+        //when
+        PostSearchResponse posts = postService.searchPosts(postSearchRequest);
+        //then
+        Assertions.assertThat(posts.getSearchCount()).isEqualTo(4);
+        Assertions.assertThat(posts.getPosts().size()).isEqualTo(4);
+
+        Assertions.assertThat(posts.getPosts().get(0).getPostId()).isEqualTo(post0.getPostId());
+        Assertions.assertThat(posts.getPosts().get(1).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(posts.getPosts().get(2).getPostId()).isEqualTo(post2.getPostId());
+        Assertions.assertThat(posts.getPosts().get(3).getPostId()).isEqualTo(post3.getPostId());
+
+        Assertions.assertThat(posts.getPosts().get(0).getRecommendCount()).isEqualTo(1);
+
+        Assertions.assertThat(posts.getPosts().get(0).getCommentCount()).isEqualTo(1);
+
+    }
+
 }
