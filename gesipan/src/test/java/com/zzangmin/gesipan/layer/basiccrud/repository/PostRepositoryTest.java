@@ -1,23 +1,20 @@
 package com.zzangmin.gesipan.layer.basiccrud.repository;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSimpleQueryDTO;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
-import com.zzangmin.gesipan.layer.embeddable.BaseTime;
-import com.zzangmin.gesipan.layer.login.entity.UserRole;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
-import com.zzangmin.gesipan.layer.basiccrud.entity.Categories;
+import com.zzangmin.gesipan.testfactory.EntityFactory;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.List;
+
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @DataJpaTest
@@ -30,65 +27,79 @@ class PostRepositoryTest {
     @Autowired
     UsersRepository usersRepository;
 
-    PostCategory postCategory;
-    Users user;
-    Post post;
 
-    @BeforeEach
-    void setUp() {
-        postCategory = PostCategory.builder()
-                .categoryName(Categories.FREE)
-                .build();
-        user = Users.builder()
-                .userEmail("ckdals1234@naver.com")
-                .userName("이창민")
-                .userNickname("zzangmin")
-                .userRole(UserRole.NORMAL)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .build();
-
-        post = Post.builder()
-                .postSubject("test제목")
-                .postContent("test내용")
-                .user(user)
-                .postCategory(postCategory)
-                .baseTime(new BaseTime(LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2)))
-                .hitCount(0L)
-                .build();
-        usersRepository.save(user).getUserId();
-        postCategoryRepository.save(postCategory);
-        postRepository.save(post).getPostId();
-    }
-
+    @DisplayName("postId로 게시글+유저 조회를 수행해야 한다")
     @Test
     void findByIdWithUser() {
         //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+
+        usersRepository.save(user);
+        postCategoryRepository.save(postCategory);
+        postRepository.save(post);
+
         Long userId = user.getUserId();
         Long postCategoryId = postCategory.getPostCategoryId();
         Long postId = post.getPostId();
         //when
-        Post post = postRepository.findByIdWithUser(postId).get();
+        Post findPost = postRepository.findByIdWithUser(postId).get();
         //then
-        org.assertj.core.api.Assertions.assertThat(post.getPostId()).isEqualTo(postId);
-        org.assertj.core.api.Assertions.assertThat(post.getUser().getUserId()).isEqualTo(userId);
+        Assertions.assertThat(findPost.getPostId()).isEqualTo(postId);
+        Assertions.assertThat(findPost.getUser().getUserId()).isEqualTo(userId);
 
     }
 
+    @DisplayName("postIds로 게시글을 조회해야 한다.")
     @Test
-    void findPageByCategoryId() {
+    void paginationByPostIds() {
         //given
-        Long userId = user.getUserId();
-        Long postCategoryId = postCategory.getPostCategoryId();
-        Long postId = post.getPostId();
-        Pageable pageable = PageRequest.of(0,10);
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post0 = EntityFactory.generateRandomPostObject(user);
+        Post post1 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post3 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post4 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post5 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+        Post post6 = EntityFactory.generateRandomPostObject(user, post0.getPostCategory());
+
+        usersRepository.save(user);
+        postCategoryRepository.save(post1.getPostCategory());
+        postRepository.save(post0);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        postRepository.save(post4);
+        postRepository.save(post5);
+        postRepository.save(post6);
+
+        List<Long> postIds = List.of(post0.getPostId(), post1.getPostId(),post2.getPostId(),post3.getPostId(),post4.getPostId(),post5.getPostId(),post6.getPostId());
 
         //when
-        List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(postCategoryId, pageable);
-        List<Post> posts = postRepository.paginationByPostIds(postIds);
-        List<Long> nonCategorizedPosts = postRepository.findPaginationPostIdsByCategoryId(99999L, pageable);
-
+        List<PostSimpleQueryDTO> posts = postRepository.paginationByPostIds(postIds);
         //then
-        org.assertj.core.api.Assertions.assertThat(posts.size()).isLessThan(10).isGreaterThan(0);
-        Assertions.assertThat(nonCategorizedPosts.size()).isEqualTo(0);
+        Assertions.assertThat(posts.get(0).getPostId()).isEqualTo(post0.getPostId());
+        Assertions.assertThat(posts.get(0).getPostSubject()).isEqualTo(post0.getPostSubject());
+
+        Assertions.assertThat(posts.get(1).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(posts.get(1).getPostSubject()).isEqualTo(post1.getPostSubject());
+
+        Assertions.assertThat(posts.get(2).getPostId()).isEqualTo(post2.getPostId());
+        Assertions.assertThat(posts.get(2).getPostSubject()).isEqualTo(post2.getPostSubject());
+
+        Assertions.assertThat(posts.get(3).getPostId()).isEqualTo(post3.getPostId());
+        Assertions.assertThat(posts.get(3).getPostSubject()).isEqualTo(post3.getPostSubject());
+
+        Assertions.assertThat(posts.get(4).getPostId()).isEqualTo(post4.getPostId());
+        Assertions.assertThat(posts.get(4).getPostSubject()).isEqualTo(post4.getPostSubject());
+
+        Assertions.assertThat(posts.get(5).getPostId()).isEqualTo(post5.getPostId());
+        Assertions.assertThat(posts.get(5).getPostSubject()).isEqualTo(post5.getPostSubject());
+
+        Assertions.assertThat(posts.get(6).getPostId()).isEqualTo(post6.getPostId());
+        Assertions.assertThat(posts.get(6).getPostSubject()).isEqualTo(post6.getPostSubject());
     }
+
+
 }
