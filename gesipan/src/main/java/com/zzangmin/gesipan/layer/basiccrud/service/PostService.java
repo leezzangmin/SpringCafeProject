@@ -90,10 +90,10 @@ public class PostService {
     public PostsPageResponse pagination(Long categoryId, Pageable pageable) {
         validatePageRequestSize(pageable);
         List<Long> postIds = postRepository.findPaginationPostIdsByCategoryId(categoryId, pageable);
-        List<Post> posts = postRepository.paginationByPostIds(postIds);
+        List<PostSimpleQueryDTO> postsDTO = postRepository.paginationByPostIds(postIds);
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
         List<Integer> commentCounts = commentRepository.countByIds(postIds);
-        return PostsPageResponse.of(categoryId, posts, recommendCount, commentCounts);
+        return PostsPageResponse.of(categoryId, postsDTO, recommendCount, commentCounts);
     }
 
     // TODO: (post_id, user_id) 복합인덱스 생성하기
