@@ -31,23 +31,23 @@ public class PostsPageResponse {
         private final String userNickname;
         private final int commentCount;
 
-        private static PostPageResponse of(Post post, int recommendCount, int commentCount) {
+        private static PostPageResponse of(PostSimpleQueryDTO post, int recommendCount, int commentCount) {
             return PostPageResponse.builder()
                     .postId(post.getPostId())
                     .postSubject(post.getPostSubject())
                     .createdAt(post.getCreatedAt())
                     .hitCount(post.getHitCount())
                     .recommendCount(recommendCount)
-                    .userId(post.getUser().getUserId())
-                    .userNickname(post.getUser().getUserNickname())
+                    .userId(post.getUserId())
+                    .userNickname(post.getUserNickname())
                     .commentCount(commentCount)
                     .build();
         }
     }
 
-    public static PostsPageResponse of(Long categoryId, List<Post> posts, List<Integer> recommendCount, List<Integer> commentCounts) {
-        return new PostsPageResponse(categoryId, IntStream.range(0, posts.size()).boxed()
-                .map(i ->  PostPageResponse.of(posts.get(i), recommendCount.get(i), commentCounts.get(i)))
+    public static PostsPageResponse of(Long categoryId, List<PostSimpleQueryDTO> postsDTO, List<Integer> recommendCount, List<Integer> commentCounts) {
+        return new PostsPageResponse(categoryId, IntStream.range(0, postsDTO.size()).boxed()
+                .map(i ->  PostPageResponse.of(postsDTO.get(i), recommendCount.get(i), commentCounts.get(i)))
                 .collect(Collectors.toList()));
     }
 
