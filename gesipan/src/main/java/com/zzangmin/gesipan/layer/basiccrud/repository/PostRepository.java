@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.repository;
 
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSimpleQueryDTO;
 import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +18,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p join fetch p.user where p.postId=:postId")
     Optional<Post> findByIdWithUser(@Param("postId") Long postId);
 
-    @Query("select p from Post p join fetch p.user where p.postId in :postIds")
-    List<Post> paginationByPostIds(@Param("postIds") List<Long> postIds);
+    @Query("select new com.zzangmin.gesipan.layer.basiccrud.dto.post.PostSimpleQueryDTO(p.postId, p.postSubject, p.baseTime.createdAt, p.hitCount, p.user.userId, p.user.userNickname) " +
+            "from Post p inner join p.user u " +
+            "where p.postId in :postIds and u.userId=p.user.userId")
+    List<PostSimpleQueryDTO> paginationByPostIds(@Param("postIds") List<Long> postIds);
     @Query("select p from Post p where p.user.userId=:userId")
     List<Post> findByUserId(@Param("userId") Long userId);
 
