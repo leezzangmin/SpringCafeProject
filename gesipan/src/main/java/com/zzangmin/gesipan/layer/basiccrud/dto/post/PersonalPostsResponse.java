@@ -1,6 +1,5 @@
 package com.zzangmin.gesipan.layer.basiccrud.dto.post;
 
-import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
 import com.zzangmin.gesipan.layer.login.entity.Users;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,7 +34,7 @@ public class PersonalPostsResponse {
         private final int commentCount;
     }
 
-    public static PersonalPostsResponse of(Users user, List<Post> posts, List<Integer> recommendCount, List<Integer> commentCount) {
+    public static PersonalPostsResponse of(Users user, List<SimpleUsersPostQueryDTO> posts, List<Integer> recommendCount, List<Integer> commentCount) {
         return new PersonalPostsResponse(user.getUserId(), user.getUserNickname(),
                 IntStream.range(0, posts.size()).boxed()
                         .map(i -> PersonalPostResponse
