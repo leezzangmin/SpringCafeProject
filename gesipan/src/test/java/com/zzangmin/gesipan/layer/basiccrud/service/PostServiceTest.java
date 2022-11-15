@@ -543,4 +543,13 @@ class PostServiceTest {
 
     }
 
+    @DisplayName("존재하지 않는 userId로 추천한 게시물 조회를 요청하면 오류가 발생해야 한다.")
+    @Test
+    void findRecommendedPost_invalidUserId() {
+        //given
+        Long invalidUserId = 999999999999L;
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> postService.findRecommendedPost(invalidUserId));
+    }
 }
