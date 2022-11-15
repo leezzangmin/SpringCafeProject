@@ -25,9 +25,9 @@ public class PostRecommendsResponse {
     @Getter
     @Builder(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PACKAGE)
-    private static class SinglePost {
+    public static class SinglePost {
         private final Long postId;
-        private final String postContent;
+        private final String postSubject;
         private final LocalDateTime createdAt;
         private final Long hitCount;
         private final Long userId;
@@ -42,7 +42,7 @@ public class PostRecommendsResponse {
             IntStream.range(0, postRecommends.size()).boxed()
                 .map(index -> SinglePost.builder()
                     .postId(postRecommends.get(index).getPostId())
-                    .postContent(postRecommends.get(index).getPostContent())
+                    .postSubject(postRecommends.get(index).getPostSubject())
                     .createdAt(postRecommends.get(index).getCreatedAt())
                     .hitCount(postRecommends.get(index).getHitCount())
                     .userId(postRecommends.get(index).getUser().getUserId())
