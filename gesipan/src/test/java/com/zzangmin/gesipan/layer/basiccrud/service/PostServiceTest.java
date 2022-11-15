@@ -559,22 +559,46 @@ class PostServiceTest {
         //given
         Users recommendSearchUser = EntityFactory.generateRandomUsersObject();
 
-        Users postOwner = EntityFactory.generateRandomUsersObject();
-        Post post0 = EntityFactory.generateRandomPostObject(postOwner);
-        Post post1 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post2 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post3 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post4 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post5 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post6 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post7 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post8 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post9 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post10 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
-        Post post11 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Users postOwner0 = EntityFactory.generateRandomUsersObject();
+        Users postOwner1 = EntityFactory.generateRandomUsersObject();
+        Users postOwner2 = EntityFactory.generateRandomUsersObject();
+        Users postOwner3 = EntityFactory.generateRandomUsersObject();
+        Users postOwner4 = EntityFactory.generateRandomUsersObject();
+        Users postOwner5 = EntityFactory.generateRandomUsersObject();
+        Users postOwner6 = EntityFactory.generateRandomUsersObject();
+        Users postOwner7 = EntityFactory.generateRandomUsersObject();
+        Users postOwner8 = EntityFactory.generateRandomUsersObject();
+        Users postOwner9 = EntityFactory.generateRandomUsersObject();
+        Users postOwner10 = EntityFactory.generateRandomUsersObject();
+        Users postOwner11 = EntityFactory.generateRandomUsersObject();
+
+        Post post0 = EntityFactory.generateRandomPostObject(postOwner0);
+        Post post1 = EntityFactory.generateRandomPostObject(postOwner1, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(postOwner2, post0.getPostCategory());
+        Post post3 = EntityFactory.generateRandomPostObject(postOwner3, post0.getPostCategory());
+        Post post4 = EntityFactory.generateRandomPostObject(postOwner4, post0.getPostCategory());
+        Post post5 = EntityFactory.generateRandomPostObject(postOwner5, post0.getPostCategory());
+        Post post6 = EntityFactory.generateRandomPostObject(postOwner6, post0.getPostCategory());
+        Post post7 = EntityFactory.generateRandomPostObject(postOwner7, post0.getPostCategory());
+        Post post8 = EntityFactory.generateRandomPostObject(postOwner8, post0.getPostCategory());
+        Post post9 = EntityFactory.generateRandomPostObject(postOwner9, post0.getPostCategory());
+        Post post10 = EntityFactory.generateRandomPostObject(postOwner10, post0.getPostCategory());
+        Post post11 = EntityFactory.generateRandomPostObject(postOwner11, post0.getPostCategory());
 
         usersRepository.save(recommendSearchUser);
-        usersRepository.save(postOwner);
+        usersRepository.save(postOwner0);
+        usersRepository.save(postOwner1);
+        usersRepository.save(postOwner2);
+        usersRepository.save(postOwner3);
+        usersRepository.save(postOwner4);
+        usersRepository.save(postOwner5);
+        usersRepository.save(postOwner6);
+        usersRepository.save(postOwner7);
+        usersRepository.save(postOwner8);
+        usersRepository.save(postOwner9);
+        usersRepository.save(postOwner10);
+        usersRepository.save(postOwner11);
+
         postCategoryRepository.save(post0.getPostCategory());
         postRepository.save(post0);
         postRepository.save(post1);
@@ -646,5 +670,30 @@ class PostServiceTest {
         Assertions.assertThat(recommendedPost.getPosts().get(10).getPostSubject()).isEqualTo(post10.getPostSubject());
         Assertions.assertThat(recommendedPost.getPosts().get(11).getPostSubject()).isEqualTo(post11.getPostSubject());
 
+        Assertions.assertThat(recommendedPost.getPosts().get(0).getUserId()).isEqualTo(post0.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(1).getUserId()).isEqualTo(post1.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(2).getUserId()).isEqualTo(post2.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(3).getUserId()).isEqualTo(post3.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(4).getUserId()).isEqualTo(post4.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(5).getUserId()).isEqualTo(post5.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(6).getUserId()).isEqualTo(post6.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(7).getUserId()).isEqualTo(post7.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(8).getUserId()).isEqualTo(post8.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(9).getUserId()).isEqualTo(post9.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(10).getUserId()).isEqualTo(post10.getUser().getUserId());
+        Assertions.assertThat(recommendedPost.getPosts().get(11).getUserId()).isEqualTo(post11.getUser().getUserId());
+
+        Assertions.assertThat(recommendedPost.getPosts().get(0).getUserNickname()).isEqualTo(post0.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(1).getUserNickname()).isEqualTo(post1.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(2).getUserNickname()).isEqualTo(post2.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(3).getUserNickname()).isEqualTo(post3.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(4).getUserNickname()).isEqualTo(post4.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(5).getUserNickname()).isEqualTo(post5.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(6).getUserNickname()).isEqualTo(post6.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(7).getUserNickname()).isEqualTo(post7.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(8).getUserNickname()).isEqualTo(post8.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(9).getUserNickname()).isEqualTo(post9.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(10).getUserNickname()).isEqualTo(post10.getUser().getUserNickname());
+        Assertions.assertThat(recommendedPost.getPosts().get(11).getUserNickname()).isEqualTo(post11.getUser().getUserNickname());
     }
 }
