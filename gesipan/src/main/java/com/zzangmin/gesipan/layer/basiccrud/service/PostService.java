@@ -140,7 +140,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostRecommendsResponse findRecommendedPost(Long userId) {
         Users user = usersService.findOne(userId);
-        List<Post> postRecommends = postRecommendRepository.findByUsersId(userId);
+        List<SimpleRecommendedPostQueryDTO> postRecommends = postRecommendRepository.findByUsersId(userId);
 
         List<Long> postIds = postRecommends.stream().map(p -> p.getPostId()).collect(Collectors.toList());
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);

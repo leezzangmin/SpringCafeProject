@@ -37,7 +37,7 @@ public class PostRecommendsResponse {
     }
 
 
-    public static PostRecommendsResponse of(List<Post> postRecommends, List<Integer> recommendCount, List<Integer> commentCount) {
+    public static PostRecommendsResponse of(List<SimpleRecommendedPostQueryDTO> postRecommends, List<Integer> recommendCount, List<Integer> commentCount) {
         return new PostRecommendsResponse(
             IntStream.range(0, postRecommends.size()).boxed()
                 .map(index -> SinglePost.builder()
@@ -45,8 +45,8 @@ public class PostRecommendsResponse {
                     .postSubject(postRecommends.get(index).getPostSubject())
                     .createdAt(postRecommends.get(index).getCreatedAt())
                     .hitCount(postRecommends.get(index).getHitCount())
-                    .userId(postRecommends.get(index).getUser().getUserId())
-                    .userNickname(postRecommends.get(index).getUser().getUserNickname())
+                    .userId(postRecommends.get(index).getUserId())
+                    .userNickname(postRecommends.get(index).getUserNickname())
                     .recommendCount(recommendCount.get(index))
                     .commentCount(commentCount.get(index))
                     .build())
