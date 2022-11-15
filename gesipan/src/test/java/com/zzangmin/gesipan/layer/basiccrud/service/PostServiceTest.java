@@ -552,4 +552,99 @@ class PostServiceTest {
         //then
         Assertions.assertThatThrownBy(() -> postService.findRecommendedPost(invalidUserId));
     }
+
+    @DisplayName("추천한 게시물 조회를 수행해야 한다.")
+    @Test
+    void findRecommendedPost() {
+        //given
+        Users recommendSearchUser = EntityFactory.generateRandomUsersObject();
+
+        Users postOwner = EntityFactory.generateRandomUsersObject();
+        Post post0 = EntityFactory.generateRandomPostObject(postOwner);
+        Post post1 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post2 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post3 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post4 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post5 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post6 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post7 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post8 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post9 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post10 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+        Post post11 = EntityFactory.generateRandomPostObject(postOwner, post0.getPostCategory());
+
+        usersRepository.save(recommendSearchUser);
+        usersRepository.save(postOwner);
+        postCategoryRepository.save(post0.getPostCategory());
+        postRepository.save(post0);
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        postRepository.save(post4);
+        postRepository.save(post5);
+        postRepository.save(post6);
+        postRepository.save(post7);
+        postRepository.save(post8);
+        postRepository.save(post9);
+        postRepository.save(post10);
+        postRepository.save(post11);
+
+        PostRecommendRequest postRecommendRequest0 = new PostRecommendRequest(post0.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest1 = new PostRecommendRequest(post1.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest2 = new PostRecommendRequest(post2.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest3 = new PostRecommendRequest(post3.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest4 = new PostRecommendRequest(post4.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest5 = new PostRecommendRequest(post5.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest6 = new PostRecommendRequest(post6.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest7 = new PostRecommendRequest(post7.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest8 = new PostRecommendRequest(post8.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest9 = new PostRecommendRequest(post9.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest10 = new PostRecommendRequest(post10.getPostId(), recommendSearchUser.getUserId());
+        PostRecommendRequest postRecommendRequest11 = new PostRecommendRequest(post11.getPostId(), recommendSearchUser.getUserId());
+
+        postService.postRecommend(postRecommendRequest0);
+        postService.postRecommend(postRecommendRequest1);
+        postService.postRecommend(postRecommendRequest2);
+        postService.postRecommend(postRecommendRequest3);
+        postService.postRecommend(postRecommendRequest4);
+        postService.postRecommend(postRecommendRequest5);
+        postService.postRecommend(postRecommendRequest6);
+        postService.postRecommend(postRecommendRequest7);
+        postService.postRecommend(postRecommendRequest8);
+        postService.postRecommend(postRecommendRequest9);
+        postService.postRecommend(postRecommendRequest10);
+        postService.postRecommend(postRecommendRequest11);
+
+        //when
+        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(recommendSearchUser.getUserId());
+        //then
+        Assertions.assertThat(recommendedPost.getSearchCount()).isEqualTo(12);
+
+        Assertions.assertThat(recommendedPost.getPosts().get(0).getPostId()).isEqualTo(post0.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(1).getPostId()).isEqualTo(post1.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(2).getPostId()).isEqualTo(post2.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(3).getPostId()).isEqualTo(post3.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(4).getPostId()).isEqualTo(post4.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(5).getPostId()).isEqualTo(post5.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(6).getPostId()).isEqualTo(post6.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(7).getPostId()).isEqualTo(post7.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(8).getPostId()).isEqualTo(post8.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(9).getPostId()).isEqualTo(post9.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(10).getPostId()).isEqualTo(post10.getPostId());
+        Assertions.assertThat(recommendedPost.getPosts().get(11).getPostId()).isEqualTo(post11.getPostId());
+
+        Assertions.assertThat(recommendedPost.getPosts().get(0).getPostSubject()).isEqualTo(post0.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(1).getPostSubject()).isEqualTo(post1.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(2).getPostSubject()).isEqualTo(post2.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(3).getPostSubject()).isEqualTo(post3.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(4).getPostSubject()).isEqualTo(post4.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(5).getPostSubject()).isEqualTo(post5.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(6).getPostSubject()).isEqualTo(post6.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(7).getPostSubject()).isEqualTo(post7.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(8).getPostSubject()).isEqualTo(post8.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(9).getPostSubject()).isEqualTo(post9.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(10).getPostSubject()).isEqualTo(post10.getPostSubject());
+        Assertions.assertThat(recommendedPost.getPosts().get(11).getPostSubject()).isEqualTo(post11.getPostSubject());
+
+    }
 }
