@@ -1,6 +1,6 @@
 package com.zzangmin.gesipan.layer.basiccrud.repository;
 
-import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
+import com.zzangmin.gesipan.layer.basiccrud.dto.post.SimpleRecommendedPostQueryDTO;
 import com.zzangmin.gesipan.layer.basiccrud.entity.PostRecommend;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +22,8 @@ public interface PostRecommendRepository extends JpaRepository<PostRecommend, Lo
     @Query("select COALESCE(count(pr.postRecommendId), 0) from PostRecommend pr where pr.post.postId=:postId")
     int countByPostId(@Param("postId") Long postId);
 
-    @Query("select pr.post from PostRecommend pr join fetch pr.post.user where pr.user.userId=:userId")
-    List<Post> findByUsersId(@Param("userId") Long userId);
+    @Query("select new com.zzangmin.gesipan.layer.basiccrud.dto.post.SimpleRecommendedPostQueryDTO(p.post.postId, p.post.postSubject, p.post.baseTime.createdAt, p.post.hitCount, p.post.user.userId, p.post.user.userNickname) " +
+            "from PostRecommend p " +
+            "where p.user.userId=:userId")
+    List<SimpleRecommendedPostQueryDTO> findByUsersId(@Param("userId") Long userId);
 }
