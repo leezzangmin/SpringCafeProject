@@ -35,8 +35,6 @@ public class PostController {
     private final TemporaryPostService temporaryPostService;
     private final JwtProvider jwtProvider;
 
-
-    // TODO: 서블릿에서 아이피 뽑아서 레디스에 캐싱하는거 말고 JWT로 구분해서 넣는것은 어떤지
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
         log.info("postId: {}", postId);
@@ -133,7 +131,7 @@ public class PostController {
             return;
         }
 
-        if (startAt.isAfter(endAt)) {
+        if (startAt != null && startAt.isAfter(endAt)) {
             throw new IllegalArgumentException("입력한 시간이 조건에 맞지 않습니다.");
         }
     }

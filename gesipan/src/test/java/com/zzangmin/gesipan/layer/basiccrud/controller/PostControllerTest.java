@@ -1,61 +1,53 @@
 package com.zzangmin.gesipan.layer.basiccrud.controller;
 
-import com.zzangmin.gesipan.layer.basiccrud.dto.post.PostResponse;
-import com.zzangmin.gesipan.layer.basiccrud.service.PostService;
-import com.zzangmin.gesipan.layer.basiccrud.service.TemporaryPostService;
-import com.zzangmin.gesipan.layer.caching.redis.RedisPostHitCountBulkUpdateService;
-import com.zzangmin.gesipan.layer.login.service.JwtProvider;
+import com.zzangmin.gesipan.layer.BaseIntegrationTest;
+import com.zzangmin.gesipan.layer.basiccrud.entity.Post;
+import com.zzangmin.gesipan.layer.basiccrud.entity.PostCategory;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostCategoryRepository;
+import com.zzangmin.gesipan.layer.basiccrud.repository.PostRepository;
+import com.zzangmin.gesipan.layer.login.entity.Users;
+import com.zzangmin.gesipan.layer.login.repository.UsersRepository;
+import com.zzangmin.gesipan.testfactory.EntityFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-
-@WebMvcTest(controllers = PostController.class)
-class PostControllerTest {
+class PostControllerTest extends BaseIntegrationTest {
 
     @Autowired
-    MockMvc mvc;
+    UsersRepository usersRepository;
+    @Autowired
+    PostCategoryRepository postCategoryRepository;
+    @Autowired
+    PostRepository postRepository;
 
-    @MockBean
-    PostService postService;
-
-    @MockBean
-    RedisPostHitCountBulkUpdateService redisPostHitCountBulkUpdateService;
-
-    @MockBean
-    JwtProvider jwtProvider;
-
-    @MockBean
-    TemporaryPostService temporaryPostService;
-
-
+    @DisplayName("postId를 담아 요청하면 PostResponse를 반환해야 한다.")
     @Test
-    @DisplayName("게시글 단건조회를 하면 PostResponse 객체 Json이 반환되어야 한다")
     void singlePost() throws Exception {
         //given
-        PostResponse postResponse = new PostResponse(123L, 10L, "givenUserNickname", 0L, 0, "givenSubject", "givenContent", LocalDateTime.of(2022,2,2,2,2), LocalDateTime.of(2022,2,2,2,2), new ArrayList<>(), false);
-        given(jwtProvider.getUserId(any()))
-                .willReturn(Optional.empty());
-        given(postService.findOne(123L, Optional.empty()))
-                .willReturn(postResponse);
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+        usersRepository.save(user);
+        postCategoryRepository.save(postCategory);
+        postRepository.save(post);
         //when
-        mvc.perform(MockMvcRequestBuilders.get("/post/123"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.postId").value(123))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userNickname").value("givenUserNickname"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.comments").value(new ArrayList<>()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.recommended").value(false));
+        ResultActions result = mvc.perform(get("/post/" + post.getPostId()));
         //then
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.postId").value(post.getPostId()))
+                .andExpect(jsonPath("$.userId").value(user.getUserId()))
+                .andExpect(jsonPath("$.userNickname").value(user.getUserNickname()))
+                .andExpect(jsonPath("$.hitCount").value(post.getHitCount()))
+                .andExpect(jsonPath("$.recommendCount").value(0))
+                .andExpect(jsonPath("$.postSubject").value(post.getPostSubject()))
+                .andExpect(jsonPath("$.postContent").value(post.getPostContent()));
     }
 }
