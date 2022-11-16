@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -22,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(controllers = PostController.class)
-class PostControllerTest {
+class PostControllerSliceTest {
 
     @Autowired
     MockMvc mvc;
@@ -50,12 +51,13 @@ class PostControllerTest {
         given(postService.findOne(123L, Optional.empty()))
                 .willReturn(postResponse);
         //when
-        mvc.perform(MockMvcRequestBuilders.get("/post/123"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+        ResultActions result = mvc.perform(MockMvcRequestBuilders.get("/post/123"));
+
+        //then
+        result.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postId").value(123))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userNickname").value("givenUserNickname"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comments").value(new ArrayList<>()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.recommended").value(false));
-        //then
     }
 }
