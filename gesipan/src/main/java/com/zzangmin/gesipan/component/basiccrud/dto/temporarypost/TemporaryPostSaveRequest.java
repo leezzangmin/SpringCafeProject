@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.component.basiccrud.dto.temporarypost;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,4 +18,6 @@ public class TemporaryPostSaveRequest {
     private final String postContent;
     @NotNull
     private final Long postCategoryId;
+    @NotNull
+    private final LocalDateTime createdAt;
 }
