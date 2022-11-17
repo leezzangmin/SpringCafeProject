@@ -1,7 +1,7 @@
 package com.zzangmin.gesipan.config;
 
-import com.zzangmin.gesipan.layer.login.argumentresolver.UserIdArgumentResolver;
-import com.zzangmin.gesipan.layer.login.interceptor.LoginCheckInterceptor;
+import com.zzangmin.gesipan.component.login.argumentresolver.UserIdArgumentResolver;
+import com.zzangmin.gesipan.component.login.interceptor.LoginCheckInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
