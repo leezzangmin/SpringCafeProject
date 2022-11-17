@@ -1,9 +1,9 @@
 package com.zzangmin.gesipan.testfactory;
 
-import com.zzangmin.gesipan.layer.basiccrud.entity.*;
-import com.zzangmin.gesipan.layer.embeddable.BaseTime;
-import com.zzangmin.gesipan.layer.login.entity.UserRole;
-import com.zzangmin.gesipan.layer.login.entity.Users;
+import com.zzangmin.gesipan.component.basiccrud.entity.*;
+import com.zzangmin.gesipan.component.embeddable.BaseTime;
+import com.zzangmin.gesipan.component.login.entity.UserRole;
+import com.zzangmin.gesipan.component.login.entity.Users;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

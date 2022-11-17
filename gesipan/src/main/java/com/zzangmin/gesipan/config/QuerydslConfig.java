@@ -1,7 +1,7 @@
 package com.zzangmin.gesipan.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zzangmin.gesipan.layer.basiccrud.repository.custom.CustomPostRepository;
+import com.zzangmin.gesipan.component.basiccrud.repository.custom.CustomPostRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
