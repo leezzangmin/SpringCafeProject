@@ -1,5 +1,7 @@
 package com.zzangmin.gesipan.component.basiccrud.service;
 
+import static org.assertj.core.api.Assertions.within;
+
 import com.zzangmin.gesipan.component.basiccrud.dto.comment.CommentResponse;
 import com.zzangmin.gesipan.component.basiccrud.dto.comment.CommentSaveRequest;
 import com.zzangmin.gesipan.component.basiccrud.dto.comment.CommentUpdateRequest;
@@ -12,6 +14,7 @@ import com.zzangmin.gesipan.component.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.component.login.entity.Users;
 import com.zzangmin.gesipan.component.login.repository.UsersRepository;
 import com.zzangmin.gesipan.testfactory.EntityFactory;
+import java.time.temporal.ChronoUnit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -171,7 +174,7 @@ class CommentServiceTest {
         //then
         Comment updatedComment = commentRepository.findById(comment.getCommentId()).get();
         Assertions.assertThat(updatedComment.getCommentContent()).isEqualTo("update_request_string");
-        Assertions.assertThat(updatedComment.getUpdatedAt()).isEqualTo(now);
+        Assertions.assertThat(updatedComment.getUpdatedAt()).isCloseTo(now, within(1, ChronoUnit.SECONDS));
     }
 
     @DisplayName("존재하지 않는 userId로 유저의 댓글조회 요청을 보내면 오류가 발생해야 한다.")
