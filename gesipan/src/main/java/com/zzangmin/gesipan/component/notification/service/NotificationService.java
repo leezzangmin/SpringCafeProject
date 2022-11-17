@@ -3,6 +3,7 @@ package com.zzangmin.gesipan.component.notification.service;
 
 import com.zzangmin.gesipan.component.basiccrud.entity.Post;
 import com.zzangmin.gesipan.component.login.entity.Users;
+import com.zzangmin.gesipan.component.login.service.UsersService;
 import com.zzangmin.gesipan.component.notification.entity.NotificationType;
 import com.zzangmin.gesipan.component.notification.repository.NotificationRepository;
 import com.zzangmin.gesipan.component.notification.dto.notification.NotificationsResponse;
@@ -21,9 +22,11 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UsersService usersService;
 
     @Transactional(readOnly = true)
     public NotificationsResponse findAll(Long userId) {
+        Users user = usersService.findOne(userId);
         List<Notification> notifications = notificationRepository.findAllByUserId(userId);
         return NotificationsResponse.of(notifications);
     }
@@ -47,6 +50,7 @@ public class NotificationService {
 
     @Transactional
     public void checkAll(Long userId) {
+        Users user = usersService.findOne(userId);
         notificationRepository.checkByUserId(userId, LocalDateTime.now());
     }
 
