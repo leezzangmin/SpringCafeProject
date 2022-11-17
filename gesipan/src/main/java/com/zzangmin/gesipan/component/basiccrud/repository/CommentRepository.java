@@ -14,9 +14,6 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query("select c from Comment c join fetch c.user where c.post.postId=:postId")
-    List<Comment> findAllByPostId(@Param("postId") Long postId);
-
     @Query("select count(c.post.postId) from Post p left join Comment c on p.postId = c.post.postId where p.postId in :postIds group by p.postId")
     List<Integer> countByIds(@Param("postIds") List<Long> postIds);
 
