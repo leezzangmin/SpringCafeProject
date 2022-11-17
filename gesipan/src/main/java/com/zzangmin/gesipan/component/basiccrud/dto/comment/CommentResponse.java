@@ -1,7 +1,6 @@
 package com.zzangmin.gesipan.component.basiccrud.dto.comment;
 
-import com.zzangmin.gesipan.component.basiccrud.entity.Comment;
-import com.zzangmin.gesipan.component.embeddable.BaseTime;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,13 +9,11 @@ import lombok.Getter;
 public class CommentResponse {
 
     private final Long commentId;
+    private final String commentContent;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
     private final Long userId;
     private final String userNickname;
-    private final String content;
-    private final BaseTime baseTime;
 
-    public static CommentResponse of(Comment comment) {
-        return new CommentResponse(comment.getCommentId(), comment.getUser().getUserId(), comment.getUser().getUserName(), comment.getCommentContent(), comment.getBaseTime());
-    }
 }
 
