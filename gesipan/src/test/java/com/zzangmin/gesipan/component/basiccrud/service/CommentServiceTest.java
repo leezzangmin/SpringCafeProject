@@ -56,10 +56,10 @@ class CommentServiceTest {
         //then
         Assertions.assertThat(pagination.get(0).getCommentId()).isEqualTo(comment1.getCommentId());
         Assertions.assertThat(pagination.get(1).getCommentId()).isEqualTo(comment2.getCommentId());
-        Assertions.assertThat(pagination.get(0).getContent()).isEqualTo(comment1.getCommentContent());
-        Assertions.assertThat(pagination.get(1).getContent()).isEqualTo(comment2.getCommentContent());
-        Assertions.assertThat(pagination.get(0).getBaseTime()).isEqualTo(comment1.getBaseTime());
-        Assertions.assertThat(pagination.get(1).getBaseTime()).isEqualTo(comment2.getBaseTime());
+        Assertions.assertThat(pagination.get(0).getCommentContent()).isEqualTo(comment1.getCommentContent());
+        Assertions.assertThat(pagination.get(1).getCommentContent()).isEqualTo(comment2.getCommentContent());
+        Assertions.assertThat(pagination.get(0).getCreatedAt()).isEqualTo(comment1.getBaseTime().getCreatedAt());
+        Assertions.assertThat(pagination.get(1).getCreatedAt()).isEqualTo(comment2.getBaseTime().getCreatedAt());
         Assertions.assertThat(pagination.get(0).getUserId()).isEqualTo(comment1.getUser().getUserId());
         Assertions.assertThat(pagination.get(1).getUserId()).isEqualTo(comment2.getUser().getUserId());
     }
