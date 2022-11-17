@@ -29,7 +29,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("select c.commentId from Comment c where c.post.postId=:postId")
     List<Long> findCommentIdsByPaginationByPostId(@Param("postId") Long postId, Pageable pageable);
 
-    //@Query("select c from Comment c join fetch c.user where c.commentId in :commentIds")
     @Query("select new com.zzangmin.gesipan.component.basiccrud.dto.comment.CommentResponse(c.commentId, c.commentContent, c.baseTime.createdAt, c.baseTime.updatedAt, u.userId, u.userNickname) "
         + "from Comment c "
         + "inner join c.user u "

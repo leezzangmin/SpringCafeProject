@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -67,10 +66,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponse> pagination(Long postId, Pageable pageable) {
         List<Long> commentIds = commentRepository.findCommentIdsByPaginationByPostId(postId, pageable);
-        final List<Comment> comments = commentRepository.findByIdsWithUsers(commentIds);
-        return comments.stream()
-                .map(c -> CommentResponse.of(c))
-                .collect(Collectors.toList());
+        return commentRepository.findByIdsWithUsers(commentIds);
     }
 
     private void validateTime(LocalDateTime updatedAt, LocalDateTime createdAt) {
