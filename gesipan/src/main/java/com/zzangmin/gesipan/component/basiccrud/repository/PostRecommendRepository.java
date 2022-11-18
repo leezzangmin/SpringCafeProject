@@ -2,6 +2,7 @@ package com.zzangmin.gesipan.component.basiccrud.repository;
 
 import com.zzangmin.gesipan.component.basiccrud.dto.post.SimpleRecommendedPostQueryDTO;
 import com.zzangmin.gesipan.component.basiccrud.entity.PostRecommend;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +25,10 @@ public interface PostRecommendRepository extends JpaRepository<PostRecommend, Lo
 
     @Query("select new com.zzangmin.gesipan.component.basiccrud.dto.post.SimpleRecommendedPostQueryDTO(p.post.postId, p.post.postSubject, p.post.baseTime.createdAt, p.post.hitCount, p.post.user.userId, p.post.user.userNickname) " +
             "from PostRecommend p " +
-            "where p.user.userId=:userId")
-    List<SimpleRecommendedPostQueryDTO> findByUsersId(@Param("userId") Long userId);
+            "where p.post.postId in :postIds")
+    List<SimpleRecommendedPostQueryDTO> findByPostIds(@Param("postIds") List<Long> postIds);
+
+
+    @Query("select pr.post.postId from PostRecommend pr where pr.user.userId=:userId")
+    List<Long> findPostIdsByUsersId(@Param("userId") Long userId, Pageable pageable);
 }

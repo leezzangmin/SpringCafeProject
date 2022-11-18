@@ -171,11 +171,11 @@ class PostServiceTest {
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
         Long tempPostId = temporaryPostRepository.save(temporaryPost).getTempPostId();
-        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",postCategoryId, LocalDateTime.now(), tempPostId);
+        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1", postCategoryId, LocalDateTime.now(), tempPostId);
         //when
         Long savedPostId = postService.save(userId, postSaveRequest);
         //then
-        List<TemporaryPost> temporaryPosts = temporaryPostRepository.findByUserId(1L);
+        List<TemporaryPost> temporaryPosts = temporaryPostRepository.findByUserId(userId);
         Assertions.assertThat(temporaryPosts.size()).isEqualTo(0);
     }
 
@@ -407,8 +407,9 @@ class PostServiceTest {
         postRepository.save(post0);
         postRepository.save(post1);
         postRepository.save(post2);
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
-        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId(), pageable);
         //then
         Assertions.assertThat(userPosts.getUserId()).isEqualTo(user.getUserId());
         Assertions.assertThat(userPosts.getUserNickname()).isEqualTo(user.getUserNickname());
@@ -430,9 +431,10 @@ class PostServiceTest {
     void userPosts_invalidUserId() {
         //given
         Long invalidUserId = 99999999999123123L;
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
         //then
-        Assertions.assertThatThrownBy(() -> postService.userPosts(invalidUserId));
+        Assertions.assertThatThrownBy(() -> postService.userPosts(invalidUserId, pageable));
     }
 
     @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 댓글 count가 정확하게 반환되어야 한다.")
@@ -468,8 +470,9 @@ class PostServiceTest {
         commentRepository.save(comment9);
         commentRepository.save(comment10);
         commentRepository.save(comment11);
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
-        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId(), pageable);
         //then
         Assertions.assertThat(userPosts.getPosts().get(0).getCommentCount()).isEqualTo(12);
     }
@@ -496,8 +499,10 @@ class PostServiceTest {
         postService.postRecommend(postRecommendRequest0);
         postService.postRecommend(postRecommendRequest1);
         postService.postRecommend(postRecommendRequest2);
+
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
-        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId(), pageable);
         //then
         Assertions.assertThat(userPosts.getPosts().get(0).getRecommendCount()).isEqualTo(3);
     }
@@ -548,9 +553,10 @@ class PostServiceTest {
     void findRecommendedPost_invalidUserId() {
         //given
         Long invalidUserId = 999999999999L;
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
         //then
-        Assertions.assertThatThrownBy(() -> postService.findRecommendedPost(invalidUserId));
+        Assertions.assertThatThrownBy(() -> postService.findRecommendedPost(invalidUserId, pageable));
     }
 
     @DisplayName("추천한 게시물 조회를 수행해야 한다.")
@@ -639,10 +645,16 @@ class PostServiceTest {
         postService.postRecommend(postRecommendRequest10);
         postService.postRecommend(postRecommendRequest11);
 
+        int pageSize = 10;
+        PageRequest pageable = PageRequest.of(0, pageSize);
         //when
-        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(recommendSearchUser.getUserId());
+        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(recommendSearchUser.getUserId(), pageable);
         //then
-        Assertions.assertThat(recommendedPost.getSearchCount()).isEqualTo(12);
+        List<PostRecommendsResponse.SinglePost> posts = recommendedPost.getPosts();
+        for (PostRecommendsResponse.SinglePost post : posts) {
+            System.out.println("post = " + post);
+        }
+        Assertions.assertThat(recommendedPost.getSearchCount()).isEqualTo(pageSize);
 
         Assertions.assertThat(recommendedPost.getPosts().get(0).getPostId()).isEqualTo(post0.getPostId());
         Assertions.assertThat(recommendedPost.getPosts().get(1).getPostId()).isEqualTo(post1.getPostId());
@@ -654,8 +666,6 @@ class PostServiceTest {
         Assertions.assertThat(recommendedPost.getPosts().get(7).getPostId()).isEqualTo(post7.getPostId());
         Assertions.assertThat(recommendedPost.getPosts().get(8).getPostId()).isEqualTo(post8.getPostId());
         Assertions.assertThat(recommendedPost.getPosts().get(9).getPostId()).isEqualTo(post9.getPostId());
-        Assertions.assertThat(recommendedPost.getPosts().get(10).getPostId()).isEqualTo(post10.getPostId());
-        Assertions.assertThat(recommendedPost.getPosts().get(11).getPostId()).isEqualTo(post11.getPostId());
 
         Assertions.assertThat(recommendedPost.getPosts().get(0).getPostSubject()).isEqualTo(post0.getPostSubject());
         Assertions.assertThat(recommendedPost.getPosts().get(1).getPostSubject()).isEqualTo(post1.getPostSubject());
@@ -667,8 +677,7 @@ class PostServiceTest {
         Assertions.assertThat(recommendedPost.getPosts().get(7).getPostSubject()).isEqualTo(post7.getPostSubject());
         Assertions.assertThat(recommendedPost.getPosts().get(8).getPostSubject()).isEqualTo(post8.getPostSubject());
         Assertions.assertThat(recommendedPost.getPosts().get(9).getPostSubject()).isEqualTo(post9.getPostSubject());
-        Assertions.assertThat(recommendedPost.getPosts().get(10).getPostSubject()).isEqualTo(post10.getPostSubject());
-        Assertions.assertThat(recommendedPost.getPosts().get(11).getPostSubject()).isEqualTo(post11.getPostSubject());
+
 
         Assertions.assertThat(recommendedPost.getPosts().get(0).getUserId()).isEqualTo(post0.getUser().getUserId());
         Assertions.assertThat(recommendedPost.getPosts().get(1).getUserId()).isEqualTo(post1.getUser().getUserId());
@@ -680,8 +689,6 @@ class PostServiceTest {
         Assertions.assertThat(recommendedPost.getPosts().get(7).getUserId()).isEqualTo(post7.getUser().getUserId());
         Assertions.assertThat(recommendedPost.getPosts().get(8).getUserId()).isEqualTo(post8.getUser().getUserId());
         Assertions.assertThat(recommendedPost.getPosts().get(9).getUserId()).isEqualTo(post9.getUser().getUserId());
-        Assertions.assertThat(recommendedPost.getPosts().get(10).getUserId()).isEqualTo(post10.getUser().getUserId());
-        Assertions.assertThat(recommendedPost.getPosts().get(11).getUserId()).isEqualTo(post11.getUser().getUserId());
 
         Assertions.assertThat(recommendedPost.getPosts().get(0).getUserNickname()).isEqualTo(post0.getUser().getUserNickname());
         Assertions.assertThat(recommendedPost.getPosts().get(1).getUserNickname()).isEqualTo(post1.getUser().getUserNickname());
@@ -693,7 +700,5 @@ class PostServiceTest {
         Assertions.assertThat(recommendedPost.getPosts().get(7).getUserNickname()).isEqualTo(post7.getUser().getUserNickname());
         Assertions.assertThat(recommendedPost.getPosts().get(8).getUserNickname()).isEqualTo(post8.getUser().getUserNickname());
         Assertions.assertThat(recommendedPost.getPosts().get(9).getUserNickname()).isEqualTo(post9.getUser().getUserNickname());
-        Assertions.assertThat(recommendedPost.getPosts().get(10).getUserNickname()).isEqualTo(post10.getUser().getUserNickname());
-        Assertions.assertThat(recommendedPost.getPosts().get(11).getUserNickname()).isEqualTo(post11.getUser().getUserNickname());
     }
 }
