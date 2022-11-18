@@ -91,8 +91,8 @@ public class PostController {
     }
 
     @GetMapping("/posts/recommend")
-    public ResponseEntity<PostRecommendsResponse> recommendedPosts(@Auth Long userId) {
-        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(userId);
+    public ResponseEntity<PostRecommendsResponse> recommendedPosts(@Auth Long userId, Pageable pageable) {
+        PostRecommendsResponse recommendedPost = postService.findRecommendedPost(userId, pageable);
         return ResponseEntity.ok(recommendedPost);
     }
 
