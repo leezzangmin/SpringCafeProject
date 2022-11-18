@@ -25,8 +25,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<PostSimpleQueryDTO> paginationByPostIds(@Param("postIds") List<Long> postIds);
     @Query("select new com.zzangmin.gesipan.component.basiccrud.dto.post.SimpleUsersPostQueryDTO(p.postId, p.postSubject, p.baseTime.createdAt, p.hitCount) " +
             "from Post p " +
-            "where p.user.userId=:userId")
-    List<SimpleUsersPostQueryDTO> findByUserId(@Param("userId") Long userId);
+            "where p.postId in :postIds")
+    List<SimpleUsersPostQueryDTO> findByPostIds(@Param("postIds") List<Long> postIds);
 
     @Modifying
     @Query("update Post p set p.hitCount = p.hitCount + :hitCount where p.postId =:postId")
@@ -34,4 +34,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p.postId from Post p where p.postCategory.postCategoryId=:categoryId")
     List<Long> findPaginationPostIdsByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query("select p.postId from Post p where p.user.userId=:userId")
+    List<Long> findPaginationPostIdsByUserId(@Param("userId") Long userId, Pageable pageable);
 }
