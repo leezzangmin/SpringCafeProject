@@ -85,8 +85,8 @@ public class PostController {
 
     // TODO: @RequestParam으로 받는 userId 추후 개선 -> ArgumentResolver 쓰기;;
     @GetMapping("/posts/my")
-    public ResponseEntity<PersonalPostsResponse> myPosts(@Auth Long userId) {
-        PersonalPostsResponse personalPostsResponse = postService.userPosts(userId);
+    public ResponseEntity<PersonalPostsResponse> myPosts(@Auth Long userId, Pageable pageable) {
+        PersonalPostsResponse personalPostsResponse = postService.userPosts(userId, pageable);
         return ResponseEntity.ok(personalPostsResponse);
     }
 
