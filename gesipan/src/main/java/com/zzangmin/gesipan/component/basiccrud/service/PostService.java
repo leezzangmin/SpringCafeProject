@@ -116,15 +116,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PersonalPostsResponse userPosts(Long userId) {
+    public PersonalPostsResponse userPosts(Long userId, Pageable pageable) {
         Users user = usersService.findOne(userId);
-        List<SimpleUsersPostQueryDTO> personalPosts = postRepository.findByUserId(userId);
-        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(personalPosts.stream()
-                .map(p -> p.getPostId())
-                .collect(Collectors.toList()));
-        List<Integer> commentCounts = commentRepository.countByIds(personalPosts.stream()
-                .map(p -> p.getPostId())
-                .collect(Collectors.toList()));
+
+        List<Long> postIds = postRepository.findPaginationPostIdsByUserId(userId, pageable);
+
+        List<SimpleUsersPostQueryDTO> personalPosts = postRepository.findByPostIds(postIds);
+
+        List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
+        List<Integer> commentCounts = commentRepository.countByIds(postIds);
+
         return PersonalPostsResponse.of(user, personalPosts, recommendCount, commentCounts);
     }
 
