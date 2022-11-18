@@ -117,6 +117,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PersonalPostsResponse userPosts(Long userId, Pageable pageable) {
+        validatePageRequestSize(pageable);
         Users user = usersService.findOne(userId);
 
         List<Long> postIds = postRepository.findPaginationPostIdsByUserId(userId, pageable);
@@ -140,6 +141,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostRecommendsResponse findRecommendedPost(Long userId, Pageable pageable) {
+        validatePageRequestSize(pageable);
         Users user = usersService.findOne(userId);
 
         List<Long> recommendedPostIds = postRecommendRepository.findPostIdsByUsersId(userId, pageable);
