@@ -407,8 +407,9 @@ class PostServiceTest {
         postRepository.save(post0);
         postRepository.save(post1);
         postRepository.save(post2);
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
-        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId(), pageable);
         //then
         Assertions.assertThat(userPosts.getUserId()).isEqualTo(user.getUserId());
         Assertions.assertThat(userPosts.getUserNickname()).isEqualTo(user.getUserNickname());
@@ -430,9 +431,10 @@ class PostServiceTest {
     void userPosts_invalidUserId() {
         //given
         Long invalidUserId = 99999999999123123L;
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
         //then
-        Assertions.assertThatThrownBy(() -> postService.userPosts(invalidUserId));
+        Assertions.assertThatThrownBy(() -> postService.userPosts(invalidUserId, pageable));
     }
 
     @DisplayName("개인 게시글 조회를 수행하면 각 게시글의 댓글 count가 정확하게 반환되어야 한다.")
@@ -468,8 +470,9 @@ class PostServiceTest {
         commentRepository.save(comment9);
         commentRepository.save(comment10);
         commentRepository.save(comment11);
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
-        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId(), pageable);
         //then
         Assertions.assertThat(userPosts.getPosts().get(0).getCommentCount()).isEqualTo(12);
     }
@@ -496,8 +499,10 @@ class PostServiceTest {
         postService.postRecommend(postRecommendRequest0);
         postService.postRecommend(postRecommendRequest1);
         postService.postRecommend(postRecommendRequest2);
+
+        PageRequest pageable = PageRequest.of(0, 10);
         //when
-        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId());
+        PersonalPostsResponse userPosts = postService.userPosts(user.getUserId(), pageable);
         //then
         Assertions.assertThat(userPosts.getPosts().get(0).getRecommendCount()).isEqualTo(3);
     }
