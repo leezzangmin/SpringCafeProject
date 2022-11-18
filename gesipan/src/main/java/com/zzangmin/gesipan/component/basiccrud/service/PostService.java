@@ -139,9 +139,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostRecommendsResponse findRecommendedPost(Long userId) {
+    public PostRecommendsResponse findRecommendedPost(Long userId, Pageable pageable) {
         Users user = usersService.findOne(userId);
-        List<SimpleRecommendedPostQueryDTO> postRecommends = postRecommendRepository.findByUsersId(userId);
+
+        List<Long> recommendedPostIds = postRecommendRepository.findPostIdsByUsersId(userId, pageable);
+
+        List<SimpleRecommendedPostQueryDTO> postRecommends = postRecommendRepository.findByPostIds(recommendedPostIds);
 
         List<Long> postIds = postRecommends.stream().map(p -> p.getPostId()).collect(Collectors.toList());
         List<Integer> recommendCount = postRecommendRepository.countAllByPostId(postIds);
