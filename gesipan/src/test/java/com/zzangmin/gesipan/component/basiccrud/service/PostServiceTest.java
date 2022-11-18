@@ -171,11 +171,11 @@ class PostServiceTest {
         Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
         Long userId = usersRepository.save(user).getUserId();
         Long tempPostId = temporaryPostRepository.save(temporaryPost).getTempPostId();
-        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1",postCategoryId, LocalDateTime.now(), tempPostId);
+        PostSaveRequest postSaveRequest = new PostSaveRequest("test제목1", "test내용1", postCategoryId, LocalDateTime.now(), tempPostId);
         //when
         Long savedPostId = postService.save(userId, postSaveRequest);
         //then
-        List<TemporaryPost> temporaryPosts = temporaryPostRepository.findByUserId(1L);
+        List<TemporaryPost> temporaryPosts = temporaryPostRepository.findByUserId(userId);
         Assertions.assertThat(temporaryPosts.size()).isEqualTo(0);
     }
 
