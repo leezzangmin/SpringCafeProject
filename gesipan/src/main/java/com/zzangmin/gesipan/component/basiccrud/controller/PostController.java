@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.component.basiccrud.controller;
 
 import com.zzangmin.gesipan.component.login.argumentresolver.Auth;
+import com.zzangmin.gesipan.component.login.argumentresolver.OptionalAuth;
 import com.zzangmin.gesipan.component.login.service.JwtProvider;
 import com.zzangmin.gesipan.component.basiccrud.dto.post.*;
 import com.zzangmin.gesipan.component.basiccrud.service.PostService;
@@ -33,14 +34,13 @@ public class PostController {
     private final PostService postService;
     private final RedisPostHitCountBulkUpdateService redisPostHitCountBulkUpdateService;
     private final TemporaryPostService temporaryPostService;
-    private final JwtProvider jwtProvider;
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<PostResponse> singlePost(@PathVariable Long postId, HttpServletRequest httpServletRequest, @OptionalAuth Optional<Long> userId) {
         log.info("postId: {}", postId);
-        String clientAddress = httpServletRequest.getRemoteAddr();
-        Optional<Long> userId = jwtProvider.getUserId(httpServletRequest);
         PostResponse singlePost = postService.findOne(postId, userId);
+        System.out.println("userId = " + userId);
+        String clientAddress = httpServletRequest.getRemoteAddr();
         redisPostHitCountBulkUpdateService.increasePostHitCount(clientAddress, postId);
         return ResponseEntity.ok(singlePost);
     }
