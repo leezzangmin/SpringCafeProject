@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.config;
 
+import com.zzangmin.gesipan.component.login.argumentresolver.OptionalUserIdArgumentResolver;
 import com.zzangmin.gesipan.component.login.argumentresolver.UserIdArgumentResolver;
 import com.zzangmin.gesipan.component.login.interceptor.LoginCheckInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginCheckInterceptor loginCheckInterceptor;
     private final UserIdArgumentResolver userIdArgumentResolver;
+    private final OptionalUserIdArgumentResolver optionalUserIdArgumentResolver;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -30,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userIdArgumentResolver);
+        resolvers.add(optionalUserIdArgumentResolver);
     }
 
     @Bean
