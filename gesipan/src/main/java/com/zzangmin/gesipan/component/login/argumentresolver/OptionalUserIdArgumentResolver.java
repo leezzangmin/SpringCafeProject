@@ -34,6 +34,6 @@ public class OptionalUserIdArgumentResolver implements HandlerMethodArgumentReso
         if (jwt.isEmpty()) {
             return Optional.empty();
         }
-        return jwtProvider.getUserIdFromToken(jwt.get());
+        return Optional.of(jwtProvider.getUserIdFromToken(jwt.get()));
     }
 }
