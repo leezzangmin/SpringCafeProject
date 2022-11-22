@@ -11,8 +11,7 @@ import com.zzangmin.gesipan.component.login.repository.UsersRepository;
 import com.zzangmin.gesipan.testfactory.EntityFactory;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.List;
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Transactional
 class TemporaryPostServiceTest {
 
     @Autowired

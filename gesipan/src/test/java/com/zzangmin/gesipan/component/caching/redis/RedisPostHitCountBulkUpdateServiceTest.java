@@ -1,5 +1,6 @@
 package com.zzangmin.gesipan.component.caching.redis;
 
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED)
+@Transactional
 class RedisPostHitCountBulkUpdateServiceTest {
 
     @Autowired

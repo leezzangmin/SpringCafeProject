@@ -15,6 +15,7 @@ import com.zzangmin.gesipan.component.login.entity.Users;
 import com.zzangmin.gesipan.component.login.repository.UsersRepository;
 import com.zzangmin.gesipan.testfactory.EntityFactory;
 import java.time.temporal.ChronoUnit;
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
+@Transactional
 class CommentServiceTest {
 
     @Autowired
