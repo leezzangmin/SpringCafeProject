@@ -9,6 +9,7 @@ import com.zzangmin.gesipan.component.login.repository.UsersRepository;
 import java.util.Optional;
 
 import com.zzangmin.gesipan.testfactory.EntityFactory;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,7 @@ import java.util.List;
 @SpringBootTest
 @RequiredArgsConstructor
 @ExtendWith(MockitoExtension.class)
+@Transactional
 class PostServiceTest {
 
     @Autowired private PostRepository postRepository;

@@ -4,6 +4,7 @@ import com.zzangmin.gesipan.component.basiccrud.entity.Categories;
 import com.zzangmin.gesipan.component.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.component.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.testfactory.EntityFactory;
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Transactional
 class PostCategoryServiceTest {
 
     @Autowired PostCategoryService postCategoryService;

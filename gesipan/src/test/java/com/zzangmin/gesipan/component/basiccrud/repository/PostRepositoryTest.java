@@ -6,6 +6,7 @@ import com.zzangmin.gesipan.component.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.component.login.entity.Users;
 import com.zzangmin.gesipan.component.login.repository.UsersRepository;
 import com.zzangmin.gesipan.testfactory.EntityFactory;
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @DataJpaTest
+@Transactional
 class PostRepositoryTest {
 
     @Autowired

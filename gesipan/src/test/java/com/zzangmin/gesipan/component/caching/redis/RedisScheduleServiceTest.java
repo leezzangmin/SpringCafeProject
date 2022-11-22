@@ -9,6 +9,7 @@ import com.zzangmin.gesipan.component.embeddable.BaseTime;
 import com.zzangmin.gesipan.component.login.entity.UserRole;
 import com.zzangmin.gesipan.component.login.entity.Users;
 import com.zzangmin.gesipan.component.login.repository.UsersRepository;
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED)
+@Transactional
 class RedisScheduleServiceTest {
 
     @Autowired

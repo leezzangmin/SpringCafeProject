@@ -1,6 +1,7 @@
 package com.zzangmin.gesipan.practice;
 
 import com.zzangmin.gesipan.component.login.service.JwtProvider;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED) // 실제 DB 사용하고 싶을때 NONE 사용
+@Transactional
 public class practice1 {
 
     @Autowired

@@ -12,6 +12,7 @@ import com.zzangmin.gesipan.component.login.entity.Users;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Import;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import(QuerydslConfig.class)
+@Transactional
 class CustomPostRepositoryTest {
 
     @Autowired EntityManager em;

@@ -50,7 +50,6 @@ public class DeployGithubOauthService implements GithubOauthService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(headers);
         String userResource = restTemplate.exchange(GET_RESOURCE_URL + token.getScope(), HttpMethod.GET, request, String.class).getBody();
-        log.info("userResource: {}", userResource);
         UserResources userResources = new ObjectMapper().readValue(userResource, UserResources.class);
         log.info("userResources: {}", userResources);
         return userResources;
@@ -65,14 +64,7 @@ public class DeployGithubOauthService implements GithubOauthService {
     public Users upsert(UserResources userResources) {
         LocalDateTime now = LocalDateTime.now();
         Users user = usersRepository.findByEmail(userResources.getUserEmail())
-                        .orElseGet(() -> usersRepository.save(
-                                Users.builder()
-                                        .userEmail(userResources.getUserEmail())
-                                        .userName(userResources.getUserName())
-                                        .userNickname(userResources.getUserNickname())
-                                        .userRole(UserRole.NORMAL)
-                                        .baseTime(new BaseTime(now, now))
-                                        .build()));
+                        .orElseGet(() -> usersRepository.save(userResources.toEntity()));
         if (!user.getUserName().equals(userResources.getUserName()) || !user.getUserNickname().equals(userResources.getUserNickname())) {
             user.update(userResources.getUserName(), userResources.getUserNickname(), now);
         }
