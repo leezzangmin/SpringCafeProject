@@ -50,7 +50,6 @@ public class DeployGithubOauthService implements GithubOauthService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(headers);
         String userResource = restTemplate.exchange(GET_RESOURCE_URL + token.getScope(), HttpMethod.GET, request, String.class).getBody();
-        log.info("userResource: {}", userResource);
         UserResources userResources = new ObjectMapper().readValue(userResource, UserResources.class);
         log.info("userResources: {}", userResources);
         return userResources;
