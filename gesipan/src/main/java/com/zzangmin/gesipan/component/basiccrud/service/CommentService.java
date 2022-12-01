@@ -66,6 +66,9 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponse> pagination(Long postId, Pageable pageable) {
         List<Long> commentIds = commentRepository.findCommentIdsByPaginationByPostId(postId, pageable);
+        if (commentIds.isEmpty()) {
+            return List.of();
+        }
         return commentRepository.findByIdsWithUsers(commentIds);
     }
 
