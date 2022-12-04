@@ -82,12 +82,14 @@ public class PostController {
 
     @GetMapping("/posts/my")
     public ResponseEntity<PersonalPostsResponse> myPosts(@Auth Long userId, Pageable pageable) {
+        log.info("myPost requested userId : {} ", userId);
         PersonalPostsResponse personalPostsResponse = postService.userPosts(userId, pageable);
         return ResponseEntity.ok(personalPostsResponse);
     }
 
     @GetMapping("/posts/recommend")
     public ResponseEntity<PostRecommendsResponse> recommendedPosts(@Auth Long userId, Pageable pageable) {
+        log.info("recommendedPosts requested userId : {} ", userId);
         PostRecommendsResponse recommendedPost = postService.findRecommendedPost(userId, pageable);
         return ResponseEntity.ok(recommendedPost);
     }
