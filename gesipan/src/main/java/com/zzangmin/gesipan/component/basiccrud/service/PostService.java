@@ -130,6 +130,7 @@ public class PostService {
         return PersonalPostsResponse.of(user, personalPosts, recommendCount, commentCounts);
     }
 
+    // TODO: 날짜 제한 둬야할듯, 인덱스가 안먹음
     @Transactional(readOnly = true)
     public PostSearchResponse searchPosts(PostSearchRequest postSearchRequest) {
         List<Post> posts = customPostRepository.searchPostsWithUser(postSearchRequest);
