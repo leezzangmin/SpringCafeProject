@@ -20,4 +20,12 @@ public class UsersService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 userId"));
     }
 
+    @Transactional(readOnly = true)
+    public void existById(Long userId) {
+        if (!usersRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 userId");
+        }
+    }
+
+
 }
