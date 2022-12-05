@@ -27,7 +27,8 @@ public class CustomPostRepository {
             .join(post.user).fetchJoin()
             .where(post.postCategory.postCategoryId.eq(postSearchRequest.getPostCategoryId()),
                 eqUserNickname(postSearchRequest.getUserNickname()),
-                betweenDate(postSearchRequest.getStartAt(), postSearchRequest.getEndAt()));
+                afterDate(postSearchRequest.getStartAt()),
+                beforeDate(postSearchRequest.getEndAt()));
 
         return query.fetch();
     }
@@ -39,10 +40,16 @@ public class CustomPostRepository {
         return null;
     }
 
-    private BooleanExpression betweenDate(LocalDateTime startAt, LocalDateTime endAt) {
+    private BooleanExpression afterDate(LocalDateTime startAt) {
         if (startAt != null) {
+            return post.baseTime.createdAt.after(startAt);
+        }
+        return null;
+    }
 
-            return post.baseTime.createdAt.between(startAt, endAt);
+    private BooleanExpression beforeDate(LocalDateTime endAt) {
+        if (endAt != null) {
+            return post.baseTime.createdAt.before(endAt);
         }
         return null;
     }

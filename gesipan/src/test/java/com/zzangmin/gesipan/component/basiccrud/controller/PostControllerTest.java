@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,6 +81,26 @@ class PostControllerTest extends BaseIntegrationTest {
             .andExpect(jsonPath("$.recommendCount").value(0))
             .andExpect(jsonPath("$.postSubject").value(post.getPostSubject()))
             .andExpect(jsonPath("$.postContent").value(post.getPostContent()));
+    }
+
+    @DisplayName("날짜범위 14일을 초과해서 검색을 요청하면 오류가 발생해야 한다.")
+    @Test
+    void search_15days() throws Exception {
+        //given
+        String userNickname = "fake_nickname";
+        String start = "2021-01-01T15:00:00";
+        String end = "2021-01-16T15:00:00";
+        String categoryId = "1";
+        //when
+
+        mvc.perform(get("/post/search")
+                .param("userNickname", userNickname)
+                .param("startAt", start)
+                .param("endAt", end)
+                .param("postCategoryId", categoryId))
+        //then
+                .andExpect(r -> assertTrue(r.getResolvedException().getClass().isAssignableFrom(IllegalArgumentException.class)));
+
     }
 
 }

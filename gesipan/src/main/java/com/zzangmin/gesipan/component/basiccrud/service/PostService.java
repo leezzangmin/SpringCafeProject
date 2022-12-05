@@ -96,7 +96,6 @@ public class PostService {
         return PostsPageResponse.of(categoryId, postsDTO, recommendCount, commentCounts);
     }
 
-    // TODO: (post_id, user_id) 복합인덱스 생성하기
     @CacheEvict(value = "single-post", key = "#postRecommendRequest.postId", cacheManager = "cacheManager")
     @Transactional
     public void postRecommend(PostRecommendRequest postRecommendRequest) {

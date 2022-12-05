@@ -9,6 +9,9 @@ import com.zzangmin.gesipan.component.basiccrud.service.TemporaryPostService;
 import com.zzangmin.gesipan.component.basiccrud.dto.temporarypost.TemporaryPostLoadResponse;
 import com.zzangmin.gesipan.component.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.component.basiccrud.entity.Categories;
+
+import java.time.Duration;
+import java.time.Period;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import java.time.temporal.ChronoUnit;
 public class PostController {
 
     private final int VALIDATE_DIFFERENCE_OF_TWO_LOCAL_DATETIME_SECONDS = 60;
+    private final int MAX_SEARCH_BETWEEN_DAY_AMOUNT = 14;
 
     private final PostService postService;
     private final RedisPostHitCountBulkUpdateService redisPostHitCountBulkUpdateService;
@@ -82,12 +86,14 @@ public class PostController {
 
     @GetMapping("/posts/my")
     public ResponseEntity<PersonalPostsResponse> myPosts(@Auth Long userId, Pageable pageable) {
+        log.info("myPost requested userId : {} ", userId);
         PersonalPostsResponse personalPostsResponse = postService.userPosts(userId, pageable);
         return ResponseEntity.ok(personalPostsResponse);
     }
 
     @GetMapping("/posts/recommend")
     public ResponseEntity<PostRecommendsResponse> recommendedPosts(@Auth Long userId, Pageable pageable) {
+        log.info("recommendedPosts requested userId : {} ", userId);
         PostRecommendsResponse recommendedPost = postService.findRecommendedPost(userId, pageable);
         return ResponseEntity.ok(recommendedPost);
     }
@@ -122,9 +128,14 @@ public class PostController {
         if (startAt == null && endAt == null) {
             return;
         }
-
-        if (startAt != null && startAt.isAfter(endAt)) {
+        if ((startAt == null && endAt != null) || (startAt != null && endAt == null)) {
             throw new IllegalArgumentException("입력한 시간이 조건에 맞지 않습니다.");
+        }
+        if (startAt.isAfter(endAt)) {
+            throw new IllegalArgumentException("입력한 시간이 조건에 맞지 않습니다.");
+        }
+        if (ChronoUnit.DAYS.between(startAt, endAt) > MAX_SEARCH_BETWEEN_DAY_AMOUNT) {
+            throw new IllegalArgumentException("너무 긴 범위의 검색기간입니다. " + MAX_SEARCH_BETWEEN_DAY_AMOUNT +"일 이하로 지정해주세요.");
         }
     }
 
