@@ -134,7 +134,7 @@ public class PostController {
         if (startAt.isAfter(endAt)) {
             throw new IllegalArgumentException("입력한 시간이 조건에 맞지 않습니다.");
         }
-        if (ChronoUnit.DAYS.between(endAt, startAt) > MAX_SEARCH_BETWEEN_DAY_AMOUNT) {
+        if (ChronoUnit.DAYS.between(startAt, endAt) > MAX_SEARCH_BETWEEN_DAY_AMOUNT) {
             throw new IllegalArgumentException("너무 긴 범위의 검색기간입니다. " + MAX_SEARCH_BETWEEN_DAY_AMOUNT +"일 이하로 지정해주세요.");
         }
     }
