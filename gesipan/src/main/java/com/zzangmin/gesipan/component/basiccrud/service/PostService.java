@@ -96,7 +96,6 @@ public class PostService {
         return PostsPageResponse.of(categoryId, postsDTO, recommendCount, commentCounts);
     }
 
-    // TODO: (post_id, user_id) 복합인덱스 생성하기
     @CacheEvict(value = "single-post", key = "#postRecommendRequest.postId", cacheManager = "cacheManager")
     @Transactional
     public void postRecommend(PostRecommendRequest postRecommendRequest) {
@@ -130,7 +129,6 @@ public class PostService {
         return PersonalPostsResponse.of(user, personalPosts, recommendCount, commentCounts);
     }
 
-    // TODO: 날짜 제한 둬야할듯, 인덱스가 안먹음
     @Transactional(readOnly = true)
     public PostSearchResponse searchPosts(PostSearchRequest postSearchRequest) {
         List<Post> posts = customPostRepository.searchPostsWithUser(postSearchRequest);
