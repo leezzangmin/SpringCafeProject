@@ -27,7 +27,7 @@ public class NotificationsResponse {
         private final NotificationType notificationType;
         private final String notificationMessage;
         private final LocalDateTime createdAt;
-        private final boolean isCheckedFlag;
+        private final boolean checkedFlag;
     }
 
     public static NotificationsResponse of(List<Notification> notifications) {
@@ -40,7 +40,7 @@ public class NotificationsResponse {
                                 .notificationType(i.getNotificationType())
                                 .notificationMessage(i.getNotificationMessage())
                                 .createdAt(i.getCreatedAt())
-                                .isCheckedFlag(i.getCheckedAt() != null ? true : false)
+                                .checkedFlag(i.getCheckedAt() != null ? true : false)
                                 .build())
                         .collect(Collectors.toList())
         );
