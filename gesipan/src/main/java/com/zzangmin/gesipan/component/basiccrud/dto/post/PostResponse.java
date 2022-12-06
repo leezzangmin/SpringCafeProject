@@ -5,6 +5,7 @@ import com.zzangmin.gesipan.component.basiccrud.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,19 +13,20 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class PostResponse {
 
-    private final Long postId;
-    private final Long userId;
-    private final String userNickname;
-    private final Long hitCount;
-    private final int recommendCount;
-    private final String postSubject;
-    private final String postContent;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final List<CommentResponse> comments;
-    private final boolean isRecommended;
+    private Long postId;
+    private Long userId;
+    private String userNickname;
+    private Long hitCount;
+    private int recommendCount;
+    private String postSubject;
+    private String postContent;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private List<CommentResponse> comments;
+    private boolean isRecommended;
 
     public static PostResponse of(Post post, List<CommentResponse> commentResponses, int recommendCount, boolean isRecommendedFlag) {
         return PostResponse.builder()

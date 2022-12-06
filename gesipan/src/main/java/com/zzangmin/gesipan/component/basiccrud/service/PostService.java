@@ -52,7 +52,7 @@ public class PostService {
     @Transactional
     public Long save(Long userId, PostSaveRequest postSaveRequest) {
         Users user = usersService.findOne(userId);
-        PostCategory postCategory =postCategoryService.findOne(postSaveRequest.getPostCategoryId());
+        PostCategory postCategory = postCategoryService.findOne(postSaveRequest.getPostCategoryId());
 
         Post post = Post.builder()
                 .postSubject(postSaveRequest.getPostSubject())
@@ -60,7 +60,7 @@ public class PostService {
                 .user(user)
                 .postCategory(postCategory)
                 .baseTime(new BaseTime(postSaveRequest.getCreatedAt(), postSaveRequest.getCreatedAt()))
-                .hitCount(0L) // TODO: DB 디폴트값 만들고 해당 줄 지우기
+                .hitCount(0L)
                 .build();
 
         temporaryPostService.postTemporaryDelete(userId, postSaveRequest.getTempPostId());
@@ -70,7 +70,7 @@ public class PostService {
 
     @CacheEvict(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     public void delete(Long postId, Long userId) {
-        Users user = usersService.findOne(userId);
+        usersService.existById(userId);
         Post post = postRepository.findByIdWithUser(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         validatePostOwner(userId, post);
