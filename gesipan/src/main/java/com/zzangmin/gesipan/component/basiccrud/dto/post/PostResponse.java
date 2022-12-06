@@ -26,9 +26,9 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentResponse> comments;
-    private boolean isRecommended;
+    private boolean recommendedFlag;
 
-    public static PostResponse of(Post post, List<CommentResponse> commentResponses, int recommendCount, boolean isRecommendedFlag) {
+    public static PostResponse of(Post post, List<CommentResponse> commentResponses, int recommendCount, boolean recommendedFlag) {
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .userId(post.getUser().getUserId())
@@ -39,7 +39,7 @@ public class PostResponse {
                 .postContent(post.getPostContent())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
-                .isRecommended(isRecommendedFlag)
+                .recommendedFlag(recommendedFlag)
                 .comments(commentResponses)
                 .build();
     }

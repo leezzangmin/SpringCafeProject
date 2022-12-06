@@ -111,6 +111,27 @@ class PostServiceTest {
         Assertions.assertThat(singlePost.getComments().size()).isLessThan(11);
     }
 
+    @DisplayName("게시글 단건조회를 짧은시간 내에 두 번 요청해도 캐시관련 오류가 발생하지 않아야 한다.")
+    @Test
+    void findOne_cache_noError() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        Post post = EntityFactory.generateRandomPostObject(user);
+        PostCategory postCategory = post.getPostCategory();
+
+        Long postCategoryId = postCategoryRepository.save(postCategory).getPostCategoryId();
+        Long userId = usersRepository.save(user).getUserId();
+        Long postId = postRepository.save(post).getPostId();
+        //when
+        PostResponse postResponse1 = postService.findOne(postId, Optional.empty());
+        PostResponse postResponse2 = postService.findOne(postId, Optional.empty());
+        //then
+        Assertions.assertThat(postResponse1.getPostId()).isEqualTo(post.getPostId());
+        Assertions.assertThat(postResponse1.getPostContent()).isEqualTo(post.getPostContent());
+        Assertions.assertThat(postResponse2.getPostId()).isEqualTo(post.getPostId());
+        Assertions.assertThat(postResponse2.getPostContent()).isEqualTo(post.getPostContent());
+    }
+
     @DisplayName("Post가 저장되어야 한다.")
     @Test
     void save() {
@@ -703,4 +724,9 @@ class PostServiceTest {
         Assertions.assertThat(recommendedPost.getPosts().get(8).getUserNickname()).isEqualTo(post8.getUser().getUserNickname());
         Assertions.assertThat(recommendedPost.getPosts().get(9).getUserNickname()).isEqualTo(post9.getUser().getUserNickname());
     }
+
+
+
+
+
 }

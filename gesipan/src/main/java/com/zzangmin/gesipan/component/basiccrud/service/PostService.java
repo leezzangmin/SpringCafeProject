@@ -45,8 +45,8 @@ public class PostService {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
         List<CommentResponse> commentResponses = commentService.pagination(postId, PageRequest.of(0, 10));
         int recommendCount = postRecommendRepository.countByPostId(postId);
-        boolean isRecommendedFlag = isUserRecommendedPost(postId, userId);
-        return PostResponse.of(post, commentResponses, recommendCount, isRecommendedFlag);
+        boolean recommendedFlag = isUserRecommendedPost(postId, userId);
+        return PostResponse.of(post, commentResponses, recommendCount, recommendedFlag);
     }
 
     @Transactional
