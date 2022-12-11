@@ -361,10 +361,10 @@ class PostServiceTest {
         Users user = EntityFactory.generateRandomUsersObject();
         usersRepository.save(user);
         Long invalidPostId = 9999999999L;
-        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(invalidPostId, user.getUserId());
+
         //when
         //then
-        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(user.getUserId(), invalidPostId));
     }
 
     @DisplayName("추천하려는 게시물이 이미 추천한 게시물이면 오류가 발생해야 한다.")
@@ -376,11 +376,10 @@ class PostServiceTest {
         usersRepository.save(user);
         postCategoryRepository.save(post.getPostCategory());
         postRepository.save(post);
-        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
-        postService.postRecommend(postRecommendRequest);
+        postService.postRecommend(user.getUserId(), post.getPostId());
         //when
         //then
-        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(user.getUserId(), post.getPostId()));
     }
 
     @DisplayName("추천하려는 user의 userId가 존재하지 않으면 오류가 발생해야 한다.")
@@ -394,10 +393,9 @@ class PostServiceTest {
         postRepository.save(post);
 
         Long invalidUserId = 9999999999999L;
-        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), invalidUserId);
         //when
         //then
-        Assertions.assertThatThrownBy(() -> postService.postRecommend(postRecommendRequest));
+        Assertions.assertThatThrownBy(() -> postService.postRecommend(invalidUserId, post.getPostId()));
     }
 
     @DisplayName("게시글 추천이 수행되어야 한다.")
@@ -409,9 +407,8 @@ class PostServiceTest {
         usersRepository.save(user);
         postCategoryRepository.save(post.getPostCategory());
         postRepository.save(post);
-        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post.getPostId(), user.getUserId());
         //when
-        postService.postRecommend(postRecommendRequest);
+        postService.postRecommend(user.getUserId(), post.getPostId());
         //then
         Assertions.assertThat(postRecommendRepository.countByPostId(post.getPostId())).isEqualTo(1);
     }
@@ -516,12 +513,9 @@ class PostServiceTest {
         postCategoryRepository.save(post.getPostCategory());
         postRepository.save(post);
 
-        PostRecommendRequest postRecommendRequest0 = new PostRecommendRequest(post.getPostId(), recommendUser0.getUserId());
-        PostRecommendRequest postRecommendRequest1 = new PostRecommendRequest(post.getPostId(), recommendUser1.getUserId());
-        PostRecommendRequest postRecommendRequest2 = new PostRecommendRequest(post.getPostId(), recommendUser2.getUserId());
-        postService.postRecommend(postRecommendRequest0);
-        postService.postRecommend(postRecommendRequest1);
-        postService.postRecommend(postRecommendRequest2);
+        postService.postRecommend(recommendUser0.getUserId(), post.getPostId());
+        postService.postRecommend(recommendUser1.getUserId(), post.getPostId());
+        postService.postRecommend(recommendUser2.getUserId(), post.getPostId());
 
         PageRequest pageable = PageRequest.of(0, 10);
         //when
@@ -551,8 +545,7 @@ class PostServiceTest {
         postRepository.save(post3);
         commentRepository.save(comment);
 
-        PostRecommendRequest postRecommendRequest = new PostRecommendRequest(post0.getPostId(), recommendUser.getUserId());
-        postService.postRecommend(postRecommendRequest);
+        postService.postRecommend(recommendUser.getUserId(), post0.getPostId());
         PostSearchRequest postSearchRequest = new PostSearchRequest(users.getUserNickname(), LocalDateTime.of(1900, 01, 01, 01, 01, 01), LocalDateTime.of(2022, 12, 31, 01, 01, 01), post0.getPostCategory().getPostCategoryId());
         //when
         PostSearchResponse posts = postService.searchPosts(postSearchRequest);
@@ -642,31 +635,18 @@ class PostServiceTest {
         postRepository.save(post10);
         postRepository.save(post11);
 
-        PostRecommendRequest postRecommendRequest0 = new PostRecommendRequest(post0.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest1 = new PostRecommendRequest(post1.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest2 = new PostRecommendRequest(post2.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest3 = new PostRecommendRequest(post3.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest4 = new PostRecommendRequest(post4.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest5 = new PostRecommendRequest(post5.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest6 = new PostRecommendRequest(post6.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest7 = new PostRecommendRequest(post7.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest8 = new PostRecommendRequest(post8.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest9 = new PostRecommendRequest(post9.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest10 = new PostRecommendRequest(post10.getPostId(), recommendSearchUser.getUserId());
-        PostRecommendRequest postRecommendRequest11 = new PostRecommendRequest(post11.getPostId(), recommendSearchUser.getUserId());
-
-        postService.postRecommend(postRecommendRequest0);
-        postService.postRecommend(postRecommendRequest1);
-        postService.postRecommend(postRecommendRequest2);
-        postService.postRecommend(postRecommendRequest3);
-        postService.postRecommend(postRecommendRequest4);
-        postService.postRecommend(postRecommendRequest5);
-        postService.postRecommend(postRecommendRequest6);
-        postService.postRecommend(postRecommendRequest7);
-        postService.postRecommend(postRecommendRequest8);
-        postService.postRecommend(postRecommendRequest9);
-        postService.postRecommend(postRecommendRequest10);
-        postService.postRecommend(postRecommendRequest11);
+        postService.postRecommend(recommendSearchUser.getUserId(), post0.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post1.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post2.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post3.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post4.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post5.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post6.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post7.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post8.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post9.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post10.getPostId());
+        postService.postRecommend(recommendSearchUser.getUserId(), post11.getPostId());
 
         int pageSize = 10;
         PageRequest pageable = PageRequest.of(0, pageSize);

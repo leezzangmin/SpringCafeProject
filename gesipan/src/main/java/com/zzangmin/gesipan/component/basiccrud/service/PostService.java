@@ -96,12 +96,12 @@ public class PostService {
         return PostsPageResponse.of(categoryId, postsDTO, recommendCount, commentCounts);
     }
 
-    @CacheEvict(value = "single-post", key = "#postRecommendRequest.postId", cacheManager = "cacheManager")
+    @CacheEvict(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional
-    public void postRecommend(PostRecommendRequest postRecommendRequest) {
-        Post post = postRepository.findById(postRecommendRequest.getPostId()).
+    public void postRecommend(Long userId, Long postId) {
+        Post post = postRepository.findById(postId).
                 orElseThrow(() -> new IllegalArgumentException("해당하는 postId가 없습니다. 잘못된 입력"));
-        Users user = usersService.findOne(postRecommendRequest.getUserId());
+        Users user = usersService.findOne(userId);
 
         postRecommendRepository.findByUsersIdAndPostId(post.getPostId(), user.getUserId())
                 .ifPresent(i -> {throw new IllegalStateException("해당 유저가 이미 추천한 게시물입니다.");});
