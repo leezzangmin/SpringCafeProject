@@ -96,7 +96,7 @@ public class PostService {
         return PostsPageResponse.of(categoryId, postsDTO, recommendCount, commentCounts);
     }
 
-    @CacheEvict(value = "single-post", key = "#postRecommendRequest.postId", cacheManager = "cacheManager")
+    @CacheEvict(value = "single-post", key = "#postId", cacheManager = "cacheManager")
     @Transactional
     public void postRecommend(Long userId, Long postId) {
         Post post = postRepository.findById(postId).
