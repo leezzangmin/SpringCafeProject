@@ -10,14 +10,11 @@ import com.zzangmin.gesipan.component.basiccrud.dto.temporarypost.TemporaryPostL
 import com.zzangmin.gesipan.component.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
 import com.zzangmin.gesipan.component.basiccrud.entity.Categories;
 
-import java.time.Duration;
-import java.time.Period;
 import java.util.Optional;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,9 +75,9 @@ public class PostController {
     }
 
     @PostMapping("/post/recommend")
-    public ResponseEntity<String> recommendPost(@RequestBody @Valid PostRecommendRequest postRecommendRequest) {
-        log.info("post recommend : {}", postRecommendRequest);
-        postService.postRecommend(postRecommendRequest);
+    public ResponseEntity<String> recommendPost(@Auth Long userId, @RequestBody @NotNull Long postId) {
+        log.info("post recommend, postId: {}, userId: {}", postId, userId);
+        postService.postRecommend(userId, postId);
         return ResponseEntity.ok("recommend success");
     }
 
