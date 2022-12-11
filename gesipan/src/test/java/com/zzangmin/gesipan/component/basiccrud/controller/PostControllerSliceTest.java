@@ -58,6 +58,6 @@ class PostControllerSliceTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postId").value(123))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userNickname").value("givenUserNickname"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.comments").value(new ArrayList<>()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.recommended").value(false));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.recommendedFlag").value(false));
     }
 }
