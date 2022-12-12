@@ -48,13 +48,14 @@ class TestRunner {
     public Long temp
 
     public static String ip = System.getProperty('param')
-    //public static String ip = "43.201.9.60"
     public static String host = "http://"+ip
 
 
 
     @BeforeProcess
     public static void beforeProcess() {
+        grinder.logger.info("ip !!!"+host)
+
         HTTPRequestControl.setConnectionTimeout(300000)
         testRecord1 = new GTest(1, ip)
         testRecord2 = new GTest(2, ip)
@@ -96,9 +97,6 @@ class TestRunner {
     public void before() {
         request = new HTTPRequest()
         request.setHeaders(headers)
-        //Cookie(java.lang.String name, java.lang.String value, java.lang.String domain, java.lang.String path, java.util.Date expires, boolean secure)
-        //http://grinder.sourceforge.net/g3/script-javadoc/HTTPClient/Cookie.html#constructor_summary
-        //cookie = new Cookie("X-AUTH-TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjYWZlX3BheWxvYWRfc3ViamVjdCIsInVzZXJJZCI6MzMsImlhdCI6MTY2MTQyNTM5NCwiZXhwIjoxNjc5NDI1Mzk0fQ.0i0BWhwk6AbKiAQ1_kNbZCzzxNWdwchf4uoKHKPnbTM")//,"http://127.0.0.1:8080","/", new Date(123456L),false)
         CookieManager.addCookies(cookies)
         grinder.logger.info("before. init headers and cookies")
     }
@@ -175,8 +173,7 @@ class TestRunner {
         String url = host+"/post/recommend"
         String postId=RandomPostIdIssuer.getRandomNumbers();
         String userId=RandomPostIdIssuer.getRandomNumbers();
-        String body = "{\"postId\":"+postId+",\n \"userId\":"+userId+"}"
-        grinder.logger.info(body);
+        String body = postId;
         HTTPResponse response = request.POST(url, body.getBytes())
 
         if (response.statusCode == 301 || response.statusCode == 302) {
@@ -192,7 +189,6 @@ class TestRunner {
         grinder.logger.info("test6")
         String url = host+"/comment"
         String postId = RandomPostIdIssuer.getRandomNumbers();
-        String commentId = RandomPostIdIssuer.getRandomNumbers();
         String charset = (('A'..'Z') + ('0'..'9')).join()
         Integer length = 500
         String commentContent = RandomStringUtils.random(length, charset.toCharArray())
@@ -246,7 +242,6 @@ class TestRunner {
         String url = host+"/post"
         String userId=RandomPostIdIssuer.getRandomNumbers();
         String charset = (('A'..'Z') + ('0'..'9')).join()
-        Integer length = 500
         String postSubject = RandomStringUtils.random(30, charset.toCharArray())
         String postContent = RandomStringUtils.random(700, charset.toCharArray())
 
