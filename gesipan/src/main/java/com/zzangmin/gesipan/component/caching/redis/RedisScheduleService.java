@@ -1,65 +1,57 @@
 package com.zzangmin.gesipan.component.caching.redis;
 
 import com.google.common.base.Charsets;
-import com.zzangmin.gesipan.component.basiccrud.entity.Post;
 import com.zzangmin.gesipan.component.basiccrud.repository.PostRepository;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class RedisScheduleService {
+
     private final RedisTemplate<String, String> redisTemplate;
     private final PostRepository postRepository;
 
     @Transactional
-    @Scheduled(fixedRate = RedisKeyUtils.scheduledIncreaseSeconds, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = RedisKeyUtils.SCHEDULED_INCREASE_SECONDS, timeUnit = TimeUnit.SECONDS)
     public void scheduledIncreasePostHitCounts() {
-        log.debug("스케줄 태스크 {}", LocalDateTime.now());
-        ScanOptions scanOptions = ScanOptions.scanOptions()
-                .match(RedisKeyUtils.scheduleHitCountKey + ":*")
-                .count(100)
-                .build();
+        log.debug("scheduled task(hitCount) time: {}", LocalDateTime.now());
 
-        Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions);
-        List<Long> postIds = new ArrayList<>();
-        List<Long> hitCounts = new ArrayList<>();
+        Cursor<byte[]> cursor = redisTemplate.getConnectionFactory()
+            .getConnection()
+            .scan(RedisKeyUtils.SCHEDULE_HITCOUNT_SCAN_OPTION);
 
+        Map<Long, Long> postIdsAndHitCounts = extractPostIdsAndHitCountsFromCursor(cursor);
+
+        hitCountBulkUpdate(postIdsAndHitCounts);
+    }
+
+    private Map<Long, Long> extractPostIdsAndHitCountsFromCursor(Cursor<byte[]> cursor) {
+        Map<Long, Long> postIdsAndHitCounts = new HashMap<>();
         while (cursor.hasNext()) {
             String key = new String(cursor.next(), Charsets.UTF_8);
-            Long postId = extractPostIdFromHitCountKey(key);
+            Long postId = RedisKeyUtils.extractPostIdFromHitCountKey(key);
             String value = redisTemplate.opsForValue().getAndDelete(key);
-
-            postIds.add(postId);
-            hitCounts.add(Long.valueOf(value));
+            postIdsAndHitCounts.put(postId, Long.valueOf(value));
         }
-
-        hitCountBulkUpdate(postIds, hitCounts);
+        return postIdsAndHitCounts;
     }
 
-    private Long extractPostIdFromHitCountKey(String key) {
-        return Long.valueOf(key.split(":")[1]);
+    private void hitCountBulkUpdate(Map<Long, Long> postIdsAndHitCounts) {
+        for (Long postId : postIdsAndHitCounts.keySet()) {
+            postRepository.updateHitCountByPostId(postId, postIdsAndHitCounts.get(postId));
+        }
     }
-
-    private void hitCountBulkUpdate(List<Long> postIds, List<Long> hitCounts) {
-        List<Post> posts = postRepository.findAllById(postIds);
-        IntStream.range(0, posts.size())
-                .boxed()
-                .forEach(i -> postRepository.updateHitCountByPostId(posts.get(i).getPostId(), hitCounts.get(i)));
-    }
-
 
 }
