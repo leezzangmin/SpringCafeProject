@@ -17,6 +17,7 @@ public class RedisPostHitCountBulkUpdateService {
         if (isFirstIpRequest(clientAddress, postId)) {
             insertHitCountsToSchedulingList(postId);
             cacheClientRequest(clientAddress, postId);
+            return;
         }
         log.debug("same user requests duplicate in 24hours: {}, {}", clientAddress, postId);
     }
@@ -39,13 +40,14 @@ public class RedisPostHitCountBulkUpdateService {
         String key = generateCacheKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
         redisTemplate.opsForValue()
-                .set(key, "", RedisKeyUtils.clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
+                .set(key, "", RedisKeyUtils.CLIENT_ADDRESS_POST_REQUEST_WRITE_EXPIRE_DURATION_SEC, TimeUnit.SECONDS);
     }
 
     private String generateCacheKey(String clientAddress, Long postId) {
         return clientAddress + ":" + postId;
     }
+
     private String generateScheduleKey(Long postId) {
-        return RedisKeyUtils.scheduleHitCountKey + ":" + postId;
+        return RedisKeyUtils.SCHEDULE_HITCOUNT_KEY + ":" + postId;
     }
 }
