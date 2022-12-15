@@ -25,19 +25,21 @@ import java.util.Date;
 public class JwtProvider {
 
     @Value("${JWT_SECRET}")
-    private String secretKey;
+    private String JWT_SECRET_KEY;
     private final String claimSubject = "cafe_payload_subject";
+    private final String PRIVATE_PAYLOAD_CLAIM_NAME = "userId";
+    private final String CAFE_TOKEN_NAME = "X-AUTH-TOKEN";
 
     // 토큰 유효시간 30분
     private final long tokenValidTime = 30 * 60 * 1000L;
 
-    public JwtProvider(String secretKey) {
-        this.secretKey = secretKey;
+    public JwtProvider(String JWT_SECRET_KEY) {
+        this.JWT_SECRET_KEY = JWT_SECRET_KEY;
     }
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+        JWT_SECRET_KEY = Base64.getEncoder().encodeToString(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
     public Optional<Long> getUserId (HttpServletRequest request) {
@@ -49,23 +51,23 @@ public class JwtProvider {
 
     public String createToken(Long userId) {
         Claims claims = Jwts.claims().setSubject(claimSubject);
-        claims.put("userId", userId);
+        claims.put(PRIVATE_PAYLOAD_CLAIM_NAME, userId);
         Date now = new Date();
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
                 .compact();
     }
 
     public long getUserIdFromToken(String jwt) {
         return Long.parseLong(Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(JWT_SECRET_KEY)
                 .parseClaimsJws(jwt)
                 .getBody()
-                .get("userId")
+                .get(PRIVATE_PAYLOAD_CLAIM_NAME)
                 .toString());
     }
 
@@ -75,7 +77,7 @@ public class JwtProvider {
             return Optional.empty();
         }
         return Arrays.stream(cookies)
-                .filter(i -> i.getName().equals("X-AUTH-TOKEN"))
+                .filter(i -> i.getName().equals(CAFE_TOKEN_NAME))
                 .findFirst()
                 .map(i -> i.getValue());
     }
@@ -83,7 +85,7 @@ public class JwtProvider {
     public boolean isValidToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+                    .setSigningKey(JWT_SECRET_KEY)
                     .parseClaimsJws(jwtToken);
 
             return !claims.getBody()
