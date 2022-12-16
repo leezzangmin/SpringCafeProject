@@ -1,9 +1,6 @@
 package com.zzangmin.gesipan.component.login.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -11,6 +8,7 @@ import javax.servlet.http.Cookie;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +18,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class JwtProvider {
@@ -82,17 +81,23 @@ public class JwtProvider {
                 .map(i -> i.getValue());
     }
 
-    public boolean isValidToken(String jwtToken) {
+    public boolean isValidToken(String JWT) {
         try {
-            Jws<Claims> claims = Jwts.parser()
+            Jwts.parser()
                     .setSigningKey(JWT_SECRET_KEY)
-                    .parseClaimsJws(jwtToken);
+                    .parseClaimsJws(JWT).getBody();
+            return true;
 
-            return !claims.getBody()
-                    .getExpiration()
-                    .before(new Date());
+        } catch(ExpiredJwtException e) {
+            log.error("JWT Expired. JWT: {}", JWT);
+            return false;
+
+        } catch(JwtException e) {
+            log.error("Token Not valid. token: {}", JWT);
+            return false;
 
         } catch (Exception e) {
+            log.error("token validation etc Error: {}", e.getMessage());
             return false;
         }
     }

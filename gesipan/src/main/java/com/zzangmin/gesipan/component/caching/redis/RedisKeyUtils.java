@@ -25,4 +25,12 @@ public class RedisKeyUtils {
         return Long.valueOf(key.split(":")[1]);
     }
 
+    public static String generateClientPostCacheKey(String clientAddress, Long postId) {
+        return clientAddress + ":" + postId;
+    }
+
+    public static String generateSchedulePostKey(Long postId) {
+        return RedisKeyUtils.SCHEDULE_HITCOUNT_KEY + ":" + postId;
+    }
+
 }

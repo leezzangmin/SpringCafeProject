@@ -24,11 +24,11 @@ public class RedisPostHitCountBulkUpdateService {
 
     private void insertHitCountsToSchedulingList(Long postId) {
         redisTemplate.opsForValue()
-                        .increment(generateScheduleKey(postId), 1);
+                        .increment(RedisKeyUtils.generateSchedulePostKey(postId), 1);
     }
 
     private boolean isFirstIpRequest(String clientAddress, Long postId) {
-        String key = generateCacheKey(clientAddress, postId);
+        String key = RedisKeyUtils.generateClientPostCacheKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
         if (redisTemplate.hasKey(key)) {
             return false;
@@ -37,17 +37,11 @@ public class RedisPostHitCountBulkUpdateService {
     }
 
     private void cacheClientRequest(String clientAddress, Long postId) {
-        String key = generateCacheKey(clientAddress, postId);
+        String key = RedisKeyUtils.generateClientPostCacheKey(clientAddress, postId);
         log.debug("user post request key: {}", key);
         redisTemplate.opsForValue()
                 .set(key, "", RedisKeyUtils.CLIENT_ADDRESS_POST_REQUEST_WRITE_EXPIRE_DURATION_SEC, TimeUnit.SECONDS);
     }
 
-    private String generateCacheKey(String clientAddress, Long postId) {
-        return clientAddress + ":" + postId;
-    }
 
-    private String generateScheduleKey(Long postId) {
-        return RedisKeyUtils.SCHEDULE_HITCOUNT_KEY + ":" + postId;
-    }
 }
