@@ -1,10 +1,14 @@
 package com.zzangmin.gesipan.component.basiccrud.service;
 
 import static org.assertj.core.api.Assertions.within;
-import static org.junit.jupiter.api.Assertions.*;
 
+import com.zzangmin.gesipan.component.basiccrud.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.component.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
+import com.zzangmin.gesipan.component.basiccrud.entity.Categories;
+import com.zzangmin.gesipan.component.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.component.basiccrud.entity.TemporaryPost;
+import com.zzangmin.gesipan.component.basiccrud.repository.PostCategoryRepository;
+import com.zzangmin.gesipan.component.basiccrud.repository.PostRepository;
 import com.zzangmin.gesipan.component.basiccrud.repository.TemporaryPostRepository;
 import com.zzangmin.gesipan.component.login.entity.Users;
 import com.zzangmin.gesipan.component.login.repository.UsersRepository;
@@ -28,6 +32,12 @@ class TemporaryPostServiceTest {
     UsersRepository usersRepository;
     @Autowired
     TemporaryPostRepository temporaryPostRepository;
+    @Autowired
+    PostService postService;
+    @Autowired
+    PostCategoryRepository postCategoryRepository;
+    @Autowired
+    PostRepository postRepository;
 
     @DisplayName("존재하지 않는 userId로 임시게시물 저장을 요청하면 오류가 발생해야 한다.")
     @Test
@@ -56,11 +66,32 @@ class TemporaryPostServiceTest {
         Assertions.assertThat(findPost.getCreatedAt()).isCloseTo(temporaryPostSaveRequest.getCreatedAt(), within(1,ChronoUnit.SECONDS));
     }
 
+    @DisplayName("존재하지 않는 임시게시글을 삭제하려고 하면 오류가 발생해야 한다.")
     @Test
-    void postTemporaryDelete() {
+    void postTemporaryDelete_noExistId() {
+        //given
+        Long invalidTemporaryPostId = 123123123L;
+        //when //then
+        Assertions.assertThatThrownBy(() ->temporaryPostService.postTemporaryDelete(12345L, invalidTemporaryPostId))
+                .isInstanceOf(IllegalArgumentException.class);
+
     }
 
+    @DisplayName("임시게시글을 불러와서 실제 게시글로 저장하면 자동으로 삭제되어야 한다.")
     @Test
-    void temporaryPostLoad() {
+    void postTemporaryDelete_save_auto_delete() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        TemporaryPost temporaryPost = EntityFactory.generateRandomTemporaryPostObject(user);
+        PostCategory postCategory = EntityFactory.generatePostCategoryObject(Categories.FREE);
+        usersRepository.save(user);
+        postCategoryRepository.save(postCategory);
+        temporaryPostRepository.save(temporaryPost);
+        PostSaveRequest postSaveRequest = new PostSaveRequest("postSubject", "postContent", postCategory.getPostCategoryId(), LocalDateTime.now(), temporaryPost.getTempPostId());
+        //when
+        postService.save(user.getUserId(), postSaveRequest);
+        //then
+        Assertions.assertThat(temporaryPostRepository.findById(temporaryPost.getTempPostId()).isEmpty()).isTrue();
     }
+
 }

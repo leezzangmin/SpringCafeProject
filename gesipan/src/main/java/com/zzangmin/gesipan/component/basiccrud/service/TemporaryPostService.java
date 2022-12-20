@@ -36,11 +36,16 @@ public class TemporaryPostService {
 
     @Transactional
     public void postTemporaryDelete(Long userId, Long temporaryPostId) {
-        if (temporaryPostId != null && temporaryPostRepository.findByUserId(userId)
+        if (temporaryPostId == null) {
+            return;
+        }
+        if (temporaryPostRepository.findByUserId(userId)
                 .stream()
                 .anyMatch(i -> i.getTempPostId().equals(temporaryPostId))) {
             temporaryPostRepository.deleteById(temporaryPostId);
+            return;
         }
+        throw new IllegalArgumentException("해당하는 임시 게시글이 존재하지 않습니다.");
     }
 
     @Transactional(readOnly = true)
