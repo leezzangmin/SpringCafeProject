@@ -2,7 +2,10 @@ package com.zzangmin.gesipan.component.basiccrud.service;
 
 import static org.assertj.core.api.Assertions.within;
 
+import com.zzangmin.gesipan.component.basiccrud.dto.post.PostSaveRequest;
 import com.zzangmin.gesipan.component.basiccrud.dto.temporarypost.TemporaryPostSaveRequest;
+import com.zzangmin.gesipan.component.basiccrud.entity.Categories;
+import com.zzangmin.gesipan.component.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.component.basiccrud.entity.TemporaryPost;
 import com.zzangmin.gesipan.component.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.component.basiccrud.repository.PostRepository;
@@ -72,6 +75,23 @@ class TemporaryPostServiceTest {
         Assertions.assertThatThrownBy(() ->temporaryPostService.postTemporaryDelete(12345L, invalidTemporaryPostId))
                 .isInstanceOf(IllegalArgumentException.class);
 
+    }
+
+    @DisplayName("임시게시글을 불러와서 실제 게시글로 저장하면 자동으로 삭제되어야 한다.")
+    @Test
+    void postTemporaryDelete_save_auto_delete() {
+        //given
+        Users user = EntityFactory.generateRandomUsersObject();
+        TemporaryPost temporaryPost = EntityFactory.generateRandomTemporaryPostObject(user);
+        PostCategory postCategory = EntityFactory.generatePostCategoryObject(Categories.FREE);
+        usersRepository.save(user);
+        postCategoryRepository.save(postCategory);
+        temporaryPostRepository.save(temporaryPost);
+        PostSaveRequest postSaveRequest = new PostSaveRequest("postSubject", "postContent", postCategory.getPostCategoryId(), LocalDateTime.now(), temporaryPost.getTempPostId());
+        //when
+        postService.save(user.getUserId(), postSaveRequest);
+        //then
+        Assertions.assertThat(temporaryPostRepository.findById(temporaryPost.getTempPostId()).isEmpty()).isTrue();
     }
 
 }
