@@ -1,9 +1,7 @@
 package com.zzangmin.gesipan.component.caching.redis;
 
 import com.google.common.base.Charsets;
-import com.zzangmin.gesipan.component.basiccrud.repository.PostRepository;
-import java.util.HashMap;
-import java.util.Map;
+import com.zzangmin.gesipan.component.basiccrud.repository.jdbc.PostJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
@@ -21,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisScheduleService {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final PostRepository postRepository;
+    private final PostJdbcRepository postJdbcRepository;
 
     @Transactional
     @Scheduled(fixedRate = RedisKeyUtils.SCHEDULED_INCREASE_SECONDS, timeUnit = TimeUnit.SECONDS)
@@ -32,26 +30,30 @@ public class RedisScheduleService {
             .getConnection()
             .scan(RedisKeyUtils.SCHEDULE_HITCOUNT_SCAN_OPTION);
 
-        Map<Long, Long> postIdsAndHitCounts = extractPostIdsAndHitCountsFromCursor(cursor);
+        String updateRows = generateRowConstructorUpdateString(cursor);
+        if (updateRows.isBlank()) {
+            return;
+        }
 
-        hitCountBulkUpdate(postIdsAndHitCounts);
+        postJdbcRepository.hitCount(updateRows);
     }
 
-    private Map<Long, Long> extractPostIdsAndHitCountsFromCursor(Cursor<byte[]> cursor) {
-        Map<Long, Long> postIdsAndHitCounts = new HashMap<>();
+    private String generateRowConstructorUpdateString(Cursor<byte[]> cursor) {
+        StringBuilder sb = new StringBuilder();
         while (cursor.hasNext()) {
+            sb.append("ROW(");
             String key = new String(cursor.next(), Charsets.UTF_8);
-            Long postId = RedisKeyUtils.extractPostIdFromHitCountKey(key);
+            sb.append(key);
+            sb.append(",");
             String value = redisTemplate.opsForValue().getAndDelete(key);
-            postIdsAndHitCounts.put(postId, Long.valueOf(value));
+            sb.append(value);
+            sb.append("),");
         }
-        return postIdsAndHitCounts;
-    }
-
-    private void hitCountBulkUpdate(Map<Long, Long> postIdsAndHitCounts) {
-        for (Long postId : postIdsAndHitCounts.keySet()) {
-            postRepository.updateHitCountByPostId(postId, postIdsAndHitCounts.get(postId));
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append(")");
         }
-    }
 
+        return sb.toString();
+    }
 }
