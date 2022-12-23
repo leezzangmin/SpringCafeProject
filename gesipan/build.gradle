@@ -30,6 +30,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
 	// 레디스
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation (group: 'it.ozimov', name: 'embedded-redis', version: '0.7.3') {
