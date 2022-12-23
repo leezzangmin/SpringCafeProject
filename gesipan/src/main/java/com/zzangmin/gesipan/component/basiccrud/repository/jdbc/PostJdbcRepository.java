@@ -1,22 +1,25 @@
 package com.zzangmin.gesipan.component.basiccrud.repository.jdbc;
 
-import com.zzangmin.gesipan.component.basiccrud.entity.Post;
-import io.lettuce.core.dynamic.annotation.Param;
-import org.springframework.data.jdbc.repository.query.Modifying;
-import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.repository.CrudRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+@RequiredArgsConstructor
 @Repository
-public interface PostJdbcRepository extends CrudRepository<Post, Long> {
+public class PostJdbcRepository {
 
-    @Modifying
-    @Query("update post p1 "
-        + " inner join (values :updateRows "
-        + " post (post_id, hit_count) p2 "
-        + " on p1.post_id = p2.post_id "
-        + " set p1.hit_count=p1.hit_count+p2.hit_count")
-    void hitCount(@Param("updateRows") String updateRows);
+    private final JdbcTemplate jdbcTemplate;
 
+    public int bulkUpdatePostHitCounts(String updateRows) {
+        String SQL = "update post p1 "
+                + " inner join "
+                + " (values "
+                + updateRows
+                + " temptable_post (post_id, hit_count) "
+                + " on p1.post_id = temptable_post.post_id "
+                + " set p1.hit_count=p1.hit_count+temptable_post.hit_count";
+
+        return jdbcTemplate.update(SQL);
+    }
 
 }
