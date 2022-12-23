@@ -1,19 +1,16 @@
 package com.zzangmin.gesipan.component.caching.redis;
 
-import com.zzangmin.gesipan.component.basiccrud.entity.Categories;
 import com.zzangmin.gesipan.component.basiccrud.entity.Post;
 import com.zzangmin.gesipan.component.basiccrud.entity.PostCategory;
 import com.zzangmin.gesipan.component.basiccrud.repository.PostCategoryRepository;
 import com.zzangmin.gesipan.component.basiccrud.repository.PostRepository;
-import com.zzangmin.gesipan.component.embeddable.BaseTime;
-import com.zzangmin.gesipan.component.login.entity.UserRole;
 import com.zzangmin.gesipan.component.login.entity.Users;
 import com.zzangmin.gesipan.component.login.repository.UsersRepository;
-import javax.transaction.Transactional;
 
 import com.zzangmin.gesipan.testfactory.EntityFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +43,7 @@ class RedisScheduleServiceTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("해시에 들어있던 값들이 스케줄 잡이 끝나면 사라져있어야 한다. 조회수도 상승되어야 한다.")
     void scheduledIncreasePostHitCounts() {
         //given
