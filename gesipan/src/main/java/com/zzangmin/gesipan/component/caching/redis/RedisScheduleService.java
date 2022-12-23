@@ -35,15 +35,17 @@ public class RedisScheduleService {
             return;
         }
 
-        postJdbcRepository.hitCount(updateRows);
+        postJdbcRepository.bulkUpdatePostHitCounts(updateRows);
     }
 
     private String generateRowConstructorUpdateString(Cursor<byte[]> cursor) {
         StringBuilder sb = new StringBuilder();
         while (cursor.hasNext()) {
-            sb.append("ROW(");
+            sb.append("row(");
+
             String key = new String(cursor.next(), Charsets.UTF_8);
-            sb.append(key);
+            Long postId = RedisKeyUtils.extractPostIdFromHitCountKey(key);
+            sb.append(postId);
             sb.append(",");
             String value = redisTemplate.opsForValue().getAndDelete(key);
             sb.append(value);
